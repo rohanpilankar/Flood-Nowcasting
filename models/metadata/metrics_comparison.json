@@ -1,0 +1,124 @@
+{
+  "selected_model": "XGBoost",
+  "features": [
+    "rainfall_1h",
+    "rainfall_3h",
+    "rainfall_6h",
+    "rainfall_24h",
+    "rainfall_intensity_change",
+    "elevation_m",
+    "slope_deg",
+    "low_lying_score",
+    "dist_to_drain_m",
+    "drainage_density",
+    "dist_to_mithi_m",
+    "dist_to_coast_m",
+    "historical_hotspot_score",
+    "built_up_ratio",
+    "hour_of_day"
+  ],
+  "validation_comparison": {
+    "LogisticRegression": {
+      "precision": 0.7658,
+      "recall": 0.7469,
+      "f1": 0.7562,
+      "roc_auc": 0.9923,
+      "pr_auc": 0.8466
+    },
+    "RandomForest": {
+      "precision": 0.9033,
+      "recall": 0.8898,
+      "f1": 0.8965,
+      "roc_auc": 0.9985,
+      "pr_auc": 0.9668
+    },
+    "XGBoost": {
+      "precision": 0.9398,
+      "recall": 0.9356,
+      "f1": 0.9377,
+      "roc_auc": 0.9996,
+      "pr_auc": 0.9888
+    }
+  },
+  "held_out_test_metrics": {
+    "precision": 0.9553,
+    "recall": 0.931,
+    "f1": 0.943,
+    "roc_auc": 0.9997,
+    "pr_auc": 0.9914,
+    "confusion_matrix": [
+      [
+        32385,
+        48
+      ],
+      [
+        76,
+        1026
+      ]
+    ]
+  },
+  "feature_importances": [
+    {
+      "feature": "rainfall_3h",
+      "importance": 0.274
+    },
+    {
+      "feature": "rainfall_6h",
+      "importance": 0.2433
+    },
+    {
+      "feature": "low_lying_score",
+      "importance": 0.2344
+    },
+    {
+      "feature": "elevation_m",
+      "importance": 0.0893
+    },
+    {
+      "feature": "rainfall_1h",
+      "importance": 0.042
+    },
+    {
+      "feature": "rainfall_24h",
+      "importance": 0.0228
+    },
+    {
+      "feature": "built_up_ratio",
+      "importance": 0.0194
+    },
+    {
+      "feature": "historical_hotspot_score",
+      "importance": 0.0168
+    },
+    {
+      "feature": "slope_deg",
+      "importance": 0.0145
+    },
+    {
+      "feature": "drainage_density",
+      "importance": 0.0136
+    },
+    {
+      "feature": "rainfall_intensity_change",
+      "importance": 0.0098
+    },
+    {
+      "feature": "dist_to_drain_m",
+      "importance": 0.0081
+    },
+    {
+      "feature": "hour_of_day",
+      "importance": 0.0058
+    },
+    {
+      "feature": "dist_to_coast_m",
+      "importance": 0.0031
+    },
+    {
+      "feature": "dist_to_mithi_m",
+      "importance": 0.003
+    }
+  ],
+  "inference_latency_ms": 38.5,
+  "trained_on": "Chronological Time-Aware Monsoon Dataset (Greater Mumbai)"
+}

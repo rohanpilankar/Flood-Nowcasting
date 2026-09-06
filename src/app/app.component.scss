@@ -1,0 +1,36 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-darkest);
+  color: var(--text-main);
+  position: relative;
+}
+
+.app-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  transition: margin-left var(--transition-normal);
+
+  @media (max-width: 1024px) {
+    margin-left: 0 !important;
+  }
+}
+
+.app-layout.sidebar-collapsed .app-main-wrapper {
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+.app-content-viewport {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1920px;
+  width: 100%;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 1rem 0.75rem;
+  }
+}

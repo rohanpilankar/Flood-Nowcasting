@@ -1,0 +1,293 @@
+{
+  "type": "FeatureCollection",
+  "name": "mumbai_arterial_roads",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_WEH_01",
+        "name": "Western Express Highway (WEH)",
+        "type": "Expressway / Flyover Arterial",
+        "speed_kmh": 70,
+        "elevation_type": "Elevated Flyover / Grade"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.841,
+            19.055
+          ],
+          [
+            72.845,
+            19.085
+          ],
+          [
+            72.852,
+            19.115
+          ],
+          [
+            72.858,
+            19.155
+          ],
+          [
+            72.862,
+            19.205
+          ],
+          [
+            72.868,
+            19.26
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_EEH_02",
+        "name": "Eastern Express Highway (EEH)",
+        "type": "Expressway / Arterial",
+        "speed_kmh": 70,
+        "elevation_type": "Elevated / Grade"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.862,
+            19.038
+          ],
+          [
+            72.89,
+            19.065
+          ],
+          [
+            72.915,
+            19.095
+          ],
+          [
+            72.935,
+            19.145
+          ],
+          [
+            72.955,
+            19.2
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_SV_03",
+        "name": "Swami Vivekananda (SV) Road",
+        "type": "Secondary Arterial",
+        "speed_kmh": 40,
+        "elevation_type": "Surface Grade"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.838,
+            19.055
+          ],
+          [
+            72.839,
+            19.085
+          ],
+          [
+            72.841,
+            19.118
+          ],
+          [
+            72.844,
+            19.155
+          ],
+          [
+            72.848,
+            19.205
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_LBS_04",
+        "name": "Lal Bahadur Shastri (LBS) Marg",
+        "type": "Secondary Arterial",
+        "speed_kmh": 35,
+        "elevation_type": "Surface Grade"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.868,
+            19.048
+          ],
+          [
+            72.876,
+            19.068
+          ],
+          [
+            72.89,
+            19.105
+          ],
+          [
+            72.915,
+            19.145
+          ],
+          [
+            72.938,
+            19.185
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_SCLR_05",
+        "name": "Santa Cruz-Chembur Link Road (SCLR)",
+        "type": "Elevated Expressway Connector",
+        "speed_kmh": 60,
+        "elevation_type": "Double-Decker Flyover"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.852,
+            19.078
+          ],
+          [
+            72.87,
+            19.072
+          ],
+          [
+            72.895,
+            19.068
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_JVLR_06",
+        "name": "Jogeshwari-Vikhroli Link Road (JVLR)",
+        "type": "Cross-City Arterial",
+        "speed_kmh": 50,
+        "elevation_type": "Elevated / Grade"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.85,
+            19.135
+          ],
+          [
+            72.88,
+            19.13
+          ],
+          [
+            72.91,
+            19.128
+          ],
+          [
+            72.935,
+            19.125
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_AMBEDKAR_07",
+        "name": "Dr. B.R. Ambedkar Road (Dadar-Sion)",
+        "type": "Major Arterial",
+        "speed_kmh": 45,
+        "elevation_type": "Surface Grade"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.835,
+            18.995
+          ],
+          [
+            72.8428,
+            19.0125
+          ],
+          [
+            72.852,
+            19.025
+          ],
+          [
+            72.8592,
+            19.0328
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_ANDHERI_SUB_08",
+        "name": "Andheri Subway Crossing",
+        "type": "Railway Underpass Choke",
+        "speed_kmh": 20,
+        "elevation_type": "Depressed Underpass (-2.5m)"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.8425,
+            19.1197
+          ],
+          [
+            72.8441,
+            19.1197
+          ],
+          [
+            72.8458,
+            19.1197
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "road_id": "RD_MILAN_SUB_09",
+        "name": "Milan Subway Underpass",
+        "type": "Railway Underpass Choke",
+        "speed_kmh": 20,
+        "elevation_type": "Depressed Underpass (-3.0m)"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.8398,
+            19.0832
+          ],
+          [
+            72.8415,
+            19.0832
+          ],
+          [
+            72.8432,
+            19.0832
+          ]
+        ]
+      }
+    }
+  ]
+}

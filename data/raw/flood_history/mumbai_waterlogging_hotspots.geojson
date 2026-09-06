@@ -1,0 +1,206 @@
+{
+  "type": "FeatureCollection",
+  "name": "mumbai_chronic_flood_spots",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_01",
+        "name": "Hindmata Junction (Dadar East)",
+        "ward": "F/South",
+        "typical_depth_m": 0.65,
+        "severity": "CRITICAL",
+        "historical_frequency": "Very High",
+        "elevation_m": 4.2,
+        "cause": "Depressed saucer topography with stormwater drain capacity surcharge during high tide"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8428,
+          19.0125
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_02",
+        "name": "Gandhi Market & King's Circle (Sion)",
+        "ward": "F/North",
+        "typical_depth_m": 0.55,
+        "severity": "HIGH",
+        "historical_frequency": "Very High",
+        "elevation_m": 5.1,
+        "cause": "Low elevation basin along Dr. Ambedkar Road adjacent to rail embankment"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8592,
+          19.0328
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_03",
+        "name": "Milan Subway (Santacruz)",
+        "ward": "H/West",
+        "typical_depth_m": 0.75,
+        "severity": "CRITICAL",
+        "historical_frequency": "Severe",
+        "elevation_m": 2.8,
+        "cause": "Depressed railway underpass with rapid stormwater catchment funneling"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8415,
+          19.0832
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_04",
+        "name": "Andheri Subway (Andheri West/East)",
+        "ward": "K/West",
+        "typical_depth_m": 0.8,
+        "severity": "CRITICAL",
+        "historical_frequency": "Severe",
+        "elevation_m": 3.0,
+        "cause": "Severe water accumulation under western railway tracks during >30mm/hr rain"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8441,
+          19.1197
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_05",
+        "name": "Kurla Station West & Kamani Junction",
+        "ward": "L",
+        "typical_depth_m": 0.7,
+        "severity": "CRITICAL",
+        "historical_frequency": "Very High",
+        "elevation_m": 4.5,
+        "cause": "Mithi River bank overflow and choked industrial area outfalls"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8765,
+          19.0682
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_06",
+        "name": "Chunabhatti Railway Junction",
+        "ward": "L",
+        "typical_depth_m": 0.48,
+        "severity": "HIGH",
+        "historical_frequency": "High",
+        "elevation_m": 4.8,
+        "cause": "Harbour line track depression and insufficient culvert width"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8804,
+          19.0521
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_07",
+        "name": "Sakinaka 90 Feet Road",
+        "ward": "L",
+        "typical_depth_m": 0.42,
+        "severity": "MEDIUM",
+        "historical_frequency": "Moderate",
+        "elevation_m": 8.5,
+        "cause": "High surface runoff from Powai-Chandivali hills"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8885,
+          19.1082
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_08",
+        "name": "Dahisar Subway (North)",
+        "ward": "R/North",
+        "typical_depth_m": 0.6,
+        "severity": "HIGH",
+        "historical_frequency": "High",
+        "elevation_m": 5.2,
+        "cause": "Underpass water accumulation and Dahisar river backflow"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8595,
+          19.2558
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_09",
+        "name": "Amar Mahal Junction (Chembur)",
+        "ward": "M/West",
+        "typical_depth_m": 0.4,
+        "severity": "MEDIUM",
+        "historical_frequency": "Moderate",
+        "elevation_m": 7.0,
+        "cause": "Eastern Express Highway interchange drain bottlenecks"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.8985,
+          19.0689
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "spot_id": "MUM_FL_10",
+        "name": "Bandra Kurla Complex (BKC Low Ground)",
+        "ward": "H/East",
+        "typical_depth_m": 0.35,
+        "severity": "MEDIUM",
+        "historical_frequency": "Moderate",
+        "elevation_m": 6.0,
+        "cause": "High impervious surface fraction and Mithi river high tide level"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          72.868,
+          19.061
+        ]
+      }
+    }
+  ]
+}

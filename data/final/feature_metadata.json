@@ -1,0 +1,128 @@
+{
+  "dataset_name": "mumbai_flood_ml_dataset",
+  "total_samples": 222390,
+  "total_features": 15,
+  "primary_key": [
+    "grid_id",
+    "timestamp"
+  ],
+  "target_variable": "flood_event",
+  "horizon_targets": [
+    "target_plus_1h",
+    "target_plus_3h"
+  ],
+  "features": [
+    {
+      "name": "rainfall_1h",
+      "type": "float",
+      "unit": "mm",
+      "category": "Dynamic Rainfall",
+      "description": "Past 1-hour accumulated precipitation at grid centroid via IDW"
+    },
+    {
+      "name": "rainfall_3h",
+      "type": "float",
+      "unit": "mm",
+      "category": "Dynamic Rainfall",
+      "description": "Past 3-hour accumulated precipitation"
+    },
+    {
+      "name": "rainfall_6h",
+      "type": "float",
+      "unit": "mm",
+      "category": "Dynamic Rainfall",
+      "description": "Past 6-hour accumulated precipitation"
+    },
+    {
+      "name": "rainfall_24h",
+      "type": "float",
+      "unit": "mm",
+      "category": "Dynamic Rainfall",
+      "description": "Past 24-hour antecedent rainfall index"
+    },
+    {
+      "name": "rainfall_intensity_change",
+      "type": "float",
+      "unit": "mm/hr",
+      "category": "Dynamic Rainfall",
+      "description": "Acceleration of rainfall rate over preceding hour"
+    },
+    {
+      "name": "elevation_m",
+      "type": "float",
+      "unit": "meters",
+      "category": "Static Terrain",
+      "description": "Surface elevation from 30m DEM relative to MSL"
+    },
+    {
+      "name": "slope_deg",
+      "type": "float",
+      "unit": "degrees",
+      "category": "Static Terrain",
+      "description": "Topographic surface slope gradient"
+    },
+    {
+      "name": "low_lying_score",
+      "type": "float",
+      "unit": "score (0-1)",
+      "category": "Static Terrain",
+      "description": "Topographic depression index indicating water pooling saucer bowl"
+    },
+    {
+      "name": "dist_to_drain_m",
+      "type": "float",
+      "unit": "meters",
+      "category": "Static Drainage",
+      "description": "Euclidean metric distance to nearest major stormwater channel / outfall"
+    },
+    {
+      "name": "drainage_density",
+      "type": "float",
+      "unit": "km/km2",
+      "category": "Static Drainage",
+      "description": "Channel length density in surrounding catchment"
+    },
+    {
+      "name": "dist_to_mithi_m",
+      "type": "float",
+      "unit": "meters",
+      "category": "Static Drainage",
+      "description": "Distance to Mithi River central tidal channel"
+    },
+    {
+      "name": "dist_to_coast_m",
+      "type": "float",
+      "unit": "meters",
+      "category": "Static Coastal",
+      "description": "Distance to shoreline (affects tidal backwater drainage gate locks)"
+    },
+    {
+      "name": "historical_hotspot_score",
+      "type": "float",
+      "unit": "score (0-1)",
+      "category": "Historical Inundation",
+      "description": "Spatial proximity factor to BMC 386 verified chronic waterlogging locations"
+    },
+    {
+      "name": "built_up_ratio",
+      "type": "float",
+      "unit": "ratio (0-1)",
+      "category": "Urban Land Cover",
+      "description": "Impervious surface fraction preventing natural infiltration"
+    },
+    {
+      "name": "hour_of_day",
+      "type": "int",
+      "unit": "hour (0-23)",
+      "category": "Temporal",
+      "description": "Diurnal hour of observation"
+    }
+  ],
+  "class_balance": {
+    "negative_samples": 143951,
+    "positive_samples": 78439,
+    "positive_rate": 0.3527
+  },
+  "study_area": "Greater Mumbai (BMC)",
+  "generated_at": "2026-09-06T15:42:15.927200"
+}

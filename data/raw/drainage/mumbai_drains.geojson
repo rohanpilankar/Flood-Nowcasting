@@ -1,0 +1,196 @@
+{
+  "type": "FeatureCollection",
+  "name": "mumbai_stormwater_drains",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "drain_id": "DR_MITHI_01",
+        "name": "Mithi River Main Channel",
+        "type": "Natural River / Surcharge Canal",
+        "width_m": 45.0,
+        "outfall": "Mahim Creek"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.905,
+            19.135
+          ],
+          [
+            72.885,
+            19.105
+          ],
+          [
+            72.875,
+            19.085
+          ],
+          [
+            72.86,
+            19.065
+          ],
+          [
+            72.845,
+            19.045
+          ],
+          [
+            72.835,
+            19.035
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "drain_id": "DR_POISAR_02",
+        "name": "Poisar River Channel",
+        "type": "Tributary River",
+        "width_m": 22.0,
+        "outfall": "Marve Creek"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.875,
+            19.215
+          ],
+          [
+            72.855,
+            19.21
+          ],
+          [
+            72.835,
+            19.205
+          ],
+          [
+            72.815,
+            19.2
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "drain_id": "DR_DAHISAR_03",
+        "name": "Dahisar River",
+        "type": "River",
+        "width_m": 20.0,
+        "outfall": "Manori Creek"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.895,
+            19.255
+          ],
+          [
+            72.865,
+            19.25
+          ],
+          [
+            72.845,
+            19.245
+          ],
+          [
+            72.825,
+            19.24
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "drain_id": "DR_OSHIWARA_04",
+        "name": "Oshiwara River",
+        "type": "River",
+        "width_m": 25.0,
+        "outfall": "Malad Creek"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.865,
+            19.155
+          ],
+          [
+            72.845,
+            19.145
+          ],
+          [
+            72.825,
+            19.135
+          ],
+          [
+            72.81,
+            19.13
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "drain_id": "DR_HINDMATA_05",
+        "name": "Hindmata-Britannia Outfall",
+        "type": "Major SWD Culvert Box",
+        "width_m": 12.0,
+        "outfall": "Arabian Sea (Haji Ali)"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.843,
+            19.012
+          ],
+          [
+            72.835,
+            19.005
+          ],
+          [
+            72.82,
+            18.988
+          ],
+          [
+            72.81,
+            18.978
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "drain_id": "DR_SION_06",
+        "name": "Sion-Dharavi Nallah",
+        "type": "Stormwater Channel",
+        "width_m": 15.0,
+        "outfall": "Mahim Creek"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            72.862,
+            19.038
+          ],
+          [
+            72.852,
+            19.04
+          ],
+          [
+            72.842,
+            19.042
+          ]
+        ]
+      }
+    }
+  ]
+}

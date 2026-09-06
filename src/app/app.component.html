@@ -1,0 +1,22 @@
+<div class="app-layout" [class.sidebar-collapsed]="sidebarCollapsed()">
+  <!-- Left Navigation Sidebar -->
+  <app-sidebar
+    [collapsed]="sidebarCollapsed()"
+    [mobileOpen]="mobileMenuOpen()"
+    (toggleCollapse)="toggleSidebarCollapse()"
+    (closeMobile)="closeMobileMenu()"
+  ></app-sidebar>
+
+  <!-- Right App Container (Header + Main Content) -->
+  <div class="app-main-wrapper">
+    <!-- Top Operations Header -->
+    <app-header
+      (toggleMobileMenu)="toggleMobileMenu()"
+    ></app-header>
+
+    <!-- Page Content Viewport -->
+    <main class="app-content-viewport" id="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

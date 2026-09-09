@@ -1,0 +1,582 @@
+// ============================================================
+// HeroComponent Styles — FloodWatch AI Landing Page
+// Dark GIS / Engineering aesthetic, glassmorphism, CSS-only
+// animations. No external CSS frameworks.
+// ============================================================
+
+// ── Design Tokens (aligned with dynamic CSS theme variables) ──────────
+$accent-cyan:      #06b6d4;
+$accent-blue:      #3b82f6;
+$accent-green:     #10b981;
+$accent-red:       #ef4444;
+$accent-orange:    #f97316;
+$text-main:        var(--text-main);
+$text-muted:       var(--text-muted);
+$text-dim:         var(--text-dim);
+$glass-bg:         var(--bg-card-subtle);
+$glass-border:     var(--border-subtle);
+$glass-border-em:  rgba(6, 182, 212, 0.3);
+
+// ── Keyframes ────────────────────────────────────────────────
+
+@keyframes mapFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes riskPulse {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  70%  { transform: scale(2.4); opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes routeDash {
+  from { stroke-dashoffset: 300; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  50%       { opacity: 0.6; box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Hero Wrapper ─────────────────────────────────────────────
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  background-color: var(--bg-darkest);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-top: 72px;
+}
+
+// ── Background layers ─────────────────────────────────────────
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+// Animated dot-grid
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(99, 132, 180, 0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.6;
+}
+
+// Radial cyan glow (left)
+.bg-radial-glow {
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 60%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.07) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+
+  // Right secondary atmospheric glow
+  &--right {
+    top: auto;
+    left: auto;
+    bottom: -20%;
+    right: -10%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+  }
+}
+
+// ── Container ────────────────────────────────────────────────
+
+.hero-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 5rem 2rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 4rem 1.5rem 3rem;
+  }
+
+  @media (max-width: 640px) {
+    padding: 3rem 1rem 2.5rem;
+    gap: 2.5rem;
+  }
+}
+
+// ── Left Column — Content ─────────────────────────────────────
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  animation: fadeSlideUp 0.7s ease both;
+
+  @media (max-width: 1024px) {
+    order: 1;
+    text-align: center;
+    align-items: center;
+  }
+}
+
+// Eyebrow
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: $accent-cyan;
+  text-transform: uppercase;
+  padding: 0.3rem 0.85rem 0.3rem 0.65rem;
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: 9999px;
+  background: rgba(6, 182, 212, 0.06);
+  backdrop-filter: blur(6px);
+  width: fit-content;
+}
+
+.eyebrow__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: $accent-cyan;
+  flex-shrink: 0;
+  animation: dotPulse 2.4s ease infinite;
+}
+
+// Headline
+.headline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: $text-main;
+}
+
+.headline__line--accent {
+  background: linear-gradient(95deg, $accent-cyan 0%, $accent-blue 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Body copy
+.hero-body {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: $text-muted;
+  max-width: 480px;
+
+  @media (max-width: 1024px) {
+    max-width: 540px;
+  }
+}
+
+// CTA group
+.cta-group {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+
+  // Primary — filled cyan-blue gradient
+  &--primary {
+    background: linear-gradient(100deg, $accent-blue, #0891b2);
+    color: #fff;
+    box-shadow: 0 4px 18px rgba(59, 130, 246, 0.35);
+
+    &:hover, &:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+    }
+
+    &:active { transform: translateY(0); }
+  }
+
+  // Secondary — glass border
+  &--secondary {
+    background: rgba(15, 23, 42, 0.55);
+    color: $text-main;
+    border-color: $glass-border;
+    backdrop-filter: blur(8px);
+
+    &:hover, &:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba($accent-cyan, 0.45);
+      background: rgba(15, 23, 42, 0.75);
+      box-shadow: 0 4px 16px rgba(6, 182, 212, 0.12);
+    }
+
+    &:active { transform: translateY(0); }
+  }
+
+  // Keyboard focus ring
+  &:focus-visible {
+    outline: 2px solid $accent-cyan;
+    outline-offset: 3px;
+  }
+}
+
+// Metrics strip
+.hero-metrics {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+
+  @media (max-width: 1024px) {
+    justify-content: center;
+  }
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.metric__value {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $text-main;
+  letter-spacing: -0.02em;
+}
+
+.metric__label {
+  font-size: 0.72rem;
+  color: $text-dim;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.metric-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(148, 163, 184, 0.18);
+  flex-shrink: 0;
+}
+
+// Live pulse dot
+.live-pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $accent-green;
+  animation: livePulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+// ── Right Column — GIS Visual ────────────────────────────────
+
+.hero-visual {
+  position: relative;
+  animation: fadeSlideUp 0.7s 0.15s ease both;
+
+  @media (max-width: 1024px) {
+    order: 2;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+// ── Floating info cards ───────────────────────────────────────
+
+.float-card {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(10, 18, 32, 0.82);
+  border: 1px solid $glass-border;
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  &--top-left {
+    top: -1rem;
+    left: -1.25rem;
+    animation: cardFloat 5s ease-in-out infinite;
+
+    @media (max-width: 640px) {
+      top: -0.5rem;
+      left: 0.25rem;
+    }
+  }
+
+  &--bottom-right {
+    bottom: 3.5rem;
+    right: -1.25rem;
+    animation: cardFloat 5.5s 0.8s ease-in-out infinite;
+
+    @media (max-width: 640px) {
+      bottom: 3rem;
+      right: 0.25rem;
+    }
+  }
+}
+
+.float-card__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $accent-blue;
+  flex-shrink: 0;
+
+  &--green {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.25);
+    color: $accent-green;
+  }
+}
+
+.float-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.float-card__title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $text-main;
+  white-space: nowrap;
+}
+
+.float-card__sub {
+  font-size: 0.68rem;
+  color: $text-dim;
+  white-space: nowrap;
+}
+
+.float-card__live {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: $accent-green;
+  flex-shrink: 0;
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+// ── GIS Map Card ─────────────────────────────────────────────
+
+.gis-card {
+  border-radius: 16px;
+  border: 1px solid $glass-border-em;
+  background: rgba(8, 14, 26, 0.92);
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.08),
+    0 24px 56px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(6, 182, 212, 0.06);
+  overflow: hidden;
+  animation: mapFloat 7s ease-in-out infinite;
+}
+
+// Chrome header bar
+.gis-card__chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(6, 10, 20, 0.9);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.chrome-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--red   { background: #ef4444; opacity: 0.7; }
+  &--amber { background: #f59e0b; opacity: 0.7; }
+  &--green { background: #10b981; opacity: 0.7; }
+}
+
+.chrome-title {
+  flex: 1;
+  font-size: 0.72rem;
+  color: $text-dim;
+  letter-spacing: 0.03em;
+  margin-left: 0.4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chrome-horizon {
+  font-size: 0.68rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: $accent-cyan;
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+// Map SVG viewport
+.gis-map-viewport {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+}
+
+.gis-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+// Animated SVG elements
+.safe-route-path {
+  stroke-dasharray: 10 5;
+  animation: routeDash 3.5s linear infinite;
+}
+
+.risk-pulse-ring {
+  transform-origin: center;
+  animation: riskPulse 2.2s ease-out infinite;
+
+  &--2 {
+    animation-delay: 0.5s;
+  }
+}
+
+.flood-zone {
+  animation: livePulse 4s ease-in-out infinite alternate;
+}
+
+// GIS footer bar
+.gis-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  background: rgba(6, 10, 20, 0.88);
+  border-top: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.footer-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.footer-alert__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $accent-red;
+  flex-shrink: 0;
+  animation: livePulse 1.8s ease-in-out infinite;
+}
+
+.footer-alert__title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text-main;
+  line-height: 1.2;
+}
+
+.footer-alert__sub {
+  font-size: 0.68rem;
+  color: $text-dim;
+  line-height: 1.2;
+}
+
+.footer-confidence {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 0.1rem;
+}
+
+.footer-confidence__label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: $text-dim;
+  text-transform: uppercase;
+}
+
+.footer-confidence__value {
+  font-family: 'Outfit', 'JetBrains Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: $accent-cyan;
+  line-height: 1;
+}

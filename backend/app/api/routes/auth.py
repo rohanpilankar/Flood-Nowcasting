@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from backend.app.db.session import get_db
@@ -16,10 +17,23 @@ from backend.app.schemas.auth import (
     GovernmentProfilePublicSchema,
     SavedLocationSchema
 )
-from backend.app.services.auth_service import AuthService, get_current_user
-from backend.app.core.security import decode_token, create_access_token
+from backend.app.services.auth_service import AuthService, get_current_user, security_scheme
+from backend.app.core.security import decode_token, create_access_token, revoke_token, is_token_revoked
 
 router = APIRouter(prefix="/auth", tags=["Authentication & User Management"])
+
+
+def _public_user(user: User) -> UserPublicSchema:
+    """Pydantic v1/v2 compatible serializer."""
+    if hasattr(UserPublicSchema, "model_validate"):
+        return UserPublicSchema.model_validate(user, from_attributes=True)
+    return UserPublicSchema.from_orm(user)  # type: ignore[attr-defined]
+
+
+def _saved_location(sl) -> SavedLocationSchema:
+    if hasattr(SavedLocationSchema, "model_validate"):
+        return SavedLocationSchema.model_validate(sl, from_attributes=True)
+    return SavedLocationSchema.from_orm(sl)  # type: ignore[attr-defined]
 
 @router.post("/register", response_model=TokenResponse)
 def register_citizen(payload: CitizenRegisterRequest, db: Session = Depends(get_db)):
@@ -29,7 +43,7 @@ def register_citizen(payload: CitizenRegisterRequest, db: Session = Depends(get_
         access_token=tokens["access_token"],
         refresh_token=tokens["refresh_token"],
         token_type="bearer",
-        user=UserPublicSchema.from_orm(user)
+        user=_public_user(user)
     )
 
 @router.post("/login", response_model=TokenResponse)
@@ -40,27 +54,39 @@ def login(payload: UserLoginRequest, db: Session = Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email/mobile or password."
         )
-    tokens = AuthService.create_tokens_for_user(user)
+    tokens = AuthService.create_tokens_for_user(user, remember_me=payload.remember_me)
     return TokenResponse(
         access_token=tokens["access_token"],
         refresh_token=tokens["refresh_token"],
         token_type="bearer",
-        user=UserPublicSchema.from_orm(user)
+        user=_public_user(user)
     )
 
 @router.post("/logout")
-def logout(current_user: User = Depends(get_current_user)):
-    # JWT logout client-side discard; audit logged
+def logout(
+    current_user: User = Depends(get_current_user),
+    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
+):
+    # Revoke the presenting access token so it cannot be replayed.
+    try:
+        revoke_token(credentials.credentials)
+    except Exception:
+        pass
     return {"success": True, "message": "Successfully logged out."}
 
 @router.post("/refresh")
 def refresh_token(payload: RefreshTokenRequest, db: Session = Depends(get_db)):
+    if not payload.refresh_token or is_token_revoked(payload.refresh_token):
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token.")
     decoded = decode_token(payload.refresh_token)
     if not decoded or decoded.get("type") != "refresh":
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token.")
 
-    user_id = decoded.get("sub")
-    user = db.query(User).filter(User.id == int(user_id)).first()
+    try:
+        user_id = int(decoded.get("sub"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token.")
+    user = db.query(User).filter(User.id == user_id).first()
     if not user or user.status == "SUSPENDED":
         raise HTTPException(status_code=401, detail="User account inactive or suspended.")
 
@@ -109,10 +135,10 @@ def get_me(current_user: User = Depends(get_current_user), db: Session = Depends
             verification_status=gp.verification_status
         )
 
-    saved_locs = [SavedLocationSchema.from_orm(sl) for sl in current_user.saved_locations]
+    saved_locs = [_saved_location(sl) for sl in current_user.saved_locations]
 
     return UserMeResponse(
-        user=UserPublicSchema.from_orm(current_user),
+        user=_public_user(current_user),
         alert_preferences=pref_schema,
         government_profile=gov_schema,
         has_active_location=has_active_loc,

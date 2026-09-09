@@ -1,0 +1,465 @@
+<!-- Top Navigation Bar with Branding, Theme Toggle, and Auth Buttons -->
+<app-landing-navbar></app-landing-navbar>
+
+<!-- Hero Section -->
+<div id="hero">
+  <app-hero></app-hero>
+</div>
+
+<!-- Section 1: Live Municipal Telemetry & Metrics Ribbon -->
+<section id="telemetry" class="metrics-ribbon" aria-label="System Metrics and Real-Time Telemetry">
+  <div class="landing-container">
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="9" y1="21" x2="9" y2="9"></line>
+          </svg>
+        </div>
+        <div class="metric-body">
+          <span class="metric-value font-mono">1,765</span>
+          <span class="metric-label">500m Grid Sectors</span>
+          <span class="metric-sub">Greater Mumbai coverage</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon metric-icon--danger">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+          </svg>
+        </div>
+        <div class="metric-body">
+          <span class="metric-value font-mono">386</span>
+          <span class="metric-label">BMC Chronic Hotspots</span>
+          <span class="metric-sub">Monitored waterlogging points</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon metric-icon--success">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <div class="metric-body">
+          <span class="metric-value font-mono">94.3%</span>
+          <span class="metric-label">XGBoost F1-Score</span>
+          <span class="metric-sub">ROC-AUC of 0.9997</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon metric-icon--accent">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="metric-body">
+          <span class="metric-value font-mono">&lt;40ms</span>
+          <span class="metric-label">Inference Latency</span>
+          <span class="metric-sub">Real-time emergency speed</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <div class="metric-body">
+          <span class="metric-value font-mono">24 Wards</span>
+          <span class="metric-label">Municipal Administrative</span>
+          <span class="metric-sub">Ward A to T synchronized</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: Core Engineering Capabilities (Features) -->
+<section id="features" class="section features-section">
+  <div class="landing-container">
+    <div class="section-header">
+      <div class="section-badge">CORE CAPABILITIES</div>
+      <h2 class="section-title">Engineered for Coastal Urban Flooding</h2>
+      <p class="section-desc">
+        Unlike generic forecast applications, FloodWatch AI couples physical GIS topography, 
+        drainage infrastructure, and machine learning to deliver operational flood intelligence.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="feature-card">
+        <div class="feature-card__icon feature-card__icon--blue">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <h3 class="feature-card__title">500m Hyper-Local Nowcasting</h3>
+        <p class="feature-card__text">
+          Continuous inundation probability across 1,765 discrete spatial grid sectors. Leverages Copernicus GLO-30 Digital Elevation Models, saucer depression indices, and historical runoff coefficient weights.
+        </p>
+        <div class="feature-card__tag">Spatial Resolution: 500m × 500m</div>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="feature-card">
+        <div class="feature-card__icon feature-card__icon--cyan">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+          </svg>
+        </div>
+        <h3 class="feature-card__title">Risk-Penalized Safe Routing</h3>
+        <p class="feature-card__text">
+          Dynamic shortest-path Dijkstra graph that penalizes flooded roads and depressed saucer basins. Automatically routes commuters away from submerged underpasses onto elevated flyovers.
+        </p>
+        <div class="feature-card__tag">Exponential Cost Function: (Risk/10)^2.5</div>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature-card">
+        <div class="feature-card__icon feature-card__icon--orange">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <h3 class="feature-card__title">Multi-Horizon AI Forecasting</h3>
+        <p class="feature-card__text">
+          Evaluates hydrological risk across 5 critical tactical horizons: NOW, +30M, +1H, +2H, and +3H. Anticipates peak convective cloudburst inundation before surface drainage overflows.
+        </p>
+        <div class="feature-card__tag">Forecast Timelines: 0m to 180m</div>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="feature-card">
+        <div class="feature-card__icon feature-card__icon--purple">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+          </svg>
+        </div>
+        <h3 class="feature-card__title">Radar & AWS Sensor Ingestion</h3>
+        <p class="feature-card__text">
+          Synthesizes continuous feeds from 60 IMD/BMC Automatic Weather Stations with Doppler radar reflectivity. Calculates rolling antecedent precipitation indices (1h, 3h, 6h, 24h).
+        </p>
+        <div class="feature-card__tag">Inverse Distance Weighting (IDW)</div>
+      </div>
+
+      <!-- Feature 5 -->
+      <div class="feature-card">
+        <div class="feature-card__icon feature-card__icon--red">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <h3 class="feature-card__title">Subway Inundation Guardian</h3>
+        <p class="feature-card__text">
+          Dedicated surveillance for chronic urban flash flood points: Milan Subway, Andheri Subway, Hindmata, and King's Circle. Immediately flags unsafe water depth levels over 0.3m.
+        </p>
+        <div class="feature-card__tag">Chronic Hotspots: 386 Tracked</div>
+      </div>
+
+      <!-- Feature 6 -->
+      <div class="feature-card">
+        <div class="feature-card__icon feature-card__icon--green">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+        <h3 class="feature-card__title">Emergency Broadcast Operations</h3>
+        <p class="feature-card__text">
+          Enables BMC Emergency Operations Center (EOC) officers to dispatch targeted geo-fenced citizen warnings, coordinate high-capacity de-watering pumps, and monitor evacuation corridors.
+        </p>
+        <div class="feature-card__tag">CAP 1.2 Protocol Compliant</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: Architecture & How It Works -->
+<section id="architecture" class="section architecture-section">
+  <div class="landing-container">
+    <div class="section-header">
+      <div class="section-badge">SYSTEM ARCHITECTURE</div>
+      <h2 class="section-title">End-to-End Operational Pipeline</h2>
+      <p class="section-desc">
+        How raw hydrological inputs transform into sub-second predictions and safe mobility paths.
+      </p>
+    </div>
+
+    <div class="pipeline-flow">
+      <!-- Step 1 -->
+      <div class="pipeline-step">
+        <div class="step-num">01</div>
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge">INGESTION</span>
+            <h4 class="step-title">Geospatial & Hydro Ingestion</h4>
+          </div>
+          <p class="step-desc">
+            Aggregates 60 AWS rain stations, Copernicus GLO-30 DEM elevation, OpenStreetMap road topologies, and BMC chronic waterlogging registries in EPSG:32643 metric space.
+          </p>
+          <ul class="step-list">
+            <li>Rolling rainfall accumulations (1h, 3h, 6h, 24h)</li>
+            <li>Saucer depression & drain proximity fields</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="pipeline-step">
+        <div class="step-num">02</div>
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge step-badge--ai">ML INFERENCE</span>
+            <h4 class="step-title">XGBoost v2.0 Surrogate Engine</h4>
+          </div>
+          <p class="step-desc">
+            Fast surrogate inference replaces hours of hydrodynamic PDEs with 38.5ms machine learning evaluations per 500m sector. Outputs risk tier and water depth.
+          </p>
+          <ul class="step-list">
+            <li>Multi-horizon outputs (NOW to +3H)</li>
+            <li>94.3% F1-score & 0.9997 ROC-AUC</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="pipeline-step">
+        <div class="step-num">03</div>
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-badge step-badge--route">MOBILITY & EOC</span>
+            <h4 class="step-title">Safe Routing & Emergency Dispatch</h4>
+          </div>
+          <p class="step-desc">
+            Routes commuters safely via risk-penalized Dijkstra graphs while equipping BMC Incident Commanders with live telemetry and emergency broadcast dispatch tools.
+          </p>
+          <ul class="step-list">
+            <li>Dynamic flyover bypass routing</li>
+            <li>Targeted SMS & mobile safety alerts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Safe Mobility Showcase (Underpass vs Flyover) -->
+<section id="safe-mobility" class="section mobility-section">
+  <div class="landing-container">
+    <div class="mobility-showcase">
+      <div class="mobility-info">
+        <div class="section-badge">DYNAMIC SAFE ROUTER</div>
+        <h2 class="showcase-title">Why Standard Navigation Fails During Urban Floods</h2>
+        <p class="showcase-desc">
+          Conventional GPS maps optimize strictly for the shortest distance, unknowingly routing vehicles directly into submerged underpasses like Milan Subway and Hindmata. 
+          FloodWatch AI dynamically scales edge costs according to predicted water depth.
+        </p>
+
+        <div class="comparison-pills">
+          <div class="comp-pill comp-pill--danger">
+            <span class="pill-dot pill-dot--danger"></span>
+            <div>
+              <strong>Conventional Navigation:</strong> Direct through depressed subway (Risk: High • Water: 0.95m • Flooded)
+            </div>
+          </div>
+          <div class="comp-pill comp-pill--success">
+            <span class="pill-dot pill-dot--success"></span>
+            <div>
+              <strong>FloodWatch AI Path:</strong> Diverts to Western Express Highway Elevated Flyover (Risk: Safe • Water: 0.00m)
+            </div>
+          </div>
+        </div>
+
+        <div class="showcase-actions">
+          <a routerLink="/safe-route" class="btn btn-primary">
+            Try Safe Route Planner →
+          </a>
+          <a routerLink="/flood-map" class="btn btn-secondary">
+            View Live Risk Map
+          </a>
+        </div>
+      </div>
+
+      <div class="mobility-graphic">
+        <div class="route-card-preview">
+          <div class="route-header">
+            <span class="route-route-tag">Route: Dadar Station → Andheri East</span>
+            <span class="badge status-safe">Safe Path Found</span>
+          </div>
+
+          <div class="route-comparison-box">
+            <div class="route-option route-option--unsafe">
+              <div class="opt-header">
+                <span class="opt-title">Standard Shortest Route</span>
+                <span class="opt-tag tag-danger">AVOID • 0.95m FLOOD</span>
+              </div>
+              <div class="opt-metrics">
+                <span>Distance: <strong>12.4 km</strong></span>
+                <span>Est. Time: <strong class="text-danger">Trapped / Gridlock</strong></span>
+              </div>
+              <div class="opt-warning">⚠️ Milan Subway submerged; impassable for light vehicles</div>
+            </div>
+
+            <div class="route-option route-option--safe">
+              <div class="opt-header">
+                <span class="opt-title">FloodWatch AI Recommended</span>
+                <span class="opt-tag tag-success">RECOMMENDED • SAFE</span>
+              </div>
+              <div class="opt-metrics">
+                <span>Distance: <strong>14.1 km (+1.7 km)</strong></span>
+                <span>Est. Time: <strong class="text-success">28 Mins</strong></span>
+              </div>
+              <div class="opt-success">✓ Uses elevated flyover; 0 flood exposure points</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: Call to Action Banner -->
+<section class="section cta-section">
+  <div class="landing-container">
+    <div class="cta-banner">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to Experience Urban Flood Intelligence?</h2>
+        <p class="cta-subtitle">
+          Explore real-time 500m nowcasting, test dynamic safe routing, or inspect the BMC disaster command console.
+        </p>
+        <div class="cta-buttons">
+          <a routerLink="/dashboard" class="btn btn-primary btn-lg" id="cta-footer-dashboard">
+            Launch EOC Dashboard
+          </a>
+          <a routerLink="/flood-map" class="btn btn-secondary btn-lg" id="cta-footer-gis">
+            Open Interactive GIS Map
+          </a>
+          <a routerLink="/register" class="btn btn-outline btn-lg" id="cta-footer-signup">
+            Citizen Registration
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 6: Comprehensive Engineering & Emergency Footer -->
+<footer class="landing-footer">
+  <div class="landing-container">
+    <!-- Top Row: Brand & Quick Columns -->
+    <div class="footer-grid">
+      <!-- Col 1: Brand & Mission -->
+      <div class="footer-col footer-col--brand">
+        <div class="footer-brand">
+          <div class="logo-symbol">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+              <path d="M9 13.5c1.5 1 3.5 1 5 0"></path>
+            </svg>
+          </div>
+          <span class="footer-title">FloodWatch AI</span>
+        </div>
+        <p class="footer-desc">
+          AI-Powered Urban Flood Nowcasting and Safe Mobility System for Greater Mumbai.
+        </p>
+        <div class="system-status-pill">
+          <span class="status-pulse-dot"></span>
+          <span>All AI Services Operational</span>
+        </div>
+      </div>
+
+      <!-- Col 2: Platform Modules -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Platform Modules</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/dashboard">EOC Flood Dashboard</a></li>
+          <li><a routerLink="/flood-map">500m GIS Risk Map</a></li>
+          <li><a routerLink="/safe-route">Dynamic Safe Routing</a></li>
+          <li><a routerLink="/location-risk">Location Risk Inspector</a></li>
+          <li><a routerLink="/alerts">Emergency Warnings Feed</a></li>
+          <li><a routerLink="/analytics">Inundation Analytics</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Role Portals -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Access Portals</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/login">Unified Portal Login</a></li>
+          <li><a routerLink="/register">Citizen Safety Sign Up</a></li>
+          <li><a routerLink="/citizen/dashboard">Citizen Portal</a></li>
+          <li><a routerLink="/government/dashboard">BMC EOC Command Console</a></li>
+          <li><a routerLink="/admin">MLOps & System Settings</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Official Emergency Contacts -->
+      <div class="footer-col footer-col--emergency">
+        <h4 class="footer-heading">Emergency Helplines</h4>
+        <ul class="emergency-list">
+          <li>
+            <span class="em-label">BMC Disaster Control:</span>
+            <span class="em-number font-mono">1916</span>
+          </li>
+          <li>
+            <span class="em-label">National Disaster (NDRF):</span>
+            <span class="em-number font-mono">1078</span>
+          </li>
+          <li>
+            <span class="em-label">Ambulance Service:</span>
+            <span class="em-number font-mono">108</span>
+          </li>
+          <li>
+            <span class="em-label">Mumbai Police:</span>
+            <span class="em-number font-mono">100 / 112</span>
+          </li>
+        </ul>
+        <div class="emergency-notice">
+          In life-threatening flood emergencies, dial 1916 or 112 immediately.
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Row: Copyright & Legal -->
+    <div class="footer-bottom">
+      <div class="copyright-text">
+        © {{ currentYear }} FloodWatch AI. Built for Brihanmumbai Municipal Corporation (BMC) Greater Mumbai.
+      </div>
+
+      <div class="footer-bottom-links">
+        <button type="button" class="back-to-top-btn" (click)="scrollToTop()">
+          Back to Top ↑
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>

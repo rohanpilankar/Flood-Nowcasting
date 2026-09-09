@@ -1,0 +1,135 @@
+// Design Tokens & Semantic Variables - FloodWatch AI
+:root {
+  // Brand Palette - Smart City EOC
+  --brand-primary: #2563eb;
+  --brand-primary-hover: #1d4ed8;
+  --brand-primary-glow: rgba(37, 99, 235, 0.25);
+  --brand-cyan: #06b6d4;
+  --brand-indigo: #6366f1;
+
+  // Neutral / Background Colors (Dark Operations Center Theme by default)
+  --bg-darkest: #0a0f1d;
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --bg-card-hover: #24344d;
+  --bg-card-subtle: rgba(30, 41, 59, 0.7);
+  --bg-glass: rgba(15, 23, 42, 0.85);
+  --border-subtle: #334155;
+  --border-light: rgba(148, 163, 184, 0.15);
+  --border-focus: #60a5fa;
+
+  // Typography Colors
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-inverse: #0f172a;
+
+  // Semantic Status & Risk Levels (Government & Emergency Standard)
+  --status-safe: #10b981;          // Green (No / Safe risk)
+  --status-safe-bg: rgba(16, 185, 129, 0.12);
+  --status-safe-border: rgba(16, 185, 129, 0.35);
+
+  --status-low: #06b6d4;           // Cyan / Light Blue-Green
+  --status-low-bg: rgba(6, 182, 212, 0.12);
+  --status-low-border: rgba(6, 182, 212, 0.35);
+
+  --status-caution: #f59e0b;       // Amber / Medium Risk
+  --status-caution-bg: rgba(245, 158, 11, 0.12);
+  --status-caution-border: rgba(245, 158, 11, 0.35);
+
+  --status-unsafe: #f97316;        // Orange / High Risk
+  --status-unsafe-bg: rgba(249, 115, 22, 0.15);
+  --status-unsafe-border: rgba(249, 115, 22, 0.4);
+
+  --status-critical: #ef4444;      // Red / Unsafe / Evacuation
+  --status-critical-bg: rgba(239, 68, 68, 0.15);
+  --status-critical-border: rgba(239, 68, 68, 0.4);
+
+  --status-severe: #dc2626;        // Dark Red
+  --status-severe-bg: rgba(220, 38, 38, 0.2);
+
+
+  // Shadows & Radii
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.2);
+  --shadow-glow-red: 0 0 20px rgba(239, 68, 68, 0.25);
+
+  // Spacing & Layout
+  --fw-space-xs: 0.25rem;
+  --fw-space-sm: 0.5rem;
+  --fw-space-md: 1rem;
+  --fw-space-lg: 1.5rem;
+  --fw-space-xl: 2rem;
+
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 72px;
+  --header-height: 64px;
+  --transition-fast: 0.18s ease;
+  --transition-normal: 0.28s ease;
+}
+
+// Light Mode Overrides
+[data-theme="light"], .theme-light {
+  --brand-primary: #1d4ed8;
+  --brand-primary-hover: #1e40af;
+  --brand-primary-glow: rgba(29, 78, 216, 0.18);
+  --brand-cyan: #0284c7;
+  --brand-indigo: #4f46e5;
+
+  // Clean, high-contrast Slate / Zinc neutral system
+  --bg-darkest: #f1f5f9;           // Canvas background (Slate 100)
+  --bg-dark: #ffffff;              // App Header, Sidebar, Navbars
+  --bg-card: #ffffff;              // Card background
+  --bg-card-hover: #f8fafc;        // Card hover state
+  --bg-card-subtle: #f8fafc;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  --border-subtle: #e2e8f0;        // Slate 200
+  --border-light: rgba(148, 163, 184, 0.3);
+  --border-focus: #3b82f6;
+
+  // Crisp readable typography
+  --text-main: #0f172a;            // Slate 900
+  --text-muted: #334155;           // Slate 700
+  --text-dim: #64748b;             // Slate 500
+  --text-inverse: #ffffff;
+
+  // Semantic Status adjustments for Light Mode readability
+  --status-safe: #059669;
+  --status-safe-bg: rgba(5, 150, 105, 0.1);
+  --status-safe-border: rgba(5, 150, 105, 0.3);
+
+  --status-low: #0284c7;
+  --status-low-bg: rgba(2, 132, 199, 0.1);
+  --status-low-border: rgba(2, 132, 199, 0.3);
+
+  --status-caution: #d97706;
+  --status-caution-bg: rgba(217, 119, 6, 0.1);
+  --status-caution-border: rgba(217, 119, 6, 0.3);
+
+  --status-unsafe: #ea580c;
+  --status-unsafe-bg: rgba(234, 88, 12, 0.1);
+  --status-unsafe-border: rgba(234, 88, 12, 0.3);
+
+  --status-critical: #dc2626;
+  --status-critical-bg: rgba(220, 38, 38, 0.1);
+  --status-critical-border: rgba(220, 38, 38, 0.3);
+
+  --status-severe: #991b1b;
+  --status-severe-bg: rgba(153, 27, 27, 0.12);
+
+
+  // Shadows
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-glow-blue: 0 0 20px rgba(37, 99, 235, 0.12);
+  --shadow-glow-red: 0 0 20px rgba(220, 38, 38, 0.15);
+}

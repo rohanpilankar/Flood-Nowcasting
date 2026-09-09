@@ -45,3 +45,22 @@ def decode_token(token: str) -> Optional[Dict[str, Any]]:
         return payload
     except JWTError:
         return None
+
+
+# --- Minimal token revocation (in-memory; use Redis/DB in production) ---
+_revoked_tokens: set = set()
+
+
+def revoke_token(token: str) -> None:
+    """Mark a JWT as revoked (logout). Best-effort in-memory store."""
+    try:
+        _revoked_tokens.add(token)
+    except Exception:
+        pass
+
+
+def is_token_revoked(token: str) -> bool:
+    try:
+        return token in _revoked_tokens
+    except Exception:
+        return False

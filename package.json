@@ -1,33 +1,13 @@
 {
-  "name": "flood-watch-ai",
-  "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
+  "name": "floodwatch-ai-root",
+  "version": "2.0.0",
+  "description": "AI-Powered Urban Flood Nowcasting & Safe Mobility System",
   "private": true,
-  "packageManager": "npm@10.9.3",
-  "dependencies": {
-    "@angular/common": "^21.2.0",
-    "@angular/compiler": "^21.2.0",
-    "@angular/core": "^21.2.0",
-    "@angular/forms": "^21.2.0",
-    "@angular/platform-browser": "^21.2.0",
-    "@angular/router": "^21.2.0",
-    "@types/leaflet": "^1.9.22",
-    "leaflet": "^1.9.4",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "^0.16.3"
-  },
-  "devDependencies": {
-    "@angular/build": "^21.2.20",
-    "@angular/cli": "^21.2.20",
-    "@angular/compiler-cli": "^21.2.0",
-    "prettier": "^3.8.1",
-    "typescript": "~5.9.2"
+  "scripts": {
+    "start": "npm --prefix Frontend start",
+    "dev": "npm --prefix Frontend start",
+    "fast": "npx --prefix Frontend ng serve --open",
+    "build": "npm --prefix Frontend run build",
+    "watch": "npm --prefix Frontend run watch"
   }
 }

@@ -3,9 +3,12 @@ import math
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
-from shapely.geometry import Point, Polygon, shape
-
-from backend.app.core.config import settings
+try:
+    from shapely.geometry import Point, Polygon, shape
+except Exception:
+    Point = None
+    Polygon = None
+    shape = None
 from backend.app.db.models.emergency_alert import EmergencyAlert
 from backend.app.db.models.alert_delivery import AlertDelivery
 from backend.app.db.models.user import User
@@ -136,7 +139,7 @@ class AlertTargetingService:
                 CitizenAlertPreferences.flood_alerts_enabled == True
             ).all()
 
-            alert_poly = Polygon(poly_geojson["coordinates"][0])
+            alert_poly = Polygon(poly_geojson["coordinates"][0]) if Polygon is not None else None
             buffer_dist_m = settings.ALERT_ZONE_BUFFER_METERS
 
             for citizen in opted_in_users:
@@ -150,11 +153,12 @@ class AlertTargetingService:
                 if not user_loc:
                     continue
 
-                user_pt = Point(user_loc.longitude, user_loc.latitude)
+                user_pt = Point(user_loc.longitude, user_loc.latitude) if Point is not None else None
                 dist_m = cls._haversine_distance_m(user_loc.latitude, user_loc.longitude, lat, lon)
 
                 # If within polygon or within buffer radius
-                if alert_poly.contains(user_pt) or dist_m <= (500.0 + buffer_dist_m):
+                is_in_poly = alert_poly.contains(user_pt) if (alert_poly is not None and user_pt is not None) else False
+                if is_in_poly or dist_m <= (500.0 + buffer_dist_m):
                     # Check deduplication within cooldown
                     cooldown_time = now - timedelta(minutes=settings.ALERT_COOLDOWN_MINUTES)
                     existing_delivery = db.query(AlertDelivery).filter(

@@ -8,6 +8,8 @@ import { RoutingService } from '../../core/services/routing.service';
 import { RoutePlanResult, PresetRoute, RouteOption } from '../../core/models/route.model';
 
 import { LoadingStateComponent } from '../../shared/components/loading-state/loading-state.component';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-safe-route',
@@ -93,6 +95,22 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
           </button>
         </div>
 
+        <!-- Emergency Services Quick Target -->
+        <div class="emergency-target-row">
+          <span class="emergency-title">🚨 Emergency Facility Navigation:</span>
+          <div class="emergency-chips">
+            <button type="button" class="emergency-chip hospital" (click)="targetEmergencyFacility('hospital')">
+              🏥 Nearest Hospital / Trauma Center
+            </button>
+            <button type="button" class="emergency-chip fire" (click)="targetEmergencyFacility('fire_station')">
+              🚒 Nearest Fire & High-Water Rescue
+            </button>
+            <button type="button" class="emergency-chip police" (click)="targetEmergencyFacility('police')">
+              🚓 Nearest Police Command Post
+            </button>
+          </div>
+        </div>
+
         <!-- Presets -->
         <div class="presets-row">
           <span class="presets-title">Quick Scenarios:</span>
@@ -131,6 +149,14 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
               <div class="legend-row">
                 <span class="hazard-dot"></span>
                 <span>Flood Hazard</span>
+              </div>
+              <div class="legend-row">
+                <span style="font-size: 13px;">🏥</span>
+                <span>Hospital POI</span>
+              </div>
+              <div class="legend-row">
+                <span style="font-size: 13px;">🚒</span>
+                <span>Fire & Rescue Station</span>
               </div>
             </div>
           </div>
@@ -395,6 +421,73 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       }
     }
 
+    /* Emergency Target Row */
+    .emergency-target-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+    }
+    .emergency-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #f87171;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .emergency-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .emergency-chip {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-darkest);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all var(--transition-fast);
+    }
+    .emergency-chip.hospital {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.08);
+      color: #fca5a5;
+    }
+    .emergency-chip.hospital:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+    .emergency-chip.fire {
+      border-color: rgba(249, 115, 22, 0.4);
+      background: rgba(249, 115, 22, 0.08);
+      color: #fdba74;
+    }
+    .emergency-chip.fire:hover {
+      background: rgba(249, 115, 22, 0.2);
+      border-color: #f97316;
+      color: #ffffff;
+    }
+    .emergency-chip.police {
+      border-color: rgba(59, 130, 246, 0.4);
+      background: rgba(59, 130, 246, 0.08);
+      color: #93c5fd;
+    }
+    .emergency-chip.police:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+      color: #ffffff;
+    }
+
     // Main Grid
     .route-main-grid {
       display: grid;
@@ -607,21 +700,35 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   presetRoutes: PresetRoute[] = [];
   routePlan: RoutePlanResult | null = null;
   loading = false;
+  emergencyFacilities: any[] = [];
 
   private map?: L.Map;
   private routeLayersGroup = L.layerGroup();
+  private emergencyLayersGroup = L.layerGroup();
 
   constructor(
     private routingService: RoutingService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
     this.loadPresets();
+    this.loadEmergencyFacilities();
     this.route.queryParams.subscribe(params => {
       if (params['from']) this.sourceLocation = params['from'];
       if (params['to']) this.destinationLocation = params['to'];
       if (params['vehicle']) this.vehicleType = params['vehicle'];
+    });
+  }
+
+  private loadEmergencyFacilities(): void {
+    this.http.get<any[]>(`${environment.apiBaseUrl}/api/v1/emergency/facilities`).subscribe({
+      next: (facs) => {
+        this.emergencyFacilities = facs;
+        this.renderEmergencyMarkers();
+      },
+      error: (err) => console.error('Failed to load emergency facilities', err)
     });
   }
 
@@ -661,7 +768,64 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
       subdomains: ['a', 'b', 'c']
     }).addTo(this.map);
 
+    this.emergencyLayersGroup.addTo(this.map);
     this.routeLayersGroup.addTo(this.map);
+    this.renderEmergencyMarkers();
+  }
+
+  targetEmergencyFacility(type: string): void {
+    const matching = this.emergencyFacilities.filter(f => f.type === type);
+    if (matching.length > 0) {
+      // Pick first matching or nearest
+      const target = matching[0];
+      this.destinationLocation = target.name;
+      this.calculateRoute();
+    }
+  }
+
+  private renderEmergencyMarkers(): void {
+    if (!this.map) return;
+    this.emergencyLayersGroup.clearLayers();
+
+    this.emergencyFacilities.forEach(fac => {
+      let iconSymbol = '🏥';
+      let bgColor = '#ef4444';
+      if (fac.type === 'fire_station') {
+        iconSymbol = '🚒';
+        bgColor = '#f97316';
+      } else if (fac.type === 'police') {
+        iconSymbol = '🚓';
+        bgColor = '#3b82f6';
+      }
+
+      const customIcon = L.divIcon({
+        className: 'emergency-poi-marker',
+        html: `
+          <div style="background-color: ${bgColor}; border: 2px solid #ffffff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 0 10px ${bgColor}; cursor: pointer;">
+            ${iconSymbol}
+          </div>
+        `,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+
+      const marker = L.marker([fac.lat, fac.lon], { icon: customIcon });
+      marker.bindTooltip(`
+        <div style="font-family: sans-serif; font-size: 11px;">
+          <strong>${fac.name}</strong><br/>
+          <span style="color: #64748b;">${fac.category || fac.type}</span><br/>
+          ${fac.phone ? '📞 ' + fac.phone + '<br/>' : ''}
+          <span style="color: #10b981; font-weight: bold;">⚡ Click to navigate here</span>
+        </div>
+      `);
+
+      marker.on('click', () => {
+        this.destinationLocation = fac.name;
+        this.calculateRoute();
+      });
+
+      this.emergencyLayersGroup.addLayer(marker);
+    });
   }
 
   calculateRoute(): void {

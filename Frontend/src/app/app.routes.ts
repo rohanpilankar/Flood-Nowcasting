@@ -52,17 +52,27 @@ export const routes: Routes = [
   // Government Authority Protected Routes
   {
     path: 'government/dashboard',
-    loadComponent: () => import('./features/government/government-dashboard/government-dashboard.component').then(m => m.GovernmentDashboardComponent),
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['GOVERNMENT_VIEWER', 'GOVERNMENT_OPERATOR', 'GOVERNMENT_SUPERVISOR', 'ADMIN'] },
-    title: 'FloodWatch AI — GCC EOC Command Console'
+    title: 'FloodWatch AI — GCC Operational Flood Dashboard'
   },
 
   // Public / Monitored Operations
   {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
-    title: 'FloodWatch AI — Regional Flood Dashboard'
+    title: 'FloodWatch AI — GCC Operational Flood Dashboard & Prediction Console'
+  },
+  {
+    path: 'drainage',
+    loadComponent: () => import('./features/drainage/drainage.component').then(m => m.DrainageComponent),
+    title: 'FloodWatch AI — 3D Drainage Network & Manning Hydraulics'
+  },
+  {
+    path: 'simulation',
+    loadComponent: () => import('./features/simulation/simulation.component').then(m => m.SimulationComponent),
+    title: 'FloodWatch AI — Model Simulation & Storm Scenario Studio'
   },
   {
     path: 'flood-map',

@@ -58,3 +58,23 @@ def get_location_risk(location: str = Query(..., description="Location name or l
     if not zone:
         raise HTTPException(status_code=404, detail=f"Location {location} not found")
     return zone
+
+
+@router.get("/predict-eta")
+@router.post("/predict-eta")
+@router.get("/flood/predict-eta")
+@router.post("/flood/predict-eta")
+def predict_flood_eta(
+    rainfall_rate_mm_h: float = Query(default=40.0, description="Current precipitation intensity in mm/hr"),
+    accumulated_rainfall_mm: float = Query(default=65.0, description="Past accumulated rainfall in mm")
+):
+    """
+    Computes real-time flood onset ETA for low-lying vulnerable Greater Chennai zones
+    based on live rainfall loading vs. storm water drain evacuation capacity.
+    """
+    service = FloodService.get_instance()
+    return service.predict_inundation_eta(
+        rainfall_rate_mm_h=rainfall_rate_mm_h,
+        accumulated_rainfall_mm=accumulated_rainfall_mm
+    )
+

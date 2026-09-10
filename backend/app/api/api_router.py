@@ -13,7 +13,9 @@ from backend.app.api.routes import (
     government,
     admin_users,
     rainfall,
-    drainage
+    drainage,
+    simulation,
+    emergency
 )
 
 api_router = APIRouter()
@@ -21,6 +23,10 @@ api_router = APIRouter()
 # Rainfall & Drainage Telemetry
 api_router.include_router(rainfall.router)
 api_router.include_router(drainage.router)
+
+# Model Simulation & Emergency Infrastructure
+api_router.include_router(simulation.router)
+api_router.include_router(emergency.router)
 
 # Authentication & OTP
 api_router.include_router(auth.router)

@@ -700,7 +700,21 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   presetRoutes: PresetRoute[] = [];
   routePlan: RoutePlanResult | null = null;
   loading = false;
-  emergencyFacilities: any[] = [];
+  emergencyFacilities: any[] = [
+    { id: 'FAC-HOSP-01', name: 'Rajiv Gandhi Govt General Hospital (RGGGH)', type: 'hospital', category: 'Tertiary Trauma Center', lat: 13.0818, lon: 80.2778, phone: '044-25305000' },
+    { id: 'FAC-HOSP-02', name: 'Apollo Hospital (Greams Road)', type: 'hospital', category: 'Multispecialty Super Center', lat: 13.0594, lon: 80.2508, phone: '044-28290200' },
+    { id: 'FAC-HOSP-03', name: 'MIOT International Hospital', type: 'hospital', category: 'Trauma & Flood Evacuation Center', lat: 13.0232, lon: 80.1795, phone: '044-42002288' },
+    { id: 'FAC-HOSP-04', name: 'Govt Stanley Medical College Hospital', type: 'hospital', category: 'North Chennai General Hospital', lat: 13.1072, lon: 80.2883, phone: '044-25281351' },
+    { id: 'FAC-HOSP-05', name: 'Dr. Kamakshi Memorial Hospital', type: 'hospital', category: 'South Chennai / Pallikaranai Hub', lat: 12.9468, lon: 80.2084, phone: '044-66300300' },
+    { id: 'FAC-FIRE-01', name: 'Kilpauk Fire & Rescue Station (Command HQ)', type: 'fire_station', category: 'Disaster Rescue Command', lat: 13.0805, lon: 80.2435, phone: '101' },
+    { id: 'FAC-FIRE-02', name: 'T. Nagar Fire Station', type: 'fire_station', category: 'Urban Flood Dewatering Unit', lat: 13.0378, lon: 80.2335, phone: '101' },
+    { id: 'FAC-FIRE-03', name: 'Tambaram Fire & Rescue Station', type: 'fire_station', category: 'South Corridor Evacuation Command', lat: 12.9249, lon: 80.1250, phone: '101' },
+    { id: 'FAC-FIRE-04', name: 'Ashok Nagar Fire & Rescue Unit', type: 'fire_station', category: 'Rapid Inundation Relief Station', lat: 13.0345, lon: 80.2118, phone: '101' },
+    { id: 'FAC-POL-01', name: 'Greater Chennai Police Commissionerate', type: 'police', category: 'Central Command & Control', lat: 13.0833, lon: 80.2600, phone: '100' },
+    { id: 'FAC-POL-02', name: 'Adyar Police District Headquarters', type: 'police', category: 'South Coastal Traffic & Safety Command', lat: 13.0067, lon: 80.2572, phone: '100' },
+    { id: 'FAC-POL-03', name: 'Mylapore Police Station', type: 'police', category: 'East Coastal Patrol & Evac', lat: 13.0335, lon: 80.2685, phone: '100' },
+    { id: 'FAC-POL-04', name: 'Guindy Traffic & Emergency Police Post', type: 'police', category: 'Industrial Hub Traffic Management', lat: 13.0100, lon: 80.2120, phone: '100' }
+  ];
 
   private map?: L.Map;
   private routeLayersGroup = L.layerGroup();
@@ -725,10 +739,15 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   private loadEmergencyFacilities(): void {
     this.http.get<any[]>(`${environment.apiBaseUrl}/api/v1/emergency/facilities`).subscribe({
       next: (facs) => {
-        this.emergencyFacilities = facs;
+        if (facs && facs.length > 0) {
+          this.emergencyFacilities = facs;
+        }
         this.renderEmergencyMarkers();
       },
-      error: (err) => console.error('Failed to load emergency facilities', err)
+      error: () => {
+        // Fallback pre-populated
+        this.renderEmergencyMarkers();
+      }
     });
   }
 
@@ -771,6 +790,10 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
     this.emergencyLayersGroup.addTo(this.map);
     this.routeLayersGroup.addTo(this.map);
     this.renderEmergencyMarkers();
+
+    setTimeout(() => {
+      this.map?.invalidateSize();
+    }, 150);
   }
 
   targetEmergencyFacility(type: string): void {

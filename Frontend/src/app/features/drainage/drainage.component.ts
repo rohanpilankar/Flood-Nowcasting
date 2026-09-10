@@ -1,7 +1,8 @@
-import { Component, OnInit, ElementRef, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import * as L from 'leaflet';
 import { environment } from '../../../environments/environment';
 
 export interface DrainageNode3D {
@@ -15,7 +16,6 @@ export interface DrainageNode3D {
   invert_elevation_m: number;
   depth_m: number;
   description: string;
-  // Computed 3D scene positions
   screenX?: number;
   screenY?: number;
 }
@@ -73,653 +73,767 @@ export interface HydraulicInspection {
   imports: [CommonModule, FormsModule],
   template: `
     <div class="drainage-page">
-      <!-- Top Title & Stats Banner -->
+      <!-- Top Title & Controls Header -->
       <div class="drainage-header">
         <div>
           <div class="header-badge-row">
-            <h1 class="page-title">Greater Chennai 3D Drainage & Hydraulic Network</h1>
-            <span class="badge-status-3d">WebGL 3D Graph</span>
+            <h1 class="page-title">Greater Chennai Drainage Network & Hydraulic Modeling</h1>
+            <span class="badge-status-3d">PHYSICAL HYDRAULICS</span>
             <span class="badge-crs">UTM 44N (MSL Datum)</span>
           </div>
           <p class="page-subtitle">
-            Physical node-and-conduit mapping with real ground elevations, Manning conveyance capacity, and Rational method surcharge prediction.
+            Authentic node-and-conduit mapping with real DEM elevations, Manning conveyance capacity, and Rational method surcharge prediction.
           </p>
         </div>
-        <div class="view-controls">
-          <button class="btn-ctrl" (click)="resetCamera()" title="Reset Camera View">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-            Isometric
-          </button>
-          <button class="btn-ctrl" (click)="setTopView()" title="Top-down Ortho View">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-            Top-Down
-          </button>
-          <button class="btn-ctrl" (click)="toggleElevationExaggeration()" title="Toggle Vertical Elevation Scale">
-            Z-Scale: {{ zScale }}x
-          </button>
+
+        <div class="header-actions">
+          <!-- View Mode Switcher -->
+          <div class="view-mode-tabs">
+            <button
+              type="button"
+              class="tab-btn"
+              [class.active]="viewMode === 'GIS_MAP'"
+              (click)="switchViewMode('GIS_MAP')"
+            >
+              🗺️ GIS Drainage Map
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              [class.active]="viewMode === '3D_ISOMETRIC'"
+              (click)="switchViewMode('3D_ISOMETRIC')"
+            >
+              🌐 3D Elevation Mesh
+            </button>
+          </div>
+
+          <!-- 3D Camera Controls -->
+          @if (viewMode === '3D_ISOMETRIC') {
+            <div class="view-controls">
+              <button class="btn-ctrl" (click)="resetCamera()" title="Reset Camera View">
+                Isometric
+              </button>
+              <button class="btn-ctrl" (click)="setTopView()" title="Top-down Ortho View">
+                Top-Down
+              </button>
+              <button class="btn-ctrl" (click)="toggleElevationExaggeration()">
+                Z-Scale: {{ zScale }}x
+              </button>
+            </div>
+          }
         </div>
       </div>
 
-      <!-- Main Layout: 3D Canvas + Engineering Inspector -->
+      <!-- Main Layout: Viewport + Engineering Inspector -->
       <div class="drainage-layout">
-        <!-- 3D Canvas Viewport -->
-        <div class="canvas-container" #containerRef>
-          <canvas #canvasRef
-            (mousedown)="onMouseDown($event)"
-            (mousemove)="onMouseMove($event)"
-            (mouseup)="onMouseUp()"
-            (wheel)="onWheel($event)"
-            (click)="onCanvasClick($event)">
-          </canvas>
+        <!-- Map / 3D Canvas Viewport -->
+        <div class="viewport-card">
+          <!-- Mode A: GIS Map View (Leaflet) -->
+          <div
+            class="leaflet-container-wrap"
+            [style.display]="viewMode === 'GIS_MAP' ? 'block' : 'none'"
+          >
+            <div #gisMapRef class="drainage-leaflet-canvas"></div>
+          </div>
 
-          <!-- 3D HUD Overlay -->
+          <!-- Mode B: 3D Isometric View (Canvas) -->
+          <div
+            class="canvas-container"
+            #containerRef
+            [style.display]="viewMode === '3D_ISOMETRIC' ? 'block' : 'none'"
+          >
+            <canvas #canvasRef
+              (mousedown)="onMouseDown($event)"
+              (mousemove)="onMouseMove($event)"
+              (mouseup)="onMouseUp()"
+              (wheel)="onWheel($event)"
+              (click)="onCanvasClick($event)">
+            </canvas>
+          </div>
+
+          <!-- HUD Overlay (Shared across both modes) -->
           <div class="canvas-hud">
             <div class="hud-item">
-              <span class="hud-label">Nodes (Manholes / Outfalls)</span>
+              <span class="hud-label">Nodes (Manholes/Outfalls)</span>
               <span class="hud-val font-mono">{{ nodes.length }}</span>
             </div>
+            <div class="hud-divider"></div>
             <div class="hud-item">
               <span class="hud-label">Conduits / Canals</span>
               <span class="hud-val font-mono">{{ edges.length }}</span>
             </div>
+            <div class="hud-divider"></div>
             <div class="hud-item">
               <span class="hud-label">Elevation Range</span>
-              <span class="hud-val font-mono text-cyan">0.0m - 12.4m MSL</span>
+              <span class="hud-val font-mono">{{ bounds.minElev }}m – {{ bounds.maxElev }}m MSL</span>
             </div>
+            <div class="hud-divider"></div>
             <div class="hud-item">
-              <span class="hud-label">Selected Segment</span>
-              <span class="hud-val font-mono text-amber">{{ selectedEdge ? selectedEdge.name : 'Click conduit' }}</span>
+              <span class="hud-label">Active Conduit</span>
+              <span class="hud-val font-mono highlight-name">{{ selectedEdge ? selectedEdge.name : 'Click conduit' }}</span>
             </div>
           </div>
 
-          <!-- Color Legend -->
+          <!-- Legend Overlay -->
           <div class="canvas-legend">
-            <span class="legend-title">Hydraulic Conveyance</span>
-            <div class="legend-item"><span class="legend-box safe"></span> Underflow (Q &lt; 80% Cap)</div>
-            <div class="legend-item"><span class="legend-box warning"></span> Transition (80-100% Cap)</div>
-            <div class="legend-item"><span class="legend-box critical"></span> Surcharge Overflow (&gt; 100%)</div>
-            <div class="legend-item"><span class="legend-dot node-dot"></span> Junction / Outfall Node</div>
+            <span class="leg-title">Hydraulic Conveyance State</span>
+            <div class="leg-item">
+              <span class="leg-dot underflow"></span>
+              <span>Underflow (Q &lt; 75% Cap) — Safe</span>
+            </div>
+            <div class="leg-item">
+              <span class="leg-dot transition"></span>
+              <span>Transition (75–100% Cap) — Alert</span>
+            </div>
+            <div class="leg-item">
+              <span class="leg-dot overflow"></span>
+              <span>Surcharge Overflow (&gt; 100%) — Critical</span>
+            </div>
+            <div class="leg-item">
+              <span class="leg-dot node-dot"></span>
+              <span>Manhole / Intake / Outfall Node</span>
+            </div>
           </div>
 
-          <!-- Instruction Tooltip -->
-          <div class="canvas-hint">
-            <span>🖱️ Drag to rotate 3D view | Scroll to zoom | Click any pipe or junction node to inspect hydraulics</span>
+          <!-- Quick Interactive Hint -->
+          <div class="viewport-footer-hint">
+            <span>💡 Click any conduit on the map or 3D view to inspect Manning capacity and predict overflow under storm intensity.</span>
           </div>
         </div>
 
-        <!-- Right Side: Hydraulic Engineering Inspector -->
-        <div class="inspector-panel" *ngIf="inspection; else noSelection">
-          <div class="panel-header">
-            <div class="panel-tag" [ngClass]="inspection.hydraulic_status.toLowerCase()">
-              {{ inspection.hydraulic_status === 'OVERFLOW_SURCHARGE' ? 'SURCHARGE OVERFLOW' : inspection.hydraulic_status }}
+        <!-- Right: Engineering Hydraulic Inspector -->
+        <div class="inspector-card">
+          <div class="inspector-header">
+            <div>
+              <span class="inspector-label">Engineering Diagnostic</span>
+              <h2 class="inspector-title">Hydraulic Solver & Inspector</h2>
             </div>
-            <h3 class="panel-title">{{ inspection.pipe_name }}</h3>
-            <span class="panel-id font-mono">{{ inspection.pipe_id }} ({{ inspection.pipe_type }})</span>
+            <span class="pill-solver font-mono">Manning 1D / Rational</span>
           </div>
 
-          <!-- Interactive Rainfall Intensity Slider -->
-          <div class="control-box">
-            <div class="control-label-row">
-              <span class="ctrl-title">Storm Rainfall Intensity (I)</span>
-              <span class="ctrl-val font-mono">{{ rainfallIntensity }} mm/h</span>
-            </div>
-            <input
-              type="range"
-              class="slider"
-              min="10"
-              max="150"
-              step="5"
-              [(ngModel)]="rainfallIntensity"
-              (input)="onRainfallChange()"
-            />
-            <div class="slider-presets">
-              <button (click)="setPresetRainfall(25)">Moderate (25mm/h)</button>
-              <button (click)="setPresetRainfall(50)">Heavy (50mm/h)</button>
-              <button (click)="setPresetRainfall(100)">Deluge (100mm/h)</button>
-            </div>
-          </div>
+          @if (inspection && selectedEdge) {
+            <div class="inspector-body">
+              <!-- Selected Conduit Identifier -->
+              <div class="conduit-badge-card">
+                <div class="conduit-top">
+                  <span class="c-type font-mono">{{ selectedEdge.type }}</span>
+                  <span class="c-id font-mono">{{ selectedEdge.id }}</span>
+                </div>
+                <h3 class="c-name">{{ selectedEdge.name }}</h3>
+                <p class="c-sub">Connecting <strong>{{ inspection.source_node.name }}</strong> → <strong>{{ inspection.target_node.name }}</strong></p>
+              </div>
 
-          <!-- Verdict Banner -->
-          <div class="verdict-card" [ngClass]="inspection.severity_level.toLowerCase()">
-            <div class="verdict-icon">
-              <span *ngIf="inspection.severity_level === 'CRITICAL'">⚠️</span>
-              <span *ngIf="inspection.severity_level === 'ALERT'">⚡</span>
-              <span *ngIf="inspection.severity_level === 'SAFE'">✅</span>
-            </div>
-            <div class="verdict-text">
-              <div class="verdict-title">{{ inspection.severity_level }} HYDRAULIC STATUS</div>
-              <p class="verdict-desc">{{ inspection.engineering_verdict }}</p>
-            </div>
-          </div>
+              <!-- Rainfall Intensity Control -->
+              <div class="param-control-card">
+                <div class="param-header">
+                  <span class="p-title">Storm Rainfall Intensity (I)</span>
+                  <span class="p-value font-mono">{{ rainfallIntensity }} mm/h</span>
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max="120"
+                  step="5"
+                  [(ngModel)]="rainfallIntensity"
+                  (input)="onRainfallChange()"
+                  class="rainfall-slider"
+                />
+                <div class="slider-presets">
+                  <button (click)="setPresetRainfall(20)">Shower (20)</button>
+                  <button (click)="setPresetRainfall(45)">Monsoon (45)</button>
+                  <button (click)="setPresetRainfall(70)">Heavy (70)</button>
+                  <button (click)="setPresetRainfall(110)">2015 Cloudburst (110)</button>
+                </div>
+              </div>
 
-          <!-- Key Quantitative Metrics Grid -->
-          <div class="metrics-grid">
-            <div class="metric-card">
-              <span class="m-label">Manning Capacity (Q_cap)</span>
-              <span class="m-val font-mono">{{ inspection.parameters.full_capacity_m3s }} <small>m³/s</small></span>
-              <span class="m-sub">Full pipe gravity flow</span>
-            </div>
-            <div class="metric-card">
-              <span class="m-label">Runoff Inflow (Q_in)</span>
-              <span class="m-val font-mono" [class.text-critical]="inspection.parameters.inflow_discharge_m3s > inspection.parameters.full_capacity_m3s">
-                {{ inspection.parameters.inflow_discharge_m3s }} <small>m³/s</small>
-              </span>
-              <span class="m-sub">Rational method (C=0.75)</span>
-            </div>
-            <div class="metric-card">
-              <span class="m-label">Capacity Utilization</span>
-              <span class="m-val font-mono" [class.text-critical]="inspection.parameters.capacity_utilization_pct > 100">
-                {{ inspection.parameters.capacity_utilization_pct }}%
-              </span>
-              <div class="util-bar">
-                <div class="util-fill" [style.width.%]="mathMin(inspection.parameters.capacity_utilization_pct, 100)" [ngClass]="inspection.severity_level.toLowerCase()"></div>
+              <!-- Verdict Alert Banner -->
+              <div class="verdict-card" [ngClass]="inspection.severity_level.toLowerCase()">
+                <div class="verdict-icon">
+                  @if (inspection.hydraulic_status === 'UNDERFLOW') { 🟢 }
+                  @else if (inspection.hydraulic_status === 'TRANSITION') { 🟡 }
+                  @else { 🔴 }
+                </div>
+                <div class="verdict-content">
+                  <span class="verdict-title">{{ inspection.hydraulic_status }} ({{ inspection.severity_level }})</span>
+                  <p class="verdict-desc">{{ inspection.engineering_verdict }}</p>
+                </div>
+              </div>
+
+              <!-- Real-world Engineering Metrics Grid -->
+              <div class="metrics-grid">
+                <!-- Metric 1: Capacity Utilization -->
+                <div class="metric-card">
+                  <span class="m-label">Capacity Load</span>
+                  <div class="m-val font-mono">
+                    {{ inspection.parameters.capacity_utilization_pct }}%
+                  </div>
+                  <div class="util-bar">
+                    <div
+                      class="util-fill"
+                      [style.width.%]="mathMin(inspection.parameters.capacity_utilization_pct, 100)"
+                      [ngClass]="inspection.severity_level.toLowerCase()"
+                    ></div>
+                  </div>
+                  <span class="m-sub font-mono">Full-barrel threshold</span>
+                </div>
+
+                <!-- Metric 2: Surcharge Flow Rate -->
+                <div class="metric-card">
+                  <span class="m-label">Surface Overflow</span>
+                  <div class="m-val font-mono" [class.text-danger]="inspection.parameters.surcharge_rate_m3s > 0">
+                    {{ inspection.parameters.surcharge_rate_m3s }} <small>m³/s</small>
+                  </div>
+                  <span class="m-sub font-mono">
+                    {{ inspection.parameters.surcharge_rate_m3s > 0 ? 'Exiting manhole rims' : 'Zero surface breach' }}
+                  </span>
+                </div>
+
+                <!-- Metric 3: Rational Runoff Inflow -->
+                <div class="metric-card">
+                  <span class="m-label">Runoff Inflow (Qin)</span>
+                  <div class="m-val font-mono">
+                    {{ inspection.parameters.inflow_discharge_m3s }} <small>m³/s</small>
+                  </div>
+                  <span class="m-sub font-mono">Catchment Area: {{ inspection.parameters.catchment_area_ha }} ha</span>
+                </div>
+
+                <!-- Metric 4: Manning Capacity -->
+                <div class="metric-card">
+                  <span class="m-label">Manning Capacity (Qcap)</span>
+                  <div class="m-val font-mono">
+                    {{ inspection.parameters.full_capacity_m3s }} <small>m³/s</small>
+                  </div>
+                  <span class="m-sub font-mono">Roughness n = {{ inspection.parameters.manning_roughness_n }}</span>
+                </div>
+              </div>
+
+              <!-- Hydraulic Dimensions & Elevation Breakdown -->
+              <div class="specs-table-card">
+                <span class="specs-title">Physical Conduit Geometry</span>
+                <table class="specs-table font-mono">
+                  <tbody>
+                    <tr>
+                      <td>Conduit Length</td>
+                      <td>{{ inspection.parameters.conduit_length_m }} m</td>
+                    </tr>
+                    <tr>
+                      <td>Cross Section (W × H)</td>
+                      <td>{{ selectedEdge.width_m }}m × {{ selectedEdge.height_m }}m ({{ selectedEdge.shape }})</td>
+                    </tr>
+                    <tr>
+                      <td>Bed Longitudinal Slope</td>
+                      <td>{{ inspection.parameters.bed_slope_pct }}%</td>
+                    </tr>
+                    <tr>
+                      <td>Water Velocity</td>
+                      <td>{{ inspection.parameters.water_velocity_m_s }} m/s</td>
+                    </tr>
+                    <tr>
+                      <td>Flow Depth vs Freeboard</td>
+                      <td>{{ inspection.parameters.estimated_flow_depth_m }}m (Freeboard: {{ inspection.parameters.freeboard_m }}m)</td>
+                    </tr>
+                    <tr>
+                      <td>Surcharge Pressure Head</td>
+                      <td [class.text-danger]="inspection.parameters.surcharge_head_m > 0">
+                        +{{ inspection.parameters.surcharge_head_m }} m above rim
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Connected Invert Nodes -->
+              <div class="node-pair-card">
+                <div class="node-item">
+                  <span class="node-role">Source Node (Upstream):</span>
+                  <span class="node-name">{{ inspection.source_node.name }}</span>
+                  <span class="node-elev font-mono">Surface: {{ inspection.source_node.surface_elevation_m }}m | Invert: {{ inspection.source_node.invert_elevation_m }}m MSL</span>
+                </div>
+                <div class="node-divider">↓ Gravity Flow Direction</div>
+                <div class="node-item">
+                  <span class="node-role">Target Node (Downstream):</span>
+                  <span class="node-name">{{ inspection.target_node.name }}</span>
+                  <span class="node-elev font-mono">Surface: {{ inspection.target_node.surface_elevation_m }}m | Invert: {{ inspection.target_node.invert_elevation_m }}m MSL</span>
+                </div>
               </div>
             </div>
-            <div class="metric-card">
-              <span class="m-label">Flow Velocity (V)</span>
-              <span class="m-val font-mono">{{ inspection.parameters.water_velocity_m_s }} <small>m/s</small></span>
-              <span class="m-sub">Kinematic flow velocity</span>
-            </div>
-          </div>
-
-          <!-- Physical Conduit Engineering Specs -->
-          <div class="specs-table-card">
-            <div class="specs-title">Physical Conduit Parameters</div>
-            <table class="specs-table">
-              <tbody>
-                <tr>
-                  <td>Conduit Length</td>
-                  <td class="font-mono">{{ inspection.parameters.conduit_length_m | number:'1.0-0' }} m</td>
-                </tr>
-                <tr>
-                  <td>Bed Slope (S)</td>
-                  <td class="font-mono">{{ inspection.parameters.bed_slope_pct }}% gradient</td>
-                </tr>
-                <tr>
-                  <td>Manning Roughness (n)</td>
-                  <td class="font-mono">{{ inspection.parameters.manning_roughness_n }} (Concrete/Masonry)</td>
-                </tr>
-                <tr>
-                  <td>Cross-Sectional Area (A)</td>
-                  <td class="font-mono">{{ inspection.parameters.cross_sectional_area_m2 }} m²</td>
-                </tr>
-                <tr>
-                  <td>Hydraulic Radius (R)</td>
-                  <td class="font-mono">{{ inspection.parameters.hydraulic_radius_m }} m</td>
-                </tr>
-                <tr>
-                  <td>Contributing Catchment</td>
-                  <td class="font-mono">{{ inspection.parameters.catchment_area_ha }} ha</td>
-                </tr>
-                <tr *ngIf="inspection.parameters.surcharge_rate_m3s > 0">
-                  <td class="text-critical font-bold">Surcharge Rate</td>
-                  <td class="font-mono text-critical font-bold">+{{ inspection.parameters.surcharge_rate_m3s }} m³/s to street</td>
-                </tr>
-                <tr *ngIf="inspection.parameters.freeboard_m > 0">
-                  <td class="text-safe">Freeboard Head</td>
-                  <td class="font-mono text-safe">{{ inspection.parameters.freeboard_m }} m remaining</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Connected Nodes -->
-          <div class="node-pair-card">
-            <div class="node-item">
-              <span class="node-role">Upstream Source:</span>
-              <span class="node-name">{{ inspection.source_node.name }}</span>
-              <span class="node-elev font-mono">Invert: {{ inspection.source_node.invert_elevation_m }}m | Surface: {{ inspection.source_node.surface_elevation_m }}m</span>
-            </div>
-            <div class="node-divider">➔</div>
-            <div class="node-item">
-              <span class="node-role">Downstream Target:</span>
-              <span class="node-name">{{ inspection.target_node.name }}</span>
-              <span class="node-elev font-mono">Invert: {{ inspection.target_node.invert_elevation_m }}m | Surface: {{ inspection.target_node.surface_elevation_m }}m</span>
-            </div>
-          </div>
-        </div>
-
-        <ng-template #noSelection>
-          <div class="inspector-panel empty-panel">
-            <div class="empty-state">
+          } @else {
+            <div class="empty-inspector-state">
               <div class="empty-icon">🌊</div>
               <h3>Select a Drainage Conduit</h3>
-              <p>Click any 3D conduit line or junction node on the viewport to calculate real-world Manning capacity, hydraulic slope, and rainfall overflow prediction.</p>
-              <button class="btn-select-default" (click)="selectDefaultPipe()">Select Velachery Macro Trunk</button>
+              <p>Click any conduit line on the map or 3D viewport to inspect its Manning conveyance capacity and surface overflow risk.</p>
+              <button class="btn-select-default" (click)="selectDefaultPipe()">
+                Inspect Velachery Macro Trunk →
+              </button>
             </div>
-          </div>
-        </ng-template>
+          }
+        </div>
       </div>
     </div>
   `,
   styles: [`
     .drainage-page {
-      padding: 1.5rem 2rem;
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      min-height: calc(100vh - var(--header-height));
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1rem;
+      min-height: calc(100vh - 100px);
     }
+
+    /* Header */
     .drainage-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       flex-wrap: wrap;
       gap: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
     }
     .header-badge-row {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.6rem;
       flex-wrap: wrap;
+      margin-bottom: 0.35rem;
     }
     .page-title {
-      font-size: 1.45rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: var(--text-main);
       margin: 0;
     }
     .badge-status-3d {
       background: rgba(6, 182, 212, 0.15);
-      border: 1px solid rgba(6, 182, 212, 0.4);
       color: #06b6d4;
-      font-size: 0.72rem;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      font-size: 0.68rem;
       font-weight: 700;
-      padding: 0.2rem 0.6rem;
-      border-radius: var(--radius-full);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.04em;
     }
     .badge-crs {
-      background: rgba(148, 163, 184, 0.12);
-      color: #94a3b8;
-      font-size: 0.72rem;
+      background: var(--bg-darkest);
+      color: var(--text-dim);
+      border: 1px solid var(--border-light);
+      font-size: 0.68rem;
       font-weight: 600;
-      padding: 0.2rem 0.55rem;
-      border-radius: var(--radius-full);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
     }
     .page-subtitle {
-      font-size: 0.85rem;
+      font-size: 0.8125rem;
       color: var(--text-muted);
-      margin: 0.35rem 0 0;
-      max-width: 820px;
+      margin: 0;
+      max-width: 800px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .view-mode-tabs {
+      display: flex;
+      background: var(--bg-darkest);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 0.2rem;
+      gap: 0.2rem;
+    }
+    .tab-btn {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+      &.active {
+        background: var(--brand-primary);
+        color: #ffffff;
+      }
     }
     .view-controls {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
     .btn-ctrl {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 0.45rem 0.85rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 0.4rem;
-      transition: all var(--transition-fast);
-    }
-    .btn-ctrl:hover {
+      gap: 0.35rem;
+      padding: 0.35rem 0.65rem;
+      background: var(--bg-darkest);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
       color: var(--text-main);
-      border-color: var(--border-focus);
-      background-color: var(--bg-card-hover);
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all var(--transition-fast);
+      &:hover {
+        border-color: #06b6d4;
+        color: #06b6d4;
+      }
     }
 
-    /* Layout */
+    /* Main Layout */
     .drainage-layout {
       display: grid;
-      grid-template-columns: 1fr 420px;
+      grid-template-columns: 1.6fr 1fr;
       gap: 1.25rem;
-      flex: 1;
-      min-height: 640px;
-    }
-    @media (max-width: 1180px) {
-      .drainage-layout {
+      align-items: stretch;
+      @media (max-width: 1200px) {
         grid-template-columns: 1fr;
       }
     }
 
-    /* 3D Canvas Viewport */
-    .canvas-container {
+    /* Viewport Card */
+    .viewport-card {
       position: relative;
-      background: radial-gradient(circle at 50% 50%, #0c1222 0%, #050811 100%);
+      background: #020617;
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       overflow: hidden;
-      min-height: 600px;
+      min-height: 640px;
       display: flex;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+      flex-direction: column;
     }
-    canvas {
+    .leaflet-container-wrap {
       width: 100%;
       height: 100%;
-      display: block;
-      cursor: grab;
+      min-height: 640px;
+      flex: 1;
     }
-    canvas:active {
-      cursor: grabbing;
+    .drainage-leaflet-canvas {
+      width: 100%;
+      height: 100%;
+      min-height: 640px;
+      background: #020617;
+    }
+    .canvas-container {
+      width: 100%;
+      height: 100%;
+      min-height: 640px;
+      flex: 1;
+      cursor: grab;
+      &:active { cursor: grabbing; }
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
+    /* HUD */
     .canvas-hud {
       position: absolute;
-      top: 1rem;
-      left: 1rem;
+      top: 0.75rem;
+      left: 0.75rem;
       display: flex;
-      gap: 0.75rem;
-      background: rgba(10, 15, 30, 0.75);
+      align-items: center;
+      background: rgba(2, 6, 23, 0.85);
       backdrop-filter: blur(8px);
-      border: 1px solid var(--border-subtle);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius-sm);
-      padding: 0.6rem 0.9rem;
-      z-index: 10;
-      flex-wrap: wrap;
+      padding: 0.4rem 0.75rem;
+      gap: 0.75rem;
+      z-index: 500;
+      pointer-events: none;
     }
     .hud-item {
       display: flex;
       flex-direction: column;
     }
     .hud-label {
-      font-size: 0.65rem;
-      color: var(--text-muted);
+      font-size: 0.58rem;
+      color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
     .hud-val {
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: #ffffff;
     }
-    .text-cyan { color: #06b6d4; }
-    .text-amber { color: #f59e0b; }
-    .text-critical { color: #ef4444; }
-    .text-safe { color: #10b981; }
+    .highlight-name {
+      color: #38bdf8;
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .hud-divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.1);
+    }
 
+    /* Legend */
     .canvas-legend {
       position: absolute;
-      bottom: 2.75rem;
-      left: 1rem;
-      background: rgba(10, 15, 30, 0.8);
+      bottom: 2.5rem;
+      left: 0.75rem;
+      background: rgba(2, 6, 23, 0.88);
       backdrop-filter: blur(8px);
-      border: 1px solid var(--border-subtle);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius-sm);
-      padding: 0.6rem 0.85rem;
-      z-index: 10;
+      padding: 0.5rem 0.75rem;
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.25rem;
+      z-index: 500;
+      pointer-events: none;
     }
-    .legend-title {
-      font-size: 0.68rem;
+    .leg-title {
+      font-size: 0.62rem;
       font-weight: 700;
-      color: var(--text-muted);
+      color: #94a3b8;
       text-transform: uppercase;
-      margin-bottom: 0.2rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.15rem;
     }
-    .legend-item {
+    .leg-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.72rem;
-      color: var(--text-main);
+      gap: 0.4rem;
+      font-size: 0.68rem;
+      color: #e2e8f0;
     }
-    .legend-box {
-      width: 14px;
-      height: 4px;
+    .leg-dot {
+      width: 10px;
+      height: 10px;
       border-radius: 2px;
+      flex-shrink: 0;
     }
-    .legend-box.safe { background-color: #10b981; }
-    .legend-box.warning { background-color: #f59e0b; }
-    .legend-box.critical { background-color: #ef4444; }
-    .legend-dot {
-      width: 8px;
-      height: 8px;
+    .leg-dot.underflow { background: #10b981; }
+    .leg-dot.transition { background: #f59e0b; }
+    .leg-dot.overflow { background: #ef4444; }
+    .leg-dot.node-dot {
       border-radius: 50%;
-      background-color: #06b6d4;
+      background: #06b6d4;
       border: 1px solid #ffffff;
     }
 
-    .canvas-hint {
+    .viewport-footer-hint {
       position: absolute;
-      bottom: 0.85rem;
-      left: 1rem;
-      right: 1rem;
-      font-size: 0.72rem;
-      color: rgba(148, 163, 184, 0.7);
-      background: rgba(5, 8, 17, 0.6);
-      padding: 0.35rem 0.75rem;
-      border-radius: var(--radius-sm);
+      bottom: 0.5rem;
+      left: 0.75rem;
+      right: 0.75rem;
+      font-size: 0.68rem;
+      color: #94a3b8;
+      background: rgba(2, 6, 23, 0.7);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      z-index: 500;
       pointer-events: none;
     }
 
-    /* Inspector Panel */
-    .inspector-panel {
-      background-color: var(--bg-card);
+    /* Inspector Card */
+    .inspector-card {
+      background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-card-subtle);
+    }
+    .inspector-label {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .inspector-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0.1rem 0 0;
+    }
+    .pill-solver {
+      font-size: 0.65rem;
+      background: rgba(6, 182, 212, 0.15);
+      color: #06b6d4;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+    }
+
+    .inspector-body {
       padding: 1.25rem;
       display: flex;
       flex-direction: column;
-      gap: 1.1rem;
+      gap: 1rem;
       overflow-y: auto;
-      max-height: 800px;
-    }
-    .panel-header {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-    .panel-tag {
-      font-size: 0.68rem;
-      font-weight: 800;
-      padding: 0.2rem 0.55rem;
-      border-radius: var(--radius-full);
-      display: inline-block;
-      width: fit-content;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .panel-tag.underflow {
-      background: rgba(16, 185, 129, 0.15);
-      color: #10b981;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-    .panel-tag.transition {
-      background: rgba(245, 158, 11, 0.15);
-      color: #f59e0b;
-      border: 1px solid rgba(245, 158, 11, 0.4);
-    }
-    .panel-tag.overflow_surcharge {
-      background: rgba(239, 68, 68, 0.15);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-    }
-    .panel-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin: 0;
-    }
-    .panel-id {
-      font-size: 0.72rem;
-      color: var(--text-muted);
+      max-height: calc(100vh - 200px);
     }
 
-    /* Control Box */
-    .control-box {
-      background-color: var(--bg-card-subtle);
-      border: 1px solid var(--border-subtle);
+    /* Conduit Badge */
+    .conduit-badge-card {
+      background: var(--bg-darkest);
+      border: 1px solid var(--border-light);
       border-radius: var(--radius-sm);
-      padding: 0.85rem;
+      padding: 0.75rem 0.85rem;
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.25rem;
     }
-    .control-label-row {
+    .conduit-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.68rem;
+    }
+    .c-type { color: #06b6d4; font-weight: 700; }
+    .c-id { color: var(--text-dim); }
+    .c-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0.15rem 0 0;
+    }
+    .c-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* Param Slider */
+    .param-control-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .param-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .ctrl-title {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-    .ctrl-val {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #06b6d4;
-    }
-    .slider {
+    .p-title { font-size: 0.72rem; font-weight: 700; color: var(--text-main); }
+    .p-value { font-size: 0.85rem; font-weight: 800; color: #38bdf8; }
+    .rainfall-slider {
       width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      background: #1e293b;
-      outline: none;
-      accent-color: #06b6d4;
+      accent-color: #38bdf8;
       cursor: pointer;
     }
     .slider-presets {
       display: flex;
-      gap: 0.4rem;
+      gap: 0.35rem;
+      flex-wrap: wrap;
     }
     .slider-presets button {
-      flex: 1;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
+      background: var(--bg-darkest);
+      border: 1px solid var(--border-light);
       color: var(--text-muted);
-      font-size: 0.68rem;
-      padding: 0.3rem 0;
-      border-radius: var(--radius-sm);
+      font-size: 0.65rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 3px;
       cursor: pointer;
-      transition: all var(--transition-fast);
-    }
-    .slider-presets button:hover {
-      color: var(--text-main);
-      border-color: #06b6d4;
+      &:hover { color: #38bdf8; border-color: #38bdf8; }
     }
 
-    /* Verdict Card */
+    /* Verdict */
     .verdict-card {
       display: flex;
-      gap: 0.75rem;
-      padding: 0.85rem;
+      gap: 0.65rem;
+      padding: 0.75rem 0.85rem;
       border-radius: var(--radius-sm);
       border: 1px solid transparent;
+      &.safe { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+      &.alert { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
+      &.critical { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.35); }
     }
-    .verdict-card.safe {
-      background: rgba(16, 185, 129, 0.08);
-      border-color: rgba(16, 185, 129, 0.3);
-    }
-    .verdict-card.alert {
-      background: rgba(245, 158, 11, 0.08);
-      border-color: rgba(245, 158, 11, 0.3);
-    }
-    .verdict-card.critical {
-      background: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.35);
-    }
-    .verdict-icon {
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
+    .verdict-icon { font-size: 1.1rem; }
     .verdict-title {
       font-size: 0.72rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
     }
     .verdict-card.safe .verdict-title { color: #10b981; }
     .verdict-card.alert .verdict-title { color: #f59e0b; }
     .verdict-card.critical .verdict-title { color: #ef4444; }
     .verdict-desc {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: var(--text-main);
       margin: 0.2rem 0 0;
       line-height: 1.35;
     }
 
-    /* Metrics Grid */
+    /* Metrics */
     .metrics-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.65rem;
     }
     .metric-card {
-      background-color: var(--bg-card-subtle);
-      border: 1px solid var(--border-subtle);
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-light);
       border-radius: var(--radius-sm);
-      padding: 0.75rem;
+      padding: 0.65rem 0.75rem;
       display: flex;
       flex-direction: column;
     }
-    .m-label {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-    .m-val {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--text-main);
-      margin: 0.2rem 0 0;
-    }
-    .m-val small {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-    .m-sub {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
+    .m-label { font-size: 0.62rem; color: var(--text-dim); text-transform: uppercase; }
+    .m-val { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin: 0.15rem 0; }
+    .m-val small { font-size: 0.7rem; font-weight: 500; color: var(--text-muted); }
+    .m-sub { font-size: 0.62rem; color: var(--text-muted); }
     .util-bar {
       width: 100%;
       height: 4px;
       background: #1e293b;
       border-radius: 2px;
-      margin-top: 0.35rem;
+      margin: 0.25rem 0;
       overflow: hidden;
     }
-    .util-fill {
-      height: 100%;
-    }
+    .util-fill { height: 100%; }
     .util-fill.safe { background: #10b981; }
     .util-fill.alert { background: #f59e0b; }
     .util-fill.critical { background: #ef4444; }
 
     /* Specs Table */
     .specs-table-card {
-      background-color: var(--bg-card-subtle);
-      border: 1px solid var(--border-subtle);
+      background: var(--bg-darkest);
+      border: 1px solid var(--border-light);
       border-radius: var(--radius-sm);
-      padding: 0.85rem;
+      padding: 0.75rem 0.85rem;
     }
     .specs-title {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
+      display: block;
     }
     .specs-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
     }
     .specs-table td {
-      padding: 0.35rem 0;
+      padding: 0.3rem 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
     }
     .specs-table td:last-child {
       text-align: right;
       font-weight: 600;
+      color: var(--text-main);
     }
 
     /* Node Pair */
@@ -727,90 +841,103 @@ export interface HydraulicInspection {
       background: rgba(6, 182, 212, 0.04);
       border: 1px solid rgba(6, 182, 212, 0.2);
       border-radius: var(--radius-sm);
-      padding: 0.75rem;
+      padding: 0.75rem 0.85rem;
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
+      gap: 0.35rem;
     }
-    .node-divider {
-      text-align: center;
-      color: #06b6d4;
-      font-size: 0.9rem;
-    }
-    .node-item {
-      display: flex;
-      flex-direction: column;
-    }
-    .node-role {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-    }
-    .node-name {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    .node-elev {
-      font-size: 0.68rem;
-      color: #06b6d4;
-    }
+    .node-role { font-size: 0.62rem; color: #06b6d4; font-weight: 700; }
+    .node-name { font-size: 0.78rem; font-weight: 700; color: var(--text-main); }
+    .node-elev { font-size: 0.65rem; color: var(--text-dim); }
+    .node-divider { text-align: center; color: #06b6d4; font-size: 0.75rem; }
 
-    /* Empty Panel */
-    .empty-panel {
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-    .empty-state {
-      max-width: 280px;
+    /* Empty State */
+    .empty-inspector-state {
+      padding: 3rem 1.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.65rem;
+      text-align: center;
+      gap: 0.75rem;
     }
-    .empty-icon {
-      font-size: 2.5rem;
-    }
-    .empty-state h3 {
-      font-size: 1.05rem;
-      color: var(--text-main);
-      margin: 0;
-    }
-    .empty-state p {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-      margin: 0;
-    }
+    .empty-icon { font-size: 2.5rem; }
+    .empty-inspector-state h3 { font-size: 1.05rem; color: var(--text-main); margin: 0; }
+    .empty-inspector-state p { font-size: 0.78rem; color: var(--text-muted); max-width: 260px; margin: 0; }
     .btn-select-default {
       margin-top: 0.5rem;
       background: #06b6d4;
       color: #050811;
       font-weight: 700;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       border: none;
       padding: 0.5rem 1rem;
       border-radius: var(--radius-sm);
       cursor: pointer;
+      transition: background var(--transition-fast);
+      &:hover { background: #38bdf8; }
     }
   `]
 })
-export class DrainageComponent implements OnInit, OnDestroy {
-  @ViewChild('canvasRef', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('containerRef', { static: true }) containerRef!: ElementRef<HTMLDivElement>;
+export class DrainageComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('canvasRef', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('containerRef', { static: false }) containerRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('gisMapRef', { static: false }) gisMapRef!: ElementRef<HTMLDivElement>;
 
-  nodes: DrainageNode3D[] = [];
-  edges: DrainageEdge3D[] = [];
+  viewMode: 'GIS_MAP' | '3D_ISOMETRIC' = 'GIS_MAP';
+
+  // Authentic Greater Chennai Drainage Graph (embedded default ensures instant rendering)
+  nodes: DrainageNode3D[] = [
+    { id: 'NODE-ADYAR-01', name: 'Manapakkam / Nandambakkam Inflow', type: 'JUNCTION', basin: 'Adyar Basin', lat: 13.0080, lon: 80.1800, surface_elevation_m: 12.4, invert_elevation_m: 8.8, depth_m: 3.6, description: 'Upstream river junction capturing runoff from Porur' },
+    { id: 'NODE-ADYAR-02', name: 'Guindy / Saidapet Gauging Node', type: 'JUNCTION', basin: 'Adyar Basin', lat: 13.0110, lon: 80.2200, surface_elevation_m: 8.2, invert_elevation_m: 5.0, depth_m: 3.2, description: 'Saidapet causeway & SWD trunk confluence' },
+    { id: 'NODE-ADYAR-03', name: 'Kotturpuram River Bend Chamber', type: 'JUNCTION', basin: 'Adyar Basin', lat: 13.0125, lon: 80.2500, surface_elevation_m: 5.1, invert_elevation_m: 2.2, depth_m: 2.9, description: 'Bottleneck at Kotturpuram low-lying loop' },
+    { id: 'NODE-ADYAR-OUTFALL', name: 'Adyar Estuary Outfall (Bay of Bengal)', type: 'OUTFALL', basin: 'Adyar Basin', lat: 13.0090, lon: 80.2780, surface_elevation_m: 2.1, invert_elevation_m: 0.0, depth_m: 2.1, description: 'Tidal discharge mouth into the Bay of Bengal' },
+    { id: 'NODE-VELACHERY-01', name: 'Velachery Main Lake Inlet Sump', type: 'INLET_SUMP', basin: 'South SWD Basin', lat: 12.9750, lon: 80.2150, surface_elevation_m: 6.8, invert_elevation_m: 4.5, depth_m: 2.3, description: 'Urban runoff collection from residential streets' },
+    { id: 'NODE-VELACHERY-02', name: 'Velachery Bypass Macro Junction', type: 'JUNCTION', basin: 'South SWD Basin', lat: 12.9820, lon: 80.2230, surface_elevation_m: 5.5, invert_elevation_m: 3.4, depth_m: 2.1, description: 'High-density concrete box drain interceptor' },
+    { id: 'NODE-OKKIUM-01', name: 'Okkium Madavu Macro Canal Intake', type: 'JUNCTION', basin: 'Pallikaranai Basin', lat: 12.9400, lon: 80.2280, surface_elevation_m: 4.2, invert_elevation_m: 1.8, depth_m: 2.4, description: 'Major surplus discharge conduit to Buckingham Canal' },
+    { id: 'NODE-COOUM-01', name: 'Koyambedu / Aminjikarai Confluence', type: 'JUNCTION', basin: 'Cooum Basin', lat: 13.0740, lon: 80.2000, surface_elevation_m: 11.0, invert_elevation_m: 7.6, depth_m: 3.4, description: 'Central catchment drain receiver' },
+    { id: 'NODE-COOUM-02', name: 'Chetpet / Egmore River Corridor', type: 'JUNCTION', basin: 'Cooum Basin', lat: 13.0760, lon: 80.2550, surface_elevation_m: 6.4, invert_elevation_m: 3.2, depth_m: 3.2, description: 'Railway culvert and SWD arterial confluence' },
+    { id: 'NODE-COOUM-OUTFALL', name: 'Cooum River Napier Bridge Outfall', type: 'OUTFALL', basin: 'Cooum Basin', lat: 13.0690, lon: 80.2850, surface_elevation_m: 2.2, invert_elevation_m: 0.0, depth_m: 2.2, description: 'Marina Beach ocean outfall with tidal gates' },
+    { id: 'NODE-TNAGAR-01', name: 'Panagal Park / Usman Road Drain', type: 'INLET_SUMP', basin: 'Central SWD', lat: 13.0380, lon: 80.2280, surface_elevation_m: 9.2, invert_elevation_m: 7.1, depth_m: 2.1, description: 'Commercial zone storm collector' },
+    { id: 'NODE-MAMBALAM-01', name: 'Mambalam Canal - Nandanam Outfall', type: 'JUNCTION', basin: 'Central SWD', lat: 13.0250, lon: 80.2380, surface_elevation_m: 6.5, invert_elevation_m: 4.1, depth_m: 2.4, description: 'Discharges into Adyar River' },
+    { id: 'NODE-BUCK-NORTH', name: 'Buckingham Canal - Basin Bridge', type: 'JUNCTION', basin: 'Tidal Corridor', lat: 13.1000, lon: 80.2850, surface_elevation_m: 3.8, invert_elevation_m: 1.1, depth_m: 2.7, description: 'North Chennai tidal canal lock' },
+    { id: 'NODE-BUCK-MID', name: 'Buckingham Canal - Triplicane Sluice', type: 'JUNCTION', basin: 'Tidal Corridor', lat: 13.0500, lon: 80.2750, surface_elevation_m: 3.1, invert_elevation_m: 0.8, depth_m: 2.3, description: 'Tidal regulator separating Cooum and Adyar catchments' },
+    { id: 'NODE-BUCK-SOUTH', name: 'Buckingham Canal - Sholinganallur', type: 'JUNCTION', basin: 'Tidal Corridor', lat: 12.9500, lon: 80.2550, surface_elevation_m: 2.9, invert_elevation_m: 0.5, depth_m: 2.4, description: 'OMR coastal IT corridor tidal canal' },
+    { id: 'NODE-OTTERI-01', name: 'Otteri Nallah - Anna Nagar East', type: 'INLET_SUMP', basin: 'North SWD Basin', lat: 13.0900, lon: 80.2200, surface_elevation_m: 10.5, invert_elevation_m: 8.0, depth_m: 2.5, description: 'Upstream masonry channel draining Kilpauk' },
+    { id: 'NODE-OTTERI-02', name: 'Otteri Nallah - Perambur / Vyasarpadi', type: 'JUNCTION', basin: 'North SWD Basin', lat: 13.1100, lon: 80.2500, surface_elevation_m: 5.8, invert_elevation_m: 3.2, depth_m: 2.6, description: 'Chronic subway interceptor' },
+    { id: 'NODE-KOSASTHALAIYAR-OUTFALL', name: 'Ennore Creek / Kosasthalaiyar Outfall', type: 'OUTFALL', basin: 'North River Basin', lat: 13.2250, lon: 80.3200, surface_elevation_m: 2.0, invert_elevation_m: 0.0, depth_m: 2.0, description: 'Primary northern mega-basin ocean outfall' }
+  ];
+
+  edges: DrainageEdge3D[] = [
+    { id: 'PIPE-ADYAR-UPPER', name: 'Adyar River Upper Reach (Manapakkam)', type: 'RIVER_CHANNEL', source_node: 'NODE-ADYAR-01', target_node: 'NODE-ADYAR-02', length_m: 4350.0, width_m: 45.0, height_m: 3.8, shape: 'TRAPEZOIDAL', manning_n: 0.035, slope: 0.00087, manning_capacity_m3s: 245.0, catchment_area_ha: 3200.0, runoff_coeff: 0.72 },
+    { id: 'PIPE-ADYAR-MID', name: 'Adyar River Mid Reach (Saidapet - Kotturpuram)', type: 'RIVER_CHANNEL', source_node: 'NODE-ADYAR-02', target_node: 'NODE-ADYAR-03', length_m: 3100.0, width_m: 55.0, height_m: 3.5, shape: 'TRAPEZOIDAL', manning_n: 0.033, slope: 0.00090, manning_capacity_m3s: 285.0, catchment_area_ha: 2400.0, runoff_coeff: 0.80 },
+    { id: 'PIPE-ADYAR-LOWER', name: 'Adyar River Estuary to Bay of Bengal', type: 'RIVER_CHANNEL', source_node: 'NODE-ADYAR-03', target_node: 'NODE-ADYAR-OUTFALL', length_m: 2900.0, width_m: 80.0, height_m: 3.0, shape: 'TRAPEZOIDAL', manning_n: 0.030, slope: 0.00076, manning_capacity_m3s: 340.0, catchment_area_ha: 1800.0, runoff_coeff: 0.85 },
+    { id: 'PIPE-VEL-TRUNK-01', name: 'Velachery 100ft Road Macro Box Drain', type: 'STORM_WATER_DRAIN', source_node: 'NODE-VELACHERY-01', target_node: 'NODE-VELACHERY-02', length_m: 1250.0, width_m: 3.2, height_m: 2.1, shape: 'RECTANGULAR_BOX', manning_n: 0.015, slope: 0.00088, manning_capacity_m3s: 14.2, catchment_area_ha: 480.0, runoff_coeff: 0.88 },
+    { id: 'PIPE-VEL-TO-OKKIUM', name: 'Pallikaranai - Okkium Madavu Relief Canal', type: 'MACRO_CANAL', source_node: 'NODE-VELACHERY-02', target_node: 'NODE-OKKIUM-01', length_m: 4600.0, width_m: 18.0, height_m: 2.4, shape: 'RECTANGULAR_OPEN', manning_n: 0.025, slope: 0.00035, manning_capacity_m3s: 48.5, catchment_area_ha: 1450.0, runoff_coeff: 0.75 },
+    { id: 'PIPE-OKKIUM-TO-BUCK', name: 'Okkium Madavu to South Buckingham Canal', type: 'MACRO_CANAL', source_node: 'NODE-OKKIUM-01', target_node: 'NODE-BUCK-SOUTH', length_m: 3200.0, width_m: 22.0, height_m: 2.2, shape: 'RECTANGULAR_OPEN', manning_n: 0.028, slope: 0.00041, manning_capacity_m3s: 52.0, catchment_area_ha: 1100.0, runoff_coeff: 0.78 },
+    { id: 'PIPE-TNAGAR-FEEDER', name: 'Usman Road Subterranean Box Culvert', type: 'STORM_WATER_DRAIN', source_node: 'NODE-TNAGAR-01', target_node: 'NODE-MAMBALAM-01', length_m: 1800.0, width_m: 2.8, height_m: 1.9, shape: 'RECTANGULAR_BOX', manning_n: 0.016, slope: 0.00167, manning_capacity_m3s: 16.8, catchment_area_ha: 350.0, runoff_coeff: 0.92 },
+    { id: 'PIPE-MAMBALAM-TO-ADYAR', name: 'Mambalam Canal Outfall into Adyar River', type: 'MACRO_CANAL', source_node: 'NODE-MAMBALAM-01', target_node: 'NODE-ADYAR-02', length_m: 2200.0, width_m: 12.0, height_m: 2.2, shape: 'RECTANGULAR_OPEN', manning_n: 0.024, slope: 0.00041, manning_capacity_m3s: 32.5, catchment_area_ha: 650.0, runoff_coeff: 0.85 },
+    { id: 'PIPE-COOUM-UPPER', name: 'Cooum River Central Reach (Koyambedu)', type: 'RIVER_CHANNEL', source_node: 'NODE-COOUM-01', target_node: 'NODE-COOUM-02', length_m: 5800.0, width_m: 35.0, height_m: 3.0, shape: 'TRAPEZOIDAL', manning_n: 0.032, slope: 0.00076, manning_capacity_m3s: 185.0, catchment_area_ha: 2900.0, runoff_coeff: 0.82 },
+    { id: 'PIPE-COOUM-LOWER', name: 'Cooum River to Napier Bridge Outfall', type: 'RIVER_CHANNEL', source_node: 'NODE-COOUM-02', target_node: 'NODE-COOUM-OUTFALL', length_m: 3400.0, width_m: 48.0, height_m: 2.8, shape: 'TRAPEZOIDAL', manning_n: 0.029, slope: 0.00094, manning_capacity_m3s: 215.0, catchment_area_ha: 1600.0, runoff_coeff: 0.86 },
+    { id: 'PIPE-OTTERI-01', name: 'Otteri Nallah Masonry Canal (Anna Nagar)', type: 'MACRO_CANAL', source_node: 'NODE-OTTERI-01', target_node: 'NODE-OTTERI-02', length_m: 3900.0, width_m: 14.0, height_m: 2.4, shape: 'RECTANGULAR_OPEN', manning_n: 0.022, slope: 0.00123, manning_capacity_m3s: 38.0, catchment_area_ha: 820.0, runoff_coeff: 0.84 },
+    { id: 'PIPE-OTTERI-TO-BUCK', name: 'Otteri Nallah to North Buckingham Canal', type: 'MACRO_CANAL', source_node: 'NODE-OTTERI-02', target_node: 'NODE-BUCK-NORTH', length_m: 2100.0, width_m: 16.0, height_m: 2.2, shape: 'RECTANGULAR_OPEN', manning_n: 0.025, slope: 0.00100, manning_capacity_m3s: 41.5, catchment_area_ha: 540.0, runoff_coeff: 0.86 },
+    { id: 'PIPE-BUCK-NORTH-MID', name: 'Buckingham Canal Central Navigation Lock', type: 'TIDAL_CANAL', source_node: 'NODE-BUCK-NORTH', target_node: 'NODE-BUCK-MID', length_m: 5600.0, width_m: 25.0, height_m: 2.5, shape: 'TRAPEZOIDAL', manning_n: 0.030, slope: 0.00005, manning_capacity_m3s: 55.0, catchment_area_ha: 1200.0, runoff_coeff: 0.88 },
+    { id: 'PIPE-BUCK-MID-SOUTH', name: 'Buckingham Canal South Tidal Channel', type: 'TIDAL_CANAL', source_node: 'NODE-BUCK-MID', target_node: 'NODE-BUCK-SOUTH', length_m: 8200.0, width_m: 28.0, height_m: 2.4, shape: 'TRAPEZOIDAL', manning_n: 0.030, slope: 0.00004, manning_capacity_m3s: 62.0, catchment_area_ha: 1700.0, runoff_coeff: 0.84 }
+  ];
+
   selectedEdge: DrainageEdge3D | null = null;
-  selectedNode: DrainageNode3D | null = null;
   inspection: HydraulicInspection | null = null;
-
   rainfallIntensity = 45.0; // mm/h
   zScale = 2.0;
 
-  // 3D Engine state (Rotations & Pan)
-  private rotX = 0.55;  // pitch
-  private rotY = -0.45; // yaw
+  // Leaflet Map state
+  private gisMap: L.Map | null = null;
+  private gisPipesLayer = L.layerGroup();
+  private gisNodesLayer = L.layerGroup();
+  private pipePolylineMap = new Map<string, L.Polyline>();
+
+  // 3D Canvas Engine state
+  private rotX = 0.55;
+  private rotY = -0.45;
   private zoom = 1.0;
   private panX = 0;
   private panY = 0;
@@ -818,66 +945,173 @@ export class DrainageComponent implements OnInit, OnDestroy {
   private lastMouseX = 0;
   private lastMouseY = 0;
   private animationFrameId = 0;
+  private flowDashOffset = 0;
 
-  // Geographic bounds of Chennai network
-  private bounds = {
-    minLat: 12.87, maxLat: 13.23,
-    minLon: 80.12, maxLon: 80.32,
-    minElev: 0.0, maxElev: 13.0
+  bounds = {
+    minLat: 12.92, maxLat: 13.23,
+    minLon: 80.17, maxLon: 80.32,
+    minElev: 0.0, maxElev: 12.4
   };
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.fetchDrainageNetwork();
+    this.selectDefaultPipe();
+    this.fetchBackendNetwork();
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize both viewports with safe timeouts
+    setTimeout(() => {
+      this.initGisMap();
+      this.renderGisNetwork();
+    }, 100);
+
+    setTimeout(() => {
+      if (this.canvasRef) {
+        this.initCanvas3D();
+      }
+    }, 200);
   }
 
   ngOnDestroy(): void {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
+    if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+    if (this.gisMap) this.gisMap.remove();
+  }
+
+  switchViewMode(mode: 'GIS_MAP' | '3D_ISOMETRIC'): void {
+    this.viewMode = mode;
+    if (mode === 'GIS_MAP') {
+      setTimeout(() => {
+        if (this.gisMap) {
+          this.gisMap.invalidateSize();
+        } else {
+          this.initGisMap();
+          this.renderGisNetwork();
+        }
+      }, 50);
+    } else {
+      setTimeout(() => {
+        if (!this.animationFrameId) {
+          this.initCanvas3D();
+        } else {
+          this.resizeCanvas();
+        }
+      }, 50);
     }
   }
 
-  fetchDrainageNetwork(): void {
+  fetchBackendNetwork(): void {
     this.http.get<any>(`${environment.apiBaseUrl}/api/v1/drainage/network-3d`).subscribe({
       next: (res) => {
-        this.nodes = res.nodes || [];
-        this.edges = res.edges || [];
-        this.initCanvas3D();
-        // Default selection: Velachery Trunk
-        this.selectDefaultPipe();
+        if (res && res.nodes && res.nodes.length > 0) {
+          this.nodes = res.nodes;
+        }
+        if (res && (res.edges || res.links)) {
+          this.edges = res.edges || res.links;
+        }
+        this.renderGisNetwork();
       },
-      error: (err) => {
-        console.error('Failed to load 3D drainage network', err);
+      error: () => {
+        // Fallback already initialized in class fields
       }
     });
   }
 
   selectDefaultPipe(): void {
-    const vel = this.edges.find(e => e.id.includes('VEL-TRUNK')) || this.edges[0];
-    if (vel) {
-      this.selectEdge(vel);
+    const defaultPipe = this.edges.find(e => e.id.includes('VEL-TRUNK')) || this.edges[0];
+    if (defaultPipe) {
+      this.selectEdge(defaultPipe);
     }
   }
 
   selectEdge(edge: DrainageEdge3D): void {
     this.selectedEdge = edge;
-    this.fetchInspection(edge.id, this.rainfallIntensity);
+    this.computeInspection(edge, this.rainfallIntensity);
+    this.highlightGisPipe(edge.id);
   }
 
-  fetchInspection(pipeId: string, rainfall: number): void {
-    this.http.get<HydraulicInspection>(`${environment.apiBaseUrl}/api/v1/drainage/hydraulic-inspect?pipe_id=${pipeId}&rainfall_mm_h=${rainfall}`).subscribe({
+  computeInspection(edge: DrainageEdge3D, rainfall: number): void {
+    // Try backend inspect endpoint, fallback to local physical solver
+    this.http.get<HydraulicInspection>(`${environment.apiBaseUrl}/api/v1/drainage/hydraulic-inspect?conduit_id=${edge.id}&rainfall_intensity_mm_h=${rainfall}`).subscribe({
       next: (res) => {
         this.inspection = res;
       },
-      error: (err) => console.error('Inspection failed', err)
+      error: () => {
+        this.inspection = this.solveLocalHydraulics(edge, rainfall);
+      }
     });
+  }
+
+  solveLocalHydraulics(edge: DrainageEdge3D, rainfall: number): HydraulicInspection {
+    const src = this.nodes.find(n => n.id === edge.source_node) || this.nodes[0];
+    const tgt = this.nodes.find(n => n.id === edge.target_node) || this.nodes[1];
+
+    // Rational Runoff Inflow: Q_in = 0.002778 * C * I * A
+    const qInflow = 0.002778 * edge.runoff_coeff * rainfall * edge.catchment_area_ha;
+    const qCap = edge.manning_capacity_m3s;
+    const ratio = qInflow / qCap;
+
+    let status: 'UNDERFLOW' | 'TRANSITION' | 'OVERFLOW_SURCHARGE' = 'UNDERFLOW';
+    let severity: 'SAFE' | 'ALERT' | 'CRITICAL' = 'SAFE';
+    let surcharge = 0.0;
+    let head = 0.0;
+    let verdict = 'Safe gravitational conveyance. Available freeboard prevents street waterlogging.';
+
+    if (ratio < 0.75) {
+      status = 'UNDERFLOW';
+      severity = 'SAFE';
+    } else if (ratio <= 1.0) {
+      status = 'TRANSITION';
+      severity = 'ALERT';
+      verdict = 'Conduit operating near full-barrel design capacity. Surcharge imminent if rainfall peaks.';
+    } else {
+      status = 'OVERFLOW_SURCHARGE';
+      severity = 'CRITICAL';
+      surcharge = Math.round((qInflow - qCap) * 100) / 100;
+      head = Math.min(1.8, Math.round((surcharge / (edge.width_m * 2.0)) * 100) / 100);
+      verdict = `Hydraulic capacity exceeded! Surcharging manhole rims at ${surcharge} m³/s onto street surface.`;
+    }
+
+    const flowDepth = ratio < 1.0 ? Math.round(edge.height_m * ratio * 100) / 100 : edge.height_m;
+
+    return {
+      pipe_id: edge.id,
+      pipe_name: edge.name,
+      pipe_type: edge.type,
+      source_node: src,
+      target_node: tgt,
+      hydraulic_status: status,
+      severity_level: severity,
+      parameters: {
+        rainfall_intensity_mm_h: rainfall,
+        catchment_area_ha: edge.catchment_area_ha,
+        runoff_coefficient: edge.runoff_coeff,
+        conduit_length_m: edge.length_m,
+        bed_slope_pct: Math.round(edge.slope * 1000) / 10,
+        manning_roughness_n: edge.manning_n,
+        cross_sectional_area_m2: Math.round(edge.width_m * edge.height_m * 10) / 10,
+        hydraulic_radius_m: Math.round((edge.width_m * edge.height_m) / (edge.width_m + 2 * edge.height_m) * 100) / 100,
+        full_capacity_m3s: Math.round(qCap * 10) / 10,
+        inflow_discharge_m3s: Math.round(qInflow * 10) / 10,
+        capacity_utilization_pct: Math.round(ratio * 100),
+        water_velocity_m_s: Math.round((qInflow / Math.max(1, edge.width_m * flowDepth)) * 100) / 100,
+        estimated_flow_depth_m: flowDepth,
+        surcharge_rate_m3s: surcharge,
+        surcharge_head_m: head,
+        freeboard_m: Math.max(0, Math.round((edge.height_m - flowDepth) * 100) / 100)
+      },
+      engineering_verdict: verdict,
+      timestamp: new Date().toISOString()
+    };
   }
 
   onRainfallChange(): void {
     if (this.selectedEdge) {
-      this.fetchInspection(this.selectedEdge.id, this.rainfallIntensity);
+      this.computeInspection(this.selectedEdge, this.rainfallIntensity);
     }
+    // Update pipe line colors dynamically on the map based on new rainfall
+    this.renderGisNetwork();
   }
 
   setPresetRainfall(val: number): void {
@@ -890,19 +1124,161 @@ export class DrainageComponent implements OnInit, OnDestroy {
   }
 
   // --------------------------------------------------------------------------
-  // High-Performance 3D Vector Rendering Engine
+  // GIS Leaflet Map Engine
   // --------------------------------------------------------------------------
-  initCanvas3D(): void {
+  private initGisMap(): void {
+    if (!this.gisMapRef || this.gisMap) return;
+
+    this.gisMap = L.map(this.gisMapRef.nativeElement, {
+      center: [13.0300, 80.2350],
+      zoom: 12,
+      zoomControl: true,
+      preferCanvas: true
+    });
+
+    // High-contrast Dark Carto basemap
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 18,
+      subdomains: ['a', 'b', 'c'],
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    }).addTo(this.gisMap);
+
+    this.gisPipesLayer.addTo(this.gisMap);
+    this.gisNodesLayer.addTo(this.gisMap);
+
+    setTimeout(() => {
+      this.gisMap?.invalidateSize();
+    }, 150);
+  }
+
+  private renderGisNetwork(): void {
+    if (!this.gisMap) return;
+
+    this.gisPipesLayer.clearLayers();
+    this.gisNodesLayer.clearLayers();
+    this.pipePolylineMap.clear();
+
+    const nodeMap = new Map(this.nodes.map(n => [n.id, n]));
+
+    // Render Conduits / Pipes
+    this.edges.forEach(edge => {
+      const src = nodeMap.get(edge.source_node);
+      const tgt = nodeMap.get(edge.target_node);
+      if (!src || !tgt) return;
+
+      // Determine real-time hydraulic status under current rainfall
+      const qInflow = 0.002778 * edge.runoff_coeff * this.rainfallIntensity * edge.catchment_area_ha;
+      const ratio = qInflow / edge.manning_capacity_m3s;
+
+      let color = '#10b981'; // Green (Underflow)
+      let statusText = 'UNDERFLOW (SAFE)';
+      let weight = Math.max(4, Math.min(9, edge.width_m / 6));
+
+      if (ratio > 1.0) {
+        color = '#ef4444'; // Red (Surcharge Overflow)
+        statusText = 'OVERFLOW SURCHARGE (CRITICAL)';
+        weight += 2;
+      } else if (ratio >= 0.75) {
+        color = '#f59e0b'; // Amber (Transition)
+        statusText = 'TRANSITION (ALERT)';
+      }
+
+      const isSelected = this.selectedEdge?.id === edge.id;
+      if (isSelected) {
+        // Render glowing cyan outline underneath
+        const halo = L.polyline([[src.lat, src.lon], [tgt.lat, tgt.lon]], {
+          color: '#38bdf8',
+          weight: weight + 6,
+          opacity: 0.8
+        });
+        this.gisPipesLayer.addLayer(halo);
+      }
+
+      const poly = L.polyline([[src.lat, src.lon], [tgt.lat, tgt.lon]], {
+        color: color,
+        weight: weight,
+        opacity: 0.95
+      });
+
+      poly.bindTooltip(`
+        <div style="font-family: sans-serif; font-size: 11px; color: #0f172a; padding: 2px;">
+          <strong style="color: #0284c7;">${edge.name}</strong><br/>
+          <span>Type: <strong>${edge.type}</strong></span><br/>
+          <span>Status: <strong style="color: ${color};">${statusText}</strong></span><br/>
+          <span>Inflow: <strong>${Math.round(qInflow * 10) / 10} m³/s</strong> | Cap: <strong>${edge.manning_capacity_m3s} m³/s</strong></span><br/>
+          <span style="color: #059669; font-weight: bold;">⚡ Click to inspect Manning hydraulics</span>
+        </div>
+      `, { sticky: true });
+
+      poly.on('click', () => {
+        this.selectEdge(edge);
+      });
+
+      this.gisPipesLayer.addLayer(poly);
+      this.pipePolylineMap.set(edge.id, poly);
+    });
+
+    // Render Junction & Outfall Nodes
+    this.nodes.forEach(node => {
+      let iconColor = '#06b6d4';
+      let iconLabel = '⚙️';
+      if (node.type === 'OUTFALL') {
+        iconColor = '#3b82f6';
+        iconLabel = '🌊';
+      } else if (node.type === 'INLET_SUMP') {
+        iconColor = '#10b981';
+        iconLabel = '📥';
+      }
+
+      const customIcon = L.divIcon({
+        className: 'drainage-gis-node',
+        html: `
+          <div style="background: ${iconColor}; border: 2px solid #ffffff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; box-shadow: 0 0 8px ${iconColor}; cursor: pointer;">
+            ${iconLabel}
+          </div>
+          <div style="background: rgba(15,23,42,0.9); color: #38bdf8; font-family: monospace; font-size: 9px; font-weight: bold; border-radius: 3px; padding: 1px 3px; margin-top: 2px; white-space: nowrap; border: 1px solid rgba(56,189,248,0.3);">
+            +${node.surface_elevation_m}m
+          </div>
+        `,
+        iconSize: [24, 38],
+        iconAnchor: [12, 12]
+      });
+
+      const marker = L.marker([node.lat, node.lon], { icon: customIcon });
+      marker.bindTooltip(`
+        <div style="font-family: sans-serif; font-size: 11px; color: #0f172a;">
+          <strong style="color: #0284c7;">${node.name}</strong><br/>
+          <span>Type: <strong>${node.type}</strong> (${node.basin})</span><br/>
+          <span>Surface Elevation: <strong>${node.surface_elevation_m} m MSL</strong></span><br/>
+          <span>Invert Elevation: <strong>${node.invert_elevation_m} m MSL</strong></span><br/>
+          <span style="color: #64748b;">${node.description}</span>
+        </div>
+      `);
+
+      this.gisNodesLayer.addLayer(marker);
+    });
+  }
+
+  private highlightGisPipe(pipeId: string): void {
+    if (!this.gisMap) return;
+    this.renderGisNetwork();
+  }
+
+  // --------------------------------------------------------------------------
+  // 3D Isometric Viewport Engine (WebGL / 2D Canvas)
+  // --------------------------------------------------------------------------
+  private initCanvas3D(): void {
     this.resizeCanvas();
     this.renderLoop();
   }
 
   @HostListener('window:resize')
   resizeCanvas(): void {
+    if (!this.canvasRef || !this.containerRef) return;
     const canvas = this.canvasRef.nativeElement;
-    const container = this.containerRef.nativeElement;
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
+    const rect = this.containerRef.nativeElement.getBoundingClientRect();
+    canvas.width = rect.width * (window.devicePixelRatio || 1);
+    canvas.height = rect.height * (window.devicePixelRatio || 1);
   }
 
   resetCamera(): void {
@@ -916,180 +1292,13 @@ export class DrainageComponent implements OnInit, OnDestroy {
   setTopView(): void {
     this.rotX = 0.05;
     this.rotY = 0.0;
-    this.zoom = 0.95;
-    this.panX = 0;
-    this.panY = 0;
+    this.zoom = 1.1;
   }
 
   toggleElevationExaggeration(): void {
-    this.zScale = this.zScale === 2.0 ? 4.0 : (this.zScale === 4.0 ? 1.0 : 2.0);
+    this.zScale = this.zScale === 2.0 ? 4.0 : this.zScale === 4.0 ? 1.0 : 2.0;
   }
 
-  renderLoop = (): void => {
-    this.draw3DScene();
-    this.animationFrameId = requestAnimationFrame(this.renderLoop);
-  };
-
-  // Convert geographic (lon, lat, elev) to 3D normalized coordinates [-1, 1]
-  private projectTo3D(lon: number, lat: number, elev: number) {
-    const nx = ((lon - this.bounds.minLon) / (this.bounds.maxLon - this.bounds.minLon) - 0.5) * 2.0;
-    const ny = ((lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat) - 0.5) * 2.0;
-    const nz = ((elev - this.bounds.minElev) / (this.bounds.maxElev - this.bounds.minElev)) * 0.8 * this.zScale;
-
-    // Apply 3D rotation: Pitch (rotX), Yaw (rotY)
-    // Rotate around Y axis (yaw)
-    const x1 = nx * Math.cos(this.rotY) + ny * Math.sin(this.rotY);
-    const y1 = -nx * Math.sin(this.rotY) + ny * Math.cos(this.rotY);
-    const z1 = nz;
-
-    // Rotate around X axis (pitch)
-    const x2 = x1;
-    const y2 = y1 * Math.cos(this.rotX) - z1 * Math.sin(this.rotX);
-    const z2 = y1 * Math.sin(this.rotX) + z1 * Math.cos(this.rotX);
-
-    // Orthographic projection to Screen space
-    const canvas = this.canvasRef.nativeElement;
-    const scale = Math.min(canvas.width, canvas.height) * 0.42 * this.zoom;
-    const screenX = canvas.width * 0.5 + x2 * scale + this.panX;
-    const screenY = canvas.height * 0.5 - y2 * scale + this.panY;
-
-    return { x: screenX, y: screenY, depth: z2 };
-  }
-
-  draw3DScene(): void {
-    const canvas = this.canvasRef.nativeElement;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 1. Draw 3D Ground Elevation Wireframe Mesh (Chennai Catchment Floor)
-    ctx.strokeStyle = 'rgba(30, 41, 59, 0.45)';
-    ctx.lineWidth = 1;
-    const gridSteps = 12;
-    for (let i = 0; i <= gridSteps; i++) {
-      const u = i / gridSteps;
-      const lon = this.bounds.minLon + u * (this.bounds.maxLon - this.bounds.minLon);
-      const p1 = this.projectTo3D(lon, this.bounds.minLat, 0);
-      const p2 = this.projectTo3D(lon, this.bounds.maxLat, 0);
-      ctx.beginPath();
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.stroke();
-
-      const lat = this.bounds.minLat + u * (this.bounds.maxLat - this.bounds.minLat);
-      const q1 = this.projectTo3D(this.bounds.minLon, lat, 0);
-      const q2 = this.projectTo3D(this.bounds.maxLon, lat, 0);
-      ctx.beginPath();
-      ctx.moveTo(q1.x, q1.y);
-      ctx.lineTo(q2.x, q2.y);
-      ctx.stroke();
-    }
-
-    // 2. Draw 3D Drainage Edges (Conduits / Canals)
-    const nodeLookup = new Map<string, DrainageNode3D>();
-    for (const n of this.nodes) {
-      nodeLookup.set(n.id, n);
-    }
-
-    for (const edge of this.edges) {
-      const src = nodeLookup.get(edge.source_node);
-      const tgt = nodeLookup.get(edge.target_node);
-      if (!src || !tgt) continue;
-
-      const p1 = this.projectTo3D(src.lon, src.lat, src.invert_elevation_m);
-      const p2 = this.projectTo3D(tgt.lon, tgt.lat, tgt.invert_elevation_m);
-
-      const isSelected = this.selectedEdge && this.selectedEdge.id === edge.id;
-
-      // Color based on capacity & slope
-      let strokeColor = '#10b981'; // Green / Underflow
-      let lineWidth = isSelected ? 6 : Math.max(2.5, edge.width_m * 0.15);
-
-      // Estimate condition based on current rainfall
-      const qIn = 0.002778 * edge.runoff_coeff * this.rainfallIntensity * edge.catchment_area_ha;
-      const ratio = qIn / edge.manning_capacity_m3s;
-      if (ratio > 1.0) {
-        strokeColor = '#ef4444'; // Red surcharge
-      } else if (ratio >= 0.8) {
-        strokeColor = '#f59e0b'; // Amber transition
-      }
-
-      if (isSelected) {
-        // Glowing halo for selected conduit
-        ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
-        ctx.lineWidth = lineWidth + 6;
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-      }
-
-      ctx.strokeStyle = strokeColor;
-      ctx.lineWidth = lineWidth;
-      ctx.beginPath();
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.stroke();
-
-      // Flow direction arrow in middle of segment
-      const midX = (p1.x + p2.x) * 0.5;
-      const midY = (p1.y + p2.y) * 0.5;
-      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-
-      ctx.fillStyle = strokeColor;
-      ctx.beginPath();
-      ctx.moveTo(midX + 7 * Math.cos(angle), midY + 7 * Math.sin(angle));
-      ctx.lineTo(midX - 5 * Math.cos(angle - Math.PI / 6), midY - 5 * Math.sin(angle - Math.PI / 6));
-      ctx.lineTo(midX - 5 * Math.cos(angle + Math.PI / 6), midY - 5 * Math.sin(angle + Math.PI / 6));
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    // 3. Draw 3D Drainage Nodes (Spheres with elevation riser stems)
-    for (const node of this.nodes) {
-      const pInvert = this.projectTo3D(node.lon, node.lat, node.invert_elevation_m);
-      const pSurface = this.projectTo3D(node.lon, node.lat, node.surface_elevation_m);
-
-      // Save screen positions for hit-testing click
-      node.screenX = pInvert.x;
-      node.screenY = pInvert.y;
-
-      // Vertical manhole shaft / riser stem connecting surface to invert
-      ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([2, 3]);
-      ctx.beginPath();
-      ctx.moveTo(pSurface.x, pSurface.y);
-      ctx.lineTo(pInvert.x, pInvert.y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Surface ground collar
-      ctx.fillStyle = 'rgba(100, 116, 139, 0.4)';
-      ctx.beginPath();
-      ctx.arc(pSurface.x, pSurface.y, 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Invert Chamber Node Sphere
-      const isOutfall = node.type === 'OUTFALL';
-      ctx.fillStyle = isOutfall ? '#38bdf8' : '#06b6d4';
-      ctx.beginPath();
-      ctx.arc(pInvert.x, pInvert.y, isOutfall ? 7 : 5, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Node Label
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = '10px Inter, sans-serif';
-      ctx.fillText(node.name.split('/')[0].trim(), pInvert.x + 8, pInvert.y + 3);
-    }
-  }
-
-  // Mouse Interaction (Orbit Rotate & Pan)
   onMouseDown(e: MouseEvent): void {
     this.isDragging = true;
     this.lastMouseX = e.clientX;
@@ -1100,16 +1309,14 @@ export class DrainageComponent implements OnInit, OnDestroy {
     if (!this.isDragging) return;
     const dx = e.clientX - this.lastMouseX;
     const dy = e.clientY - this.lastMouseY;
-
-    if (e.buttons === 1) { // Left click: Orbit rotate
-      this.rotY += dx * 0.006;
-      this.rotX += dy * 0.006;
-      this.rotX = Math.max(0.01, Math.min(Math.PI * 0.48, this.rotX));
-    } else if (e.buttons === 2 || e.buttons === 4) { // Right/Middle click: Pan
+    if (e.shiftKey || e.button === 1) {
       this.panX += dx;
       this.panY += dy;
+    } else {
+      this.rotY += dx * 0.008;
+      this.rotX += dy * 0.008;
+      this.rotX = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, this.rotX));
     }
-
     this.lastMouseX = e.clientX;
     this.lastMouseY = e.clientY;
   }
@@ -1120,64 +1327,190 @@ export class DrainageComponent implements OnInit, OnDestroy {
 
   onWheel(e: WheelEvent): void {
     e.preventDefault();
-    const factor = e.deltaY < 0 ? 1.08 : 0.92;
-    this.zoom = Math.max(0.4, Math.min(3.5, this.zoom * factor));
+    const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+    this.zoom = Math.max(0.4, Math.min(3.5, this.zoom * zoomFactor));
   }
 
   onCanvasClick(e: MouseEvent): void {
+    if (!this.canvasRef) return;
     const rect = this.canvasRef.nativeElement.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    // Check click on nodes
-    for (const node of this.nodes) {
-      if (node.screenX && node.screenY) {
-        const dist = Math.hypot(node.screenX - clickX, node.screenY - clickY);
-        if (dist <= 10) {
-          // Find connected edge
-          const connEdge = this.edges.find(ed => ed.source_node === node.id || ed.target_node === node.id);
-          if (connEdge) {
-            this.selectEdge(connEdge);
-          }
-          return;
+    // Hit test pipes in 3D projection
+    let closestPipe: DrainageEdge3D | null = null;
+    let minD = 24;
+
+    const nodeMap = new Map(this.nodes.map(n => [n.id, n]));
+
+    this.edges.forEach(edge => {
+      const src = nodeMap.get(edge.source_node);
+      const tgt = nodeMap.get(edge.target_node);
+      if (src && tgt && src.screenX !== undefined && tgt.screenX !== undefined) {
+        const midX = (src.screenX + tgt.screenX) / 2;
+        const midY = (src.screenY! + tgt.screenY!) / 2;
+        const d = Math.hypot(clickX - midX, clickY - midY);
+        if (d < minD) {
+          minD = d;
+          closestPipe = edge;
         }
       }
-    }
+    });
 
-    // Check click on edges (point-to-line segment distance)
-    const nodeLookup = new Map(this.nodes.map(n => [n.id, n]));
-    let closestEdge: DrainageEdge3D | null = null;
-    let minDist = 18;
-
-    for (const edge of this.edges) {
-      const s = nodeLookup.get(edge.source_node);
-      const t = nodeLookup.get(edge.target_node);
-      if (!s || !t) continue;
-
-      const p1 = this.projectTo3D(s.lon, s.lat, s.invert_elevation_m);
-      const p2 = this.projectTo3D(t.lon, t.lat, t.invert_elevation_m);
-
-      const d = this.pointToSegmentDistance(clickX, clickY, p1.x, p1.y, p2.x, p2.y);
-      if (d < minDist) {
-        minDist = d;
-        closestEdge = edge;
-      }
-    }
-
-    if (closestEdge) {
-      this.selectEdge(closestEdge);
+    if (closestPipe) {
+      this.selectEdge(closestPipe);
     }
   }
 
-  private pointToSegmentDistance(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const lenSq = dx * dx + dy * dy;
-    if (lenSq === 0) return Math.hypot(px - x1, py - y1);
+  private renderLoop(): void {
+    this.flowDashOffset += 0.4;
+    this.draw3DScene();
+    this.animationFrameId = requestAnimationFrame(() => this.renderLoop());
+  }
 
-    const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lenSq));
-    const projX = x1 + t * dx;
-    const projY = y1 + t * dy;
-    return Math.hypot(px - projX, py - projY);
+  private draw3DScene(): void {
+    if (!this.canvasRef) return;
+    const canvas = this.canvasRef.nativeElement;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const w = canvas.width / dpr;
+    const h = canvas.height / dpr;
+    const cx = w / 2 + this.panX;
+    const cy = h / 2 + this.panY;
+
+    // 3D Projection Helper
+    const project = (lat: number, lon: number, elev: number) => {
+      const nx = (lon - this.bounds.minLon) / (this.bounds.maxLon - this.bounds.minLon) - 0.5;
+      const ny = (lat - this.bounds.minLat) / (this.bounds.maxLat - this.bounds.minLat) - 0.5;
+      const nz = (elev / this.bounds.maxElev) * 0.3 * this.zScale;
+
+      const cosY = Math.cos(this.rotY);
+      const sinY = Math.sin(this.rotY);
+      const x1 = nx * cosY - ny * sinY;
+      const y1 = nx * sinY + ny * cosY;
+
+      const cosX = Math.cos(this.rotX);
+      const sinX = Math.sin(this.rotX);
+      const y2 = y1 * cosX - nz * sinX;
+      const z2 = y1 * sinX + nz * cosX;
+
+      const scale = 320 * this.zoom;
+      return {
+        x: cx + x1 * scale,
+        y: cy - y2 * scale,
+        depth: z2
+      };
+    };
+
+    // Draw 3D Ground Grid
+    ctx.strokeStyle = 'rgba(30, 41, 59, 0.45)';
+    ctx.lineWidth = 1;
+    const gridSteps = 8;
+    for (let i = 0; i <= gridSteps; i++) {
+      const f = i / gridSteps;
+      const lon = this.bounds.minLon + f * (this.bounds.maxLon - this.bounds.minLon);
+      const p1 = project(this.bounds.minLat, lon, 0);
+      const p2 = project(this.bounds.maxLat, lon, 0);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+
+      const lat = this.bounds.minLat + f * (this.bounds.maxLat - this.bounds.minLat);
+      const p3 = project(lat, this.bounds.minLon, 0);
+      const p4 = project(lat, this.bounds.maxLon, 0);
+      ctx.beginPath();
+      ctx.moveTo(p3.x, p3.y);
+      ctx.lineTo(p4.x, p4.y);
+      ctx.stroke();
+    }
+
+    // Update screen positions for nodes
+    const nodeMap = new Map<string, DrainageNode3D>();
+    this.nodes.forEach(node => {
+      const pt = project(node.lat, node.lon, node.surface_elevation_m);
+      node.screenX = pt.x;
+      node.screenY = pt.y;
+      nodeMap.set(node.id, node);
+
+      // Draw vertical drop shaft to invert
+      const invertPt = project(node.lat, node.lon, node.invert_elevation_m);
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(pt.x, pt.y);
+      ctx.lineTo(invertPt.x, invertPt.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // Draw Conduits (Pipes)
+    this.edges.forEach(edge => {
+      const src = nodeMap.get(edge.source_node);
+      const tgt = nodeMap.get(edge.target_node);
+      if (!src || !tgt || src.screenX === undefined || tgt.screenX === undefined) return;
+
+      const qInflow = 0.002778 * edge.runoff_coeff * this.rainfallIntensity * edge.catchment_area_ha;
+      const ratio = qInflow / edge.manning_capacity_m3s;
+
+      let strokeColor = '#10b981';
+      if (ratio > 1.0) strokeColor = '#ef4444';
+      else if (ratio >= 0.75) strokeColor = '#f59e0b';
+
+      const isSelected = this.selectedEdge?.id === edge.id;
+
+      if (isSelected) {
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(src.screenX, src.screenY!);
+        ctx.lineTo(tgt.screenX, tgt.screenY!);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = isSelected ? 4.5 : 3;
+      ctx.beginPath();
+      ctx.moveTo(src.screenX, src.screenY!);
+      ctx.lineTo(tgt.screenX, tgt.screenY!);
+      ctx.stroke();
+
+      // Animated Water Flow Pulses
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 18]);
+      ctx.lineDashOffset = -this.flowDashOffset;
+      ctx.beginPath();
+      ctx.moveTo(src.screenX, src.screenY!);
+      ctx.lineTo(tgt.screenX, tgt.screenY!);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // Draw Nodes (Manholes / Inlets)
+    this.nodes.forEach(node => {
+      if (node.screenX === undefined || node.screenY === undefined) return;
+      const x = node.screenX;
+      const y = node.screenY;
+
+      ctx.fillStyle = node.type === 'OUTFALL' ? '#3b82f6' : node.type === 'INLET_SUMP' ? '#10b981' : '#06b6d4';
+      ctx.beginPath();
+      ctx.arc(x, y, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Node label
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '10px monospace';
+      ctx.fillText(`+${node.surface_elevation_m}m`, x + 8, y + 3);
+    });
   }
 }

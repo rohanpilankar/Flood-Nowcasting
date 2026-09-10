@@ -28,7 +28,7 @@ import { FeedbackModalComponent } from '../feedback-modal/feedback-modal.compone
             <h1>Welcome, {{ authService.currentUser()?.full_name || 'Citizen' }}</h1>
             <p class="banner-subtitle">
               Live flood risk advisory for your area:
-              <strong>{{ currentAreaName() }}</strong> (Ward F/North — Greater Mumbai)
+              <strong>{{ currentAreaName() }}</strong> (Zone 10 Kodambakkam — Greater Chennai)
             </p>
           </div>
 
@@ -195,11 +195,11 @@ import { FeedbackModalComponent } from '../feedback-modal/feedback-modal.compone
 
           <!-- Emergency Helplines -->
           <div class="bmc-helplines">
-            <span class="helpline-title">Mumbai Emergency Control Rooms</span>
+            <span class="helpline-title">Chennai Emergency Control Rooms</span>
             <div class="helpline-tags">
-              <span class="helpline-pill">BMC Disaster: <strong>1916</strong></span>
-              <span class="helpline-pill">Mumbai Police: <strong>100</strong></span>
-              <span class="helpline-pill">Traffic Police: <strong>8454999999</strong></span>
+              <span class="helpline-pill">GCC Disaster: <strong>1913</strong></span>
+              <span class="helpline-pill">Chennai Police: <strong>100</strong></span>
+              <span class="helpline-pill">Traffic Helpline: <strong>103</strong></span>
             </div>
           </div>
         </div>
@@ -219,7 +219,7 @@ import { FeedbackModalComponent } from '../feedback-modal/feedback-modal.compone
           <div class="empty-alerts">
             <div class="shield-check">✓</div>
             <h3>No Active Flood Warnings</h3>
-            <p>Your current registered location (Dadar / Ward F/North) currently has normal drainage conditions.</p>
+            <p>Your current registered location (T. Nagar / Zone 10) currently has normal drainage conditions.</p>
           </div>
         } @else {
           <div class="targeted-alerts-grid">
@@ -726,7 +726,7 @@ import { FeedbackModalComponent } from '../feedback-modal/feedback-modal.compone
   `]
 })
 export class CitizenDashboardComponent implements OnInit, OnDestroy {
-  currentAreaName = signal<string>('Dadar TT / Hindmata Junction');
+  currentAreaName = signal<string>('T. Nagar / Madley Subway');
   currentRiskScore = signal<number>(76);
   currentRiskLevel = signal<string>('HIGH');
   waterDepth = signal<number>(24);

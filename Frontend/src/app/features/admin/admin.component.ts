@@ -474,7 +474,7 @@ import { AdminManagementService, AdminUser, PendingAuthority, PendingFloodReport
                 <strong>Algorithm:</strong> {{ overview.modelMetrics.algorithm }}
               </div>
               <div class="summary-col">
-                <strong>Training Baseline:</strong> Greater Mumbai BMC historical telemetry
+                <strong>Training Baseline:</strong> Greater Chennai GCC historical telemetry (2020-2024 offline susceptibility baseline)
               </div>
             </div>
           </div>

@@ -9,7 +9,7 @@ class GovernmentInviteRequest(BaseModel):
     department: str
     designation: str
     official_phone: str
-    jurisdiction: str = "Greater Mumbai"
+    jurisdiction: str = "Greater Chennai"
     role: str = "GOVERNMENT_OPERATOR" # GOVERNMENT_VIEWER, GOVERNMENT_OPERATOR, GOVERNMENT_SUPERVISOR
 
 class GovernmentVerifyRequest(BaseModel):

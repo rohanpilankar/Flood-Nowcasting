@@ -13,7 +13,7 @@ export class RoutingService {
     return this.routingProvider.getPresetRoutes();
   }
 
-  calculateSafeRoute(source: string, destination: string): Observable<RoutePlanResult> {
-    return this.routingProvider.calculateSafeRoute(source, destination);
+  calculateSafeRoute(source: string, destination: string, vehicle_type: string = 'car'): Observable<RoutePlanResult> {
+    return this.routingProvider.calculateSafeRoute(source, destination, vehicle_type);
   }
 }

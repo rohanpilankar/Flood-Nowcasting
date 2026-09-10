@@ -14,7 +14,7 @@ import { GovernmentService, BroadcastAlertPayload } from '../../../core/services
           <div class="header-icon">📢</div>
           <div class="header-titles">
             <h3>Broadcast Emergency Warning Alert</h3>
-            <p>EOC Officer Dispatch • Greater Mumbai Ward Command</p>
+            <p>EOC Officer Dispatch • Greater Chennai Corporation Ward Command</p>
           </div>
           <button class="btn-close" (click)="close()">✕</button>
         </div>
@@ -38,7 +38,7 @@ import { GovernmentService, BroadcastAlertPayload } from '../../../core/services
                 type="text"
                 [(ngModel)]="payload.title"
                 name="title"
-                placeholder="e.g. Flash Flood Warning: Hindmata - Dadar Corridor"
+                placeholder="e.g. Flash Flood Warning: Madley Subway - T. Nagar Corridor"
                 class="form-control"
                 required
               />
@@ -58,11 +58,11 @@ import { GovernmentService, BroadcastAlertPayload } from '../../../core/services
               <div class="form-group">
                 <label>Affected Ward</label>
                 <select [(ngModel)]="payload.affected_ward" name="affected_ward" class="form-control" (change)="onWardChange()">
-                  <option value="Ward F/North (Dadar / Hindmata)">Ward F/North (Dadar / Hindmata)</option>
-                  <option value="Ward L (Kurla West / LBS Marg)">Ward L (Kurla West / LBS Marg)</option>
-                  <option value="Ward K/West (Andheri Subway)">Ward K/West (Andheri Subway)</option>
-                  <option value="Ward H/East (Bandra / Kalanagar)">Ward H/East (Bandra / Kalanagar)</option>
-                  <option value="Ward G/South (Lower Parel)">Ward G/South (Lower Parel)</option>
+                  <option value="Zone 10 (Kodambakkam / T. Nagar)">Zone 10 (Kodambakkam / T. Nagar)</option>
+                  <option value="Zone 13 (Adyar / Velachery)">Zone 13 (Adyar / Velachery)</option>
+                  <option value="Zone 5 (Royapuram / George Town)">Zone 5 (Royapuram / George Town)</option>
+                  <option value="Zone 9 (Teynampet / Egmore)">Zone 9 (Teynampet / Egmore)</option>
+                  <option value="Zone 12 (Alandur / Guindy)">Zone 12 (Alandur / Guindy)</option>
                 </select>
               </div>
             </div>
@@ -263,41 +263,41 @@ export class BroadcastModalComponent {
   isSending = signal<boolean>(false);
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
-  recommendedRoute = 'Dr. B.A. Road Flyover';
+  recommendedRoute = 'Anna Salai Elevated Corridor';
 
   payload: BroadcastAlertPayload = {
-    title: 'Flash Flood Warning: Hindmata - Dadar Corridor',
+    title: 'Flash Flood Warning: Madley Subway - T. Nagar Corridor',
     severity: 'CRITICAL',
     flood_category: 'FLASH_FLOOD',
-    affected_ward: 'Ward F/North (Dadar / Hindmata)',
-    affected_landmarks: ['Hindmata Junction', 'Dadar TT Circle', 'Parel TT'],
+    affected_ward: 'Zone 10 (Kodambakkam / T. Nagar)',
+    affected_landmarks: ['Madley Subway', 'Usman Road Flyover', 'Panagal Park'],
     message: 'Rapid storm runoff accumulation exceeding 25cm. Surface drainage overwhelmed.',
-    safety_instructions: 'Avoid ground-level transit. Divert to Eastern Freeway or elevated corridor.',
-    recommended_safe_routes: ['Eastern Freeway via Wadala'],
-    target_latitude: 19.0178,
-    target_longitude: 72.8478,
+    safety_instructions: 'Avoid ground-level underpasses. Divert to Anna Salai or elevated flyovers.',
+    recommended_safe_routes: ['Anna Salai via Mount Road'],
+    target_latitude: 13.0418,
+    target_longitude: 80.2335,
     radius_meters: 500
   };
 
   constructor(private govService: GovernmentService) {}
 
   onWardChange(): void {
-    if (this.payload.affected_ward.includes('Kurla')) {
-      this.payload.target_latitude = 19.0688;
-      this.payload.target_longitude = 72.8797;
-      this.payload.affected_landmarks = ['Kurla Station West', 'LBS Marg', 'Sheetal Cinema Junction'];
-    } else if (this.payload.affected_ward.includes('Andheri')) {
-      this.payload.target_latitude = 19.1197;
-      this.payload.target_longitude = 72.8464;
-      this.payload.affected_landmarks = ['Andheri Subway', 'SV Road Junction', 'Gokhale Bridge Approach'];
-    } else if (this.payload.affected_ward.includes('Bandra')) {
-      this.payload.target_latitude = 19.0596;
-      this.payload.target_longitude = 72.8656;
-      this.payload.affected_landmarks = ['BKC Connector', 'Kalanagar Junction'];
+    if (this.payload.affected_ward.includes('Velachery') || this.payload.affected_ward.includes('Zone 13')) {
+      this.payload.target_latitude = 12.9815;
+      this.payload.target_longitude = 80.2180;
+      this.payload.affected_landmarks = ['Velachery Main Road', 'Bypass Road', 'MRTS Station Corridor'];
+    } else if (this.payload.affected_ward.includes('Royapuram') || this.payload.affected_ward.includes('Zone 5')) {
+      this.payload.target_latitude = 13.0860;
+      this.payload.target_longitude = 80.2870;
+      this.payload.affected_landmarks = ['RBI Subway', 'Rajaji Salai', 'Parrys Corner'];
+    } else if (this.payload.affected_ward.includes('Egmore') || this.payload.affected_ward.includes('Zone 9')) {
+      this.payload.target_latitude = 13.0780;
+      this.payload.target_longitude = 80.2605;
+      this.payload.affected_landmarks = ['Gengu Reddy Subway', 'Gandhi Irwin Road'];
     } else {
-      this.payload.target_latitude = 19.0178;
-      this.payload.target_longitude = 72.8478;
-      this.payload.affected_landmarks = ['Hindmata Junction', 'Dadar TT Circle'];
+      this.payload.target_latitude = 13.0418;
+      this.payload.target_longitude = 80.2335;
+      this.payload.affected_landmarks = ['Madley Subway', 'Panagal Park'];
     }
   }
 

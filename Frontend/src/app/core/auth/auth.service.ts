@@ -153,7 +153,7 @@ export class AuthService {
       profile: {
         id: 2,
         full_name: 'Rajesh Sharma (EOC Watch Officer)',
-        email: 'eoc.officer@mcgm.gov.in',
+        email: 'eoc.officer@chennai.gov.in',
         mobile: '+919820022222',
         role: 'GOVERNMENT_OPERATOR',
         status: 'VERIFIED',
@@ -161,13 +161,13 @@ export class AuthService {
         mobile_verified: true,
         created_at: '2026-06-01T00:00:00Z'
       },
-      passwordMatch: 'Gov@Mumbai2026'
+      passwordMatch: 'Gov@Chennai2026'
     },
     admin: {
       profile: {
         id: 3,
-        full_name: 'System Administrator (EOC Mumbai)',
-        email: 'admin@floodwatch.mumbai.gov.in',
+        full_name: 'System Administrator (EOC Chennai)',
+        email: 'admin@floodwatch.chennai.gov.in',
         mobile: '+919820011111',
         role: 'ADMIN',
         status: 'VERIFIED',
@@ -175,7 +175,7 @@ export class AuthService {
         mobile_verified: true,
         created_at: '2026-06-01T00:00:00Z'
       },
-      passwordMatch: 'Admin@Mumbai2026'
+      passwordMatch: 'Admin@Chennai2026'
     }
   };
 
@@ -195,13 +195,13 @@ export class AuthService {
       return this.DEMO_USERS['citizen'].profile;
     }
     if (
-      (norm === 'eoc.officer@mcgm.gov.in' || norm.includes('9820022222')) &&
+      (norm === 'eoc.officer@chennai.gov.in' || norm.includes('9820022222')) &&
       password === this.DEMO_USERS['gov'].passwordMatch
     ) {
       return this.DEMO_USERS['gov'].profile;
     }
     if (
-      (norm === 'admin@floodwatch.mumbai.gov.in' || norm === 'admin' || norm.includes('9820011111')) &&
+      (norm === 'admin@floodwatch.chennai.gov.in' || norm === 'admin' || norm.includes('9820011111')) &&
       password === this.DEMO_USERS['admin'].passwordMatch
     ) {
       return this.DEMO_USERS['admin'].profile;

@@ -11,10 +11,16 @@ from backend.app.api.routes import (
     citizen_alerts,
     feedback,
     government,
-    admin_users
+    admin_users,
+    rainfall,
+    drainage
 )
 
 api_router = APIRouter()
+
+# Rainfall & Drainage Telemetry
+api_router.include_router(rainfall.router)
+api_router.include_router(drainage.router)
 
 # Authentication & OTP
 api_router.include_router(auth.router)

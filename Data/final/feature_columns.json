@@ -1,0 +1,213 @@
+{
+  "dataset_name": "chennai_flood_training",
+  "version": "2.0",
+  "correction_date": "2026-09-10",
+  "corrections_applied": [
+    "Removed dist_to_krishna_water_canal_m: Canal is 18.2 km outside study area (lon 79.86-79.93 vs study area 80.10-80.35). Feature encodes latitude (r=0.78) rather than flood-relevant hydraulic connectivity.",
+    "Updated train/test split metadata: validation now uses first flood wave (Nov 15-17) with 1,653 real positives instead of zero-positive transition period (Nov 25-29)."
+  ],
+  "total_rows": 126816,
+  "total_predictors": 25,
+  "primary_keys": [
+    "grid_id",
+    "date"
+  ],
+  "target": "flood_occurred",
+  "target_type": "binary (0: non-flooded, 1: flooded)",
+  "target_positive_count": 4408,
+  "target_negative_count": 122408,
+  "target_positive_rate_pct": 3.48,
+  "unique_grid_cells": 3963,
+  "unique_dates": 32,
+  "date_range": "2015-10-01 to 2015-12-10",
+  "features": [
+    {
+      "feature_name": "rainfall_daily_mm",
+      "category": "Meteorological (Dynamic)",
+      "units": "mm",
+      "data_type": "float64",
+      "transformation": "IDW (power=2) from 62 active telemetry stations in EPSG:32644"
+    },
+    {
+      "feature_name": "rainfall_cum_2d_mm",
+      "category": "Meteorological (Dynamic)",
+      "units": "mm",
+      "data_type": "float64",
+      "transformation": "Rolling 2-day backward window sum (t + t-1)"
+    },
+    {
+      "feature_name": "rainfall_cum_3d_mm",
+      "category": "Meteorological (Dynamic)",
+      "units": "mm",
+      "data_type": "float64",
+      "transformation": "Rolling 3-day backward window sum (t + t-1 + t-2)"
+    },
+    {
+      "feature_name": "rainfall_cum_7d_mm",
+      "category": "Meteorological (Dynamic)",
+      "units": "mm",
+      "data_type": "float64",
+      "transformation": "Rolling 7-day backward window sum (t through t-6)"
+    },
+    {
+      "feature_name": "rainfall_delta_mm",
+      "category": "Meteorological (Dynamic)",
+      "units": "mm",
+      "data_type": "float64",
+      "transformation": "First-order backward temporal difference: rainfall_t - rainfall_{t-1}"
+    },
+    {
+      "feature_name": "elevation_m",
+      "category": "Topography (Static)",
+      "units": "meters above MSL",
+      "data_type": "float64",
+      "source_note": "Copernicus GLO-30 DSM (TanDEM-X radar; reflects surface including vegetation/structures)",
+      "transformation": "Bilinear spatial resampling to 500m grid centroid"
+    },
+    {
+      "feature_name": "slope_deg",
+      "category": "Topography (Static)",
+      "units": "degrees",
+      "data_type": "float64",
+      "transformation": "arctan(sqrt(dx^2 + dy^2)) finite-difference gradient from GLO-30"
+    },
+    {
+      "feature_name": "low_lying_score",
+      "category": "Topography (Static)",
+      "units": "dimensionless [0, 1]",
+      "data_type": "float64",
+      "transformation": "clip((neighborhood_mean_elev_3km - cell_elev - P1) / (P99 - P1), 0, 1). Window: 101-pixel (~3km) uniform filter. P1/P99 of depression values across study area. Higher = more depressed relative to surroundings."
+    },
+    {
+      "feature_name": "built_up_ratio",
+      "category": "Land Cover (Static)",
+      "units": "ratio [0, 1]",
+      "data_type": "float64",
+      "transformation": "Fraction of 500m cell pixels classified as WorldCover class 50 (Built-up)"
+    },
+    {
+      "feature_name": "water_ratio",
+      "category": "Land Cover (Static)",
+      "units": "ratio [0, 1]",
+      "data_type": "float64",
+      "transformation": "Fraction of 500m cell pixels classified as WorldCover class 80 (Permanent water)"
+    },
+    {
+      "feature_name": "vegetation_ratio",
+      "category": "Land Cover (Static)",
+      "units": "ratio [0, 1]",
+      "data_type": "float64",
+      "transformation": "Fraction of 500m cell pixels classified as WorldCover classes 10 (Tree), 20 (Shrub), 30 (Grass), 40 (Crop)"
+    },
+    {
+      "feature_name": "worldcover_class",
+      "category": "Land Cover (Static)",
+      "units": "integer class code",
+      "data_type": "int64",
+      "retention_reason": "RETAINED: captures classes 60 (Bare/Sparse vegetation) and 90 (Herbaceous wetland) not represented in the three ratio columns. 47 grid cells (1.2%) have majority class 60 or 90.",
+      "transformation": "Majority mode pixel class in 500m cell (8 classes present: 10,20,30,40,50,60,80,90)"
+    },
+    {
+      "feature_name": "soil_clay_0_5cm",
+      "category": "Edaphic / Soil (Static)",
+      "units": "g/kg (SoilGrids native units)",
+      "data_type": "float64",
+      "imputation": "Nearest-neighbor spatial interpolation from valid terrestrial soil samples. 7 cells imputed to spatial median (200 g/kg). Scientific basis: SoilGrids masks impervious urban surfaces as nodata; underlying geological continuity preserved via interpolation.",
+      "transformation": "Point sampling from SoilGrids 2.0 250m raster, with nearest-neighbor gap fill"
+    },
+    {
+      "feature_name": "dist_to_swd_m",
+      "category": "Drainage (Static)",
+      "units": "meters",
+      "data_type": "float64",
+      "source": "Chennai_Storm_Water_Drains_2023.geojson (10,255 features)",
+      "transformation": "Shapely STRtree nearest geometry query in EPSG:32644"
+    },
+    {
+      "feature_name": "dist_to_macro_drain_m",
+      "category": "Drainage (Static)",
+      "units": "meters",
+      "data_type": "float64",
+      "source": "Chennai_Basin_Macro_Drains.geojson (15 features)",
+      "transformation": "Shapely STRtree nearest geometry query in EPSG:32644"
+    },
+    {
+      "feature_name": "dist_to_micro_drain_m",
+      "category": "Drainage (Static)",
+      "units": "meters",
+      "data_type": "float64",
+      "source": "Chennai_Basin_Micro_Drains.geojson (37 features)",
+      "transformation": "Shapely STRtree nearest geometry query in EPSG:32644"
+    },
+    {
+      "feature_name": "dist_to_river_stream_m",
+      "category": "Drainage (Static)",
+      "units": "meters",
+      "data_type": "float64",
+      "source": "Chennai_Basin_Rivers_Streams.geojson (876 features: Adyar, Cooum, Kosasthalaiyar)",
+      "transformation": "Shapely STRtree nearest geometry query in EPSG:32644"
+    },
+    {
+      "feature_name": "dist_to_buckingham_canal_m",
+      "category": "Drainage (Static)",
+      "units": "meters",
+      "data_type": "float64",
+      "source": "Chennai_Buckingham_Canal.geojson (5 features)",
+      "transformation": "Shapely STRtree nearest geometry query in EPSG:32644"
+    },
+    {
+      "feature_name": "drainage_density_m_per_km2",
+      "category": "Drainage (Static)",
+      "units": "m/km2",
+      "data_type": "float64",
+      "transformation": "Sum of SWD line lengths clipped to 500m cell, divided by cell area (0.25 km2). Zero for cells outside SWD network coverage."
+    },
+    {
+      "feature_name": "building_count",
+      "category": "Buildings (Static)",
+      "units": "count",
+      "data_type": "int64",
+      "source": "Microsoft Bing Building Footprints (869,486 polygons across 4 QuadKey tiles)",
+      "transformation": "Building centroid binned to 500m grid cell in EPSG:32644"
+    },
+    {
+      "feature_name": "building_area_m2",
+      "category": "Buildings (Static)",
+      "units": "m2 (approximate)",
+      "data_type": "float64",
+      "approximation_note": "Area computed as polygon.area_in_degrees * 111000 * 108000. Error ~2-5% at Chennai latitude (13N) vs. exact UTM projection. Acceptable for ML feature engineering.",
+      "transformation": "Sum of building footprint polygon areas (approximate degree-space computation)"
+    },
+    {
+      "feature_name": "dist_to_hospital_m",
+      "category": "Critical Infrastructure (Static)",
+      "units": "meters",
+      "data_type": "float64",
+      "source": "OSM hospitals and clinics (1,089 + 722 = 1,811 facilities)",
+      "transformation": "STRtree nearest distance in EPSG:32644"
+    },
+    {
+      "feature_name": "hospital_count_1km",
+      "category": "Critical Infrastructure (Static)",
+      "units": "count",
+      "data_type": "int64",
+      "transformation": "Count of hospital/clinic points within 1000m buffer of cell centroid"
+    },
+    {
+      "feature_name": "dist_to_fire_station_m",
+      "category": "Critical Infrastructure (Static)",
+      "units": "meters",
+      "data_type": "float64",
+      "source": "OSM fire stations (17 facilities)",
+      "transformation": "STRtree nearest distance in EPSG:32644"
+    },
+    {
+      "feature_name": "dist_to_police_m",
+      "category": "Critical Infrastructure (Static)",
+      "units": "meters",
+      "data_type": "float64",
+      "source": "OSM police stations (145 facilities)",
+      "transformation": "STRtree nearest distance in EPSG:32644"
+    }
+  ]
+}

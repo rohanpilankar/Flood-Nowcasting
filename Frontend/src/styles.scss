@@ -1,5 +1,5 @@
-@import './styles/variables';
-@import 'leaflet/dist/leaflet.css';
+@use './styles/variables' as *;
+@use 'leaflet/dist/leaflet.css';
 
 *, *::before, *::after {
   box-sizing: border-box;

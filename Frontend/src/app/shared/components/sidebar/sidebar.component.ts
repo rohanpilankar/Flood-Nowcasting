@@ -30,7 +30,7 @@ interface NavItem {
         @if (!collapsed) {
           <div class="brand-text">
             <span class="brand-name">FloodWatch AI</span>
-            <span class="brand-sub">Greater Mumbai Nowcasting</span>
+            <span class="brand-sub">Greater Chennai Nowcasting</span>
           </div>
         }
         <!-- Persistent toggle: always rendered, never hidden by collapsed state -->
@@ -79,7 +79,7 @@ interface NavItem {
             <span class="dot-operational"></span>
             <div class="status-texts">
               <span class="status-title">EOC Telemetry Online</span>
-              <span class="status-desc">Greater Mumbai Spatial Grid</span>
+              <span class="status-desc">Greater Chennai Spatial Grid</span>
             </div>
           </div>
         </div>

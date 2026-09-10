@@ -1,280 +1,484 @@
-<section class="hero" aria-label="FloodWatch AI hero section">
+<section class="hero" aria-label="FloodWatch AI urban flood Nowcasting System">
 
-  <!-- Animated background -->
-  <div class="hero-bg" aria-hidden="true">
-    <div class="bg-grid"></div>
-    <div class="bg-radial-glow"></div>
-    <div class="bg-radial-glow bg-radial-glow--right"></div>
+  <!-- =========================================================
+       BACKGROUND
+  ========================================================== -->
+  <div class="hero__background" aria-hidden="true">
+    <div class="hero__grid"></div>
+    <div class="hero__glow hero__glow--one"></div>
+    <div class="hero__glow hero__glow--two"></div>
+    <div class="hero__noise"></div>
   </div>
 
-  <div class="hero-container">
 
-    <!-- ===== LEFT COLUMN — Content ===== -->
-    <div class="hero-content">
+  <!-- =========================================================
+       MAIN CONTAINER
+  ========================================================== -->
+  <div class="hero__container">
 
-      <!-- Eyebrow label -->
-      <div class="eyebrow" aria-label="AI-POWERED URBAN FLOOD INTELLIGENCE">
-        <span class="eyebrow__dot" aria-hidden="true"></span>
-        AI-POWERED URBAN FLOOD INTELLIGENCE
+    <!-- =======================================================
+         LEFT — HERO CONTENT
+    ======================================================== -->
+    <div class="hero__content">
+
+      <!-- Status -->
+      <div class="hero-status">
+        <span class="hero-status__pulse"></span>
+        <span>AI FLOOD INTELLIGENCE</span>
+        <span class="hero-status__separator"></span>
+        <span class="hero-status__live">LIVE SYSTEM</span>
       </div>
 
-      <!-- Main headline -->
-      <h1 class="headline">
-        <span class="headline__line">Predict floods.</span>
-        <span class="headline__line headline__line--accent">Protect cities.</span>
+
+      <!-- Heading -->
+      <h1 class="hero__title">
+        <span>Predict floods.</span>
+        <span class="hero__title-accent">Protect cities.</span>
       </h1>
 
-      <!-- Supporting copy -->
-      <p class="hero-body">
-        FloodWatch AI combines rainfall, drainage, terrain and machine-learning
-        intelligence to nowcast urban flooding and identify safer routes before
-        waterlogging becomes critical.
+
+      <!-- Description -->
+      <p class="hero__description">
+        FloodWatch AI combines rainfall, drainage, terrain and
+        machine-learning intelligence to nowcast urban flooding
+        and identify safer routes before waterlogging becomes critical.
       </p>
 
-      <!-- CTA buttons -->
-      <div class="cta-group" role="group" aria-label="Primary actions">
+
+      <!-- Actions -->
+      <div class="hero__actions">
+
         <a
           [routerLink]="['/dashboard']"
-          class="cta-btn cta-btn--primary"
+          class="hero-btn hero-btn--primary"
           id="hero-cta-launch"
           aria-label="Launch FloodWatch dashboard"
         >
-          Launch FloodWatch
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
+          <span>Launch Dashboard</span>
+
+          <span class="hero-btn__arrow" aria-hidden="true">
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+            >
+              <path d="M5 12h14"/>
+              <path d="m13 6 6 6-6 6"/>
+            </svg>
+          </span>
         </a>
+
 
         <a
           [routerLink]="['/flood-map']"
-          class="cta-btn cta-btn--secondary"
+          class="hero-btn hero-btn--secondary"
           id="hero-cta-map"
           aria-label="Explore the flood GIS map"
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
             <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+            <line x1="9" y1="3" x2="9" y2="18"/>
+            <line x1="15" y1="6" x2="15" y2="21"/>
           </svg>
-          Explore Flood Map
+
+          <span>Explore Flood Map</span>
         </a>
+
       </div>
 
-      <!-- Compact stat metrics -->
-      <div class="hero-metrics" role="list" aria-label="System capabilities">
-        <div class="metric" role="listitem">
-          <span class="metric__value">500 m</span>
-          <span class="metric__label">Spatial Grid</span>
+
+      <!-- Trust / capability metrics -->
+      <div class="hero__metrics">
+
+        <div class="hero-metric">
+          <strong>500<span>m</span></strong>
+          <small>Spatial Resolution</small>
         </div>
-        <div class="metric-divider" aria-hidden="true"></div>
-        <div class="metric" role="listitem">
-          <span class="metric__value">AI</span>
-          <span class="metric__label">Flood Nowcasting</span>
+
+        <div class="hero-metric__divider"></div>
+
+        <div class="hero-metric">
+          <strong>AI</strong>
+          <small>Flood Nowcasting</small>
         </div>
-        <div class="metric-divider" aria-hidden="true"></div>
-        <div class="metric" role="listitem">
-          <span class="metric__value">
-            <span class="live-pulse" aria-hidden="true"></span>
-            Live
-          </span>
-          <span class="metric__label">GIS Intelligence</span>
+
+        <div class="hero-metric__divider"></div>
+
+        <div class="hero-metric">
+          <strong class="hero-metric__live">
+            <span></span>
+            LIVE
+          </strong>
+          <small>GIS Intelligence</small>
         </div>
+
       </div>
 
-    </div><!-- /hero-content -->
+    </div>
 
-    <!-- ===== RIGHT COLUMN — GIS Visualisation ===== -->
-    <div class="hero-visual" aria-label="GIS flood intelligence map">
 
-      <!-- Floating info card 1: XGBoost -->
-      <div class="float-card float-card--top-left" aria-label="XGBoost nowcast status">
-        <div class="float-card__icon" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-          </svg>
+    <!-- =======================================================
+         RIGHT — FLOOD INTELLIGENCE VISUAL
+    ======================================================== -->
+    <div class="hero__visual">
+
+      <!-- Ambient glow -->
+      <div class="map-aura" aria-hidden="true"></div>
+
+
+      <!-- Main intelligence panel -->
+      <div class="flood-panel">
+
+        <!-- Panel header -->
+        <div class="flood-panel__header">
+
+          <div class="flood-panel__location">
+
+            <div class="location-icon">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/>
+                <circle cx="12" cy="10" r="2.5"/>
+              </svg>
+            </div>
+
+            <div>
+              <strong>Greater Chennai</strong>
+              <span>Urban Flood Risk Map</span>
+            </div>
+
+          </div>
+
+
+          <div class="map-status">
+            <span class="map-status__dot"></span>
+            NOW
+          </div>
+
         </div>
-        <div class="float-card__text">
-          <span class="float-card__title">XGBoost Nowcast</span>
-          <span class="float-card__sub">Prediction updated</span>
-        </div>
-        <span class="float-card__live" aria-hidden="true"></span>
-      </div>
 
-      <!-- Floating info card 2: Safe Route -->
-      <div class="float-card float-card--bottom-right" aria-label="Safe route status">
-        <div class="float-card__icon float-card__icon--green" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12h18M3 6l9-3 9 3M3 18l9 3 9-3"/>
-          </svg>
-        </div>
-        <div class="float-card__text">
-          <span class="float-card__title">Safe Route Found</span>
-          <span class="float-card__sub">Avoiding 3 flooded zones</span>
-        </div>
-      </div>
 
-      <!-- Main GIS map card -->
-      <div class="gis-card">
-        <!-- GIS map header chrome -->
-        <div class="gis-card__chrome" aria-hidden="true">
-          <div class="chrome-dot chrome-dot--red"></div>
-          <div class="chrome-dot chrome-dot--amber"></div>
-          <div class="chrome-dot chrome-dot--green"></div>
-          <span class="chrome-title">FloodWatch AI — Greater Mumbai Risk Map</span>
-          <span class="chrome-horizon">Horizon: NOW</span>
-        </div>
+        <!-- Map -->
+        <div class="flood-map">
 
-        <!-- SVG map visualisation -->
-        <div class="gis-map-viewport" role="img" aria-label="Stylised GIS flood risk map of Greater Mumbai showing flood zones, safe route, and rainfall stations">
-          <svg viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="gis-svg">
+          <!-- Map background -->
+          <div class="flood-map__terrain"></div>
 
-            <!-- Background base -->
-            <rect width="520" height="340" fill="#060d18"/>
+          <!-- Grid -->
+          <div class="flood-map__grid"></div>
 
-            <!-- Faint map grid -->
-            <defs>
-              <pattern id="mapGrid" width="26" height="26" patternUnits="userSpaceOnUse">
-                <path d="M 26 0 L 0 0 0 26" fill="none" stroke="rgba(99,132,180,0.08)" stroke-width="0.5"/>
-              </pattern>
 
-              <!-- Flood zone gradient — red/orange -->
-              <radialGradient id="floodZone1" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#ef4444" stop-opacity="0.35"/>
-                <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
-              </radialGradient>
-              <radialGradient id="floodZone2" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#f97316" stop-opacity="0.30"/>
-                <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
-              </radialGradient>
-              <radialGradient id="floodZone3" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.22"/>
-                <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
-              </radialGradient>
+          <!-- Roads -->
+          <svg
+            class="flood-map__roads"
+            viewBox="0 0 700 470"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
 
-              <!-- Safe route marker glow -->
-              <filter id="glowGreen" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-              <filter id="glowCyan">
-                <feGaussianBlur stdDeviation="4" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-              <filter id="glowRed">
-                <feGaussianBlur stdDeviation="5" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-
-            <rect width="520" height="340" fill="url(#mapGrid)"/>
-
-            <!-- Flood risk zones -->
-            <ellipse cx="180" cy="140" rx="72" ry="56" fill="url(#floodZone1)" class="flood-zone"/>
-            <ellipse cx="310" cy="200" rx="55" ry="44" fill="url(#floodZone2)" class="flood-zone"/>
-            <ellipse cx="420" cy="120" rx="48" ry="38" fill="url(#floodZone3)" class="flood-zone"/>
-
-            <!-- Road network (subtle) -->
-            <g stroke="rgba(100,130,180,0.18)" stroke-width="1.5" fill="none">
-              <!-- Horizontal arterials -->
-              <line x1="20" y1="85"  x2="500" y2="85"/>
-              <line x1="20" y1="170" x2="500" y2="170"/>
-              <line x1="20" y1="255" x2="500" y2="255"/>
-              <!-- Vertical arterials -->
-              <line x1="90"  y1="10" x2="90"  y2="330"/>
-              <line x1="200" y1="10" x2="200" y2="330"/>
-              <line x1="320" y1="10" x2="320" y2="330"/>
-              <line x1="430" y1="10" x2="430" y2="330"/>
-              <!-- Diagonals -->
-              <line x1="90" y1="85" x2="200" y2="170"/>
-              <line x1="320" y1="85" x2="430" y2="170"/>
-              <line x1="200" y1="170" x2="320" y2="255"/>
-            </g>
-
-            <!-- Flooded road segments (red dashes over flood zones) -->
-            <g stroke="#ef4444" stroke-width="2.5" stroke-dasharray="5 4" opacity="0.55">
-              <line x1="130" y1="170" x2="240" y2="170"/>
-              <line x1="90"  y1="110" x2="90"  y2="175"/>
-            </g>
-
-            <!-- Safe route path (animated green dashes) -->
-            <path
-              d="M 60 255 C 90 255 90 200 160 200 C 220 200 260 130 320 85 C 370 55 430 85 470 85"
-              stroke="#10b981"
-              stroke-width="3"
-              stroke-dasharray="10 5"
+            <g
               fill="none"
-              filter="url(#glowGreen)"
-              class="safe-route-path"
+              stroke="rgba(148,163,184,.16)"
+              stroke-width="2"
+            >
+              <path d="M30 80H670"/>
+              <path d="M20 180H680"/>
+              <path d="M10 290H690"/>
+              <path d="M20 400H680"/>
+
+              <path d="M90 0V470"/>
+              <path d="M210 0V470"/>
+              <path d="M350 0V470"/>
+              <path d="M500 0V470"/>
+              <path d="M620 0V470"/>
+
+              <path d="M90 80L210 180"/>
+              <path d="M350 80L500 180"/>
+              <path d="M210 180L350 290"/>
+              <path d="M500 290L620 400"/>
+            </g>
+
+
+            <!-- Flooded segments -->
+            <g
+              fill="none"
+              stroke="#ef4444"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-dasharray="7 8"
+              opacity=".75"
+            >
+              <path d="M105 180H250"/>
+              <path d="M90 105V180"/>
+              <path d="M350 290H500"/>
+            </g>
+
+
+            <!-- Safe route -->
+            <path
+              class="safe-route"
+              d="M45 400
+                 C95 400 105 350 150 350
+                 C215 350 235 250 300 250
+                 C365 250 390 135 450 115
+                 C515 92 555 80 650 80"
+              fill="none"
+              stroke="#22c55e"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-dasharray="12 9"
             />
 
-            <!-- Route start marker (green circle) -->
-            <circle cx="60" cy="255" r="7" fill="#10b981" opacity="0.9" filter="url(#glowGreen)"/>
-            <circle cx="60" cy="255" r="3.5" fill="#fff"/>
+            <!-- Route halo -->
+            <path
+              d="M45 400
+                 C95 400 105 350 150 350
+                 C215 350 235 250 300 250
+                 C365 250 390 135 450 115
+                 C515 92 555 80 650 80"
+              fill="none"
+              stroke="#22c55e"
+              stroke-width="12"
+              stroke-linecap="round"
+              opacity=".08"
+            />
 
-            <!-- Route end marker (cyan circle) -->
-            <circle cx="470" cy="85" r="7" fill="#06b6d4" opacity="0.9" filter="url(#glowCyan)"/>
-            <circle cx="470" cy="85" r="3.5" fill="#fff"/>
+          </svg>
 
-            <!-- Rainfall stations (cyan dots) -->
-            <g fill="#06b6d4">
-              <circle cx="90"  cy="255" r="4" opacity="0.9"/>
-              <circle cx="200" cy="85"  r="4" opacity="0.9"/>
-              <circle cx="430" cy="255" r="4" opacity="0.9"/>
-              <circle cx="320" cy="170" r="4" opacity="0.9"/>
-              <circle cx="90"  cy="85"  r="3.5" opacity="0.7"/>
-            </g>
 
-            <!-- Station telemetry rings -->
-            <g fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.3">
-              <circle cx="200" cy="85"  r="10"/>
-              <circle cx="430" cy="255" r="10"/>
-            </g>
+          <!-- Flood zones -->
+          <div class="risk-zone risk-zone--high">
+            <span></span>
+          </div>
 
-            <!-- HIGH RISK prediction marker -->
-            <g class="risk-marker" transform="translate(180,140)">
-              <circle r="14" fill="#ef4444" opacity="0.15" class="risk-pulse-ring"/>
-              <circle r="9"  fill="#ef4444" opacity="0.22" class="risk-pulse-ring risk-pulse-ring--2"/>
-              <circle r="5"  fill="#ef4444"/>
-              <circle r="2"  fill="#fff"/>
-            </g>
+          <div class="risk-zone risk-zone--medium">
+            <span></span>
+          </div>
 
-            <!-- HIGH RISK label -->
-            <g transform="translate(198, 122)">
-              <rect x="0" y="0" width="82" height="32" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(239,68,68,0.5)" stroke-width="1"/>
-              <text x="8" y="12" fill="#ef4444" font-size="7.5" font-weight="700" letter-spacing="0.05em" font-family="'JetBrains Mono', monospace">HIGH RISK</text>
-              <text x="8" y="26" fill="#f8fafc" font-size="9.5" font-weight="600" font-family="'Inter', sans-serif">0.82 probability</text>
-            </g>
+          <div class="risk-zone risk-zone--low">
+            <span></span>
+          </div>
 
-            <!-- 500m grid overlay (partial) -->
-            <g fill="none" stroke="rgba(99,132,180,0.12)" stroke-width="0.8">
-              <rect x="154" y="114" width="26" height="26"/>
-              <rect x="180" y="114" width="26" height="26"/>
-              <rect x="206" y="114" width="26" height="26"/>
-              <rect x="154" y="140" width="26" height="26"/>
-              <rect x="180" y="140" width="26" height="26"/>
-              <rect x="206" y="140" width="26" height="26"/>
-            </g>
 
+          <!-- Rainfall stations -->
+          <div class="station station--1">
+            <span></span>
+          </div>
+
+          <div class="station station--2">
+            <span></span>
+          </div>
+
+          <div class="station station--3">
+            <span></span>
+          </div>
+
+          <div class="station station--4">
+            <span></span>
+          </div>
+
+
+          <!-- High risk marker -->
+          <div class="risk-marker">
+
+            <div class="risk-marker__rings">
+              <span></span>
+              <span></span>
+            </div>
+
+            <div class="risk-marker__core"></div>
+
+          </div>
+
+
+          <!-- Risk information -->
+          <div class="risk-tooltip">
+
+            <div class="risk-tooltip__top">
+              <span class="risk-tooltip__indicator"></span>
+              HIGH RISK
+            </div>
+
+            <strong>82% probability</strong>
+
+            <span>Predicted waterlogging</span>
+
+          </div>
+
+
+          <!-- Route labels -->
+          <div class="map-label map-label--start">
+            <span></span>
+            Current Location
+          </div>
+
+          <div class="map-label map-label--end">
+            Safe Destination
+            <span></span>
+          </div>
+
+
+          <!-- Map controls -->
+          <div class="map-controls">
+
+            <button type="button" aria-label="Zoom in">+</button>
+            <button type="button" aria-label="Zoom out">−</button>
+
+          </div>
+
+
+          <!-- Map legend -->
+          <div class="map-legend">
+
+            <div>
+              <span class="legend-dot legend-dot--red"></span>
+              High Risk
+            </div>
+
+            <div>
+              <span class="legend-dot legend-dot--amber"></span>
+              Moderate
+            </div>
+
+            <div>
+              <span class="legend-dot legend-dot--green"></span>
+              Safe Route
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- Intelligence footer -->
+        <div class="flood-panel__footer">
+
+          <div class="risk-summary">
+
+            <div class="risk-summary__icon">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z"/>
+                <path d="M12 8v4"/>
+                <circle cx="12" cy="15.5" r=".7" fill="currentColor"/>
+              </svg>
+            </div>
+
+            <div>
+              <strong>Flood risk detected</strong>
+              <span>Rainfall + terrain + drainage coupling</span>
+            </div>
+
+          </div>
+
+
+          <div class="confidence">
+
+            <span>AI CONFIDENCE</span>
+
+            <div class="confidence__value">
+              <strong>82</strong>
+              <small>%</small>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           FLOATING AI STATUS
+      ====================================================== -->
+
+      <div class="intel-card intel-card--prediction">
+
+        <div class="intel-card__icon">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <path d="M12 2 2 7l10 5 10-5-10-5Z"/>
+            <path d="m2 12 10 5 10-5"/>
+            <path d="m2 17 10 5 10-5"/>
           </svg>
         </div>
 
-        <!-- GIS card footer bar -->
-        <div class="gis-card__footer">
-          <div class="footer-alert">
-            <span class="footer-alert__dot" aria-hidden="true"></span>
-            <div>
-              <p class="footer-alert__title">Flood Risk Detected</p>
-              <p class="footer-alert__sub">Rainfall + terrain + drainage coupling</p>
-            </div>
-          </div>
-          <div class="footer-confidence">
-            <span class="footer-confidence__label">AI CONFIDENCE</span>
-            <span class="footer-confidence__value">82%</span>
-          </div>
+        <div class="intel-card__content">
+          <span>AI NOWCAST</span>
+          <strong>XGBoost prediction updated</strong>
         </div>
 
-      </div><!-- /gis-card -->
+        <span class="intel-card__check">✓</span>
 
-    </div><!-- /hero-visual -->
+      </div>
 
-  </div><!-- /hero-container -->
+
+      <div class="intel-card intel-card--route">
+
+        <div class="intel-card__icon intel-card__icon--green">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <path d="M4 19c3-5 5-8 8-8s5 3 8-8"/>
+            <circle cx="4" cy="19" r="2"/>
+            <circle cx="20" cy="3" r="2"/>
+          </svg>
+        </div>
+
+        <div class="intel-card__content">
+          <span>SAFE ROUTE</span>
+          <strong>Avoiding 3 flooded zones</strong>
+        </div>
+
+        <span class="route-arrow">↗</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================
+       BOTTOM SCROLL INDICATOR
+  ========================================================== -->
+  <div class="hero-scroll" aria-hidden="true">
+    <span></span>
+    <p>Explore flood intelligence</p>
+  </div>
 
 </section>

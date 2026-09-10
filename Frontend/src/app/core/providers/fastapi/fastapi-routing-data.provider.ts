@@ -19,10 +19,11 @@ export class FastApiRoutingDataProvider extends RoutingDataProvider {
     return this.http.get<PresetRoute[]>(`${this.baseUrl}/api/v1/safe-route/presets`);
   }
 
-  calculateSafeRoute(source: string, destination: string): Observable<RoutePlanResult> {
+  calculateSafeRoute(source: string, destination: string, vehicle_type: string = 'car'): Observable<RoutePlanResult> {
     return this.http.post<RoutePlanResult>(`${this.baseUrl}/api/v1/safe-route`, {
       source,
-      destination
+      destination,
+      vehicle_type
     });
   }
 }

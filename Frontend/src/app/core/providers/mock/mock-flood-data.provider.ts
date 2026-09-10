@@ -85,6 +85,6 @@ export class MockFloodDataProvider extends FloodDataProvider {
 
     // Return primary hotspot as safe fallback for demonstration
     const fallback = this.floodZones[0];
-    return of({ ...fallback, name: locationName.toUpperCase() + ' (Mumbai Sector Evaluation)' }).pipe(delay(200));
+    return of({ ...fallback, name: locationName.toUpperCase() + ' (Chennai Sector Evaluation)' }).pipe(delay(200));
   }
 }

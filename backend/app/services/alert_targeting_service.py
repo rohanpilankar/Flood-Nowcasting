@@ -44,37 +44,37 @@ class AlertTargetingService:
         alerts_created = 0
         deliveries_created = 0
 
-        # Representative hotspots for spatial alerts
+        # Representative hotspots for spatial alerts in Greater Chennai
         focal_points = [
             {
-                "code": "ALT-MUM-HINDMATA",
-                "title": "Severe Inundation — Hindmata Saucer Basin",
-                "locality": "Hindmata Chowk, Dadar East",
-                "coords": [19.0125, 72.8428],
+                "code": "ALT-CHN-VELACHERY",
+                "title": "Severe Low-Lying Inundation — Velachery Basin",
+                "locality": "Velachery Lake & Gandhi Salai",
+                "coords": [12.9815, 80.2180],
                 "score": 92,
-                "confidence": 95,
-                "desc": "Extreme depression basin runoff. Water depth exceeding 55cm at Dr. Ambedkar Road intersection.",
-                "action": "Avoid Hindmata basin. Use elevated Hindmata Flyover or Western Express Highway."
+                "confidence": 94,
+                "desc": "Topographic depression index and high soil saturation indicate severe localized water accumulation risk.",
+                "action": "Avoid low-lying Velachery lake roads. Use elevated Taramani / Guindy link bypass."
             },
             {
-                "code": "ALT-MUM-MILAN",
-                "title": "Subway Submergence — Milan Subway Underpass",
-                "locality": "Milan Subway, Santacruz West",
-                "coords": [19.0832, 72.8415],
-                "score": 95,
-                "confidence": 96,
-                "desc": "Depressed underpass water depth exceeds 70cm. Ramps barricaded by Mumbai Traffic Police.",
-                "action": "Traffic diverted to SV Road Flyover and Western Express Highway."
+                "code": "ALT-CHN-VYASARPADI",
+                "title": "Underpass Advisory — Vyasarpadi Subway",
+                "locality": "Vyasarpadi Railway Subway, North Chennai",
+                "coords": [13.1185, 80.2615],
+                "score": 82,
+                "confidence": 88,
+                "desc": "Railway subway depression subject to surface runoff pooling during rainfall events.",
+                "action": "Risk-based avoidance: prefer elevated Perambur Flyover route."
             },
             {
-                "code": "ALT-MUM-ANDHERI",
-                "title": "Subway Inundation Warning — Andheri Subway",
-                "locality": "Andheri Subway, Andheri West",
-                "coords": [19.1197, 72.8441],
-                "score": 94,
-                "confidence": 98,
-                "desc": "Mogra Nallah backflow causing rapid submergence above 75cm.",
-                "action": "Subway closed. Reroute via Gokhale Bridge or Captain Gore Flyover."
+                "code": "ALT-CHN-ADYAR",
+                "title": "River Corridor Swell Warning — Saidapet / Kotturpuram",
+                "locality": "Adyar River Basin",
+                "coords": [13.0180, 80.2220],
+                "score": 84,
+                "confidence": 91,
+                "desc": "Upstream reservoir discharge and localized basin rainfall elevate surface stream water levels.",
+                "action": "Maintain distance from riverbank service roads; follow traffic police diversions."
             }
         ]
 

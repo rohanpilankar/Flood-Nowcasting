@@ -24,14 +24,14 @@ def init_db(db: Session) -> None:
     if not settings.ENABLE_DEMO_SEED:
         return
 
-    # Check if admin already exists
-    admin_user = db.query(User).filter(User.email == "admin@floodwatch.mumbai.gov.in").first()
+    # Check if admin already exists (Development account)
+    admin_user = db.query(User).filter(User.email == "admin@dev.floodwatch.local").first()
     if not admin_user:
         admin_user = User(
-            full_name="System Administrator (EOC Mumbai)",
-            email="admin@floodwatch.mumbai.gov.in",
-            mobile="+919820011111",
-            password_hash=get_password_hash("Admin@Mumbai2026"),
+            full_name="System Administrator (Dev Test Account)",
+            email="admin@dev.floodwatch.local",
+            mobile="+919800000001",
+            password_hash=get_password_hash("DevAdmin@2026"),
             role="ADMIN",
             status="VERIFIED",
             email_verified=True,
@@ -43,14 +43,14 @@ def init_db(db: Session) -> None:
         db.commit()
         db.refresh(admin_user)
 
-    # Verified Government Official
-    gov_user = db.query(User).filter(User.email == "eoc.officer@mcgm.gov.in").first()
+    # Development Operator Account
+    gov_user = db.query(User).filter(User.email == "operator@dev.floodwatch.local").first()
     if not gov_user:
         gov_user = User(
-            full_name="Rajesh Sharma (EOC Watch Officer)",
-            email="eoc.officer@mcgm.gov.in",
-            mobile="+919820022222",
-            password_hash=get_password_hash("Gov@Mumbai2026"),
+            full_name="EOC Watch Officer (Dev Test Account)",
+            email="operator@dev.floodwatch.local",
+            mobile="+919800000002",
+            password_hash=get_password_hash("DevOperator@2026"),
             role="GOVERNMENT_OPERATOR",
             status="VERIFIED",
             email_verified=True,
@@ -64,12 +64,12 @@ def init_db(db: Session) -> None:
 
         gov_profile = GovernmentProfile(
             user_id=gov_user.id,
-            organization_name="Brihanmumbai Municipal Corporation (BMC)",
+            organization_name="Greater Chennai Corporation (GCC) — Simulation Environment",
             department="Disaster Management Cell",
-            designation="Senior EOC Operations Officer",
-            official_email="eoc.officer@mcgm.gov.in",
-            official_phone="+91-22-22694725",
-            jurisdiction="BMC Wards F/North, F/South, G/North (Central Mumbai)",
+            designation="EOC Watch Officer (Dev)",
+            official_email="operator@dev.floodwatch.local",
+            official_phone="+91-44-25384520",
+            jurisdiction="Greater Chennai Zones (Zone 9, 10, 13 - Adyar & Velachery)",
             verification_status="VERIFIED",
             verified_by=admin_user.id,
             verified_at=datetime.now(timezone.utc)
@@ -77,44 +77,13 @@ def init_db(db: Session) -> None:
         db.add(gov_profile)
         db.commit()
 
-    # Pending Government Official
-    pending_gov = db.query(User).filter(User.email == "ward.trainee@mcgm.gov.in").first()
-    if not pending_gov:
-        pending_gov = User(
-            full_name="Pooja Kulkarni (Ward H/East Analyst)",
-            email="ward.trainee@mcgm.gov.in",
-            mobile="+919820033333",
-            password_hash=get_password_hash("Pending@2026"),
-            role="GOVERNMENT_VIEWER",
-            status="PENDING",
-            email_verified=True,
-            mobile_verified=False,
-            email_verified_at=datetime.now(timezone.utc)
-        )
-        db.add(pending_gov)
-        db.commit()
-        db.refresh(pending_gov)
-
-        pending_profile = GovernmentProfile(
-            user_id=pending_gov.id,
-            organization_name="BMC Ward H/East Office",
-            department="Storm Water Drains Department",
-            designation="Assistant Drainage Inspector",
-            official_email="ward.trainee@mcgm.gov.in",
-            official_phone="+91-22-26182222",
-            jurisdiction="Ward H/East (Santacruz East)",
-            verification_status="PENDING"
-        )
-        db.add(pending_profile)
-        db.commit()
-
-    # Opted-In Citizen (located near Hindmata Saucer Basin)
-    citizen_user = db.query(User).filter(User.email == "rohan.citizen@gmail.com").first()
+    # Opted-In Development Citizen Account (located near Velachery Basin)
+    citizen_user = db.query(User).filter(User.email == "citizen@dev.floodwatch.local").first()
     if not citizen_user:
         citizen_user = User(
-            full_name="Rohan Varma (Citizen)",
-            email="rohan.citizen@gmail.com",
-            mobile="+919820044444",
+            full_name="Karthik R (Dev Citizen Account)",
+            email="citizen@dev.floodwatch.local",
+            mobile="+919800000004",
             password_hash=get_password_hash("Citizen@2026"),
             role="CITIZEN",
             status="ACTIVE",
@@ -135,19 +104,19 @@ def init_db(db: Session) -> None:
             high_risk_alerts_enabled=True,
             push_enabled=True,
             email_enabled=True,
-            sms_enabled=False, # marked as unconfigured
+            sms_enabled=False,
             location_alerts_enabled=True,
             emergency_contact_notifications_enabled=False
         )
         db.add(prefs)
 
-        # Active Session Location in Hindmata Basin (19.0125, 72.8428)
+        # Active Session Location in Velachery Basin (12.9815, 80.2180)
         now = datetime.now(timezone.utc)
         loc = UserLocation(
             user_id=citizen_user.id,
-            latitude=19.0125,
-            longitude=72.8428,
-            accuracy_meters=8.5,
+            latitude=12.9815,
+            longitude=80.2180,
+            accuracy_meters=5.0,
             captured_at=now,
             consent_status=True,
             location_source="CURRENT_SESSION",
@@ -155,56 +124,56 @@ def init_db(db: Session) -> None:
         )
         db.add(loc)
 
-        # Saved Location (Home in Dadar)
+        # Saved Location (Home in Velachery)
         home = SavedLocation(
             user_id=citizen_user.id,
-            label="Home (Dadar East)",
-            latitude=19.0178,
-            longitude=72.8478,
+            label="Home (Velachery Gandhi Salai)",
+            latitude=12.9815,
+            longitude=80.2180,
             alerts_enabled=True
         )
         db.add(home)
 
-        # Optional Emergency Contact
+        # Emergency Contact
         ec = EmergencyContact(
             user_id=citizen_user.id,
-            full_name="Sunita Varma",
+            full_name="Meenakshi R",
             relationship_type="Family",
-            mobile="+919820055555",
+            mobile="+919800000005",
             verified=False,
             notification_consent=False
         )
         db.add(ec)
         db.commit()
 
-    # Initial Emergency Alert over Hindmata & Milan Subways
-    alert = db.query(EmergencyAlert).filter(EmergencyAlert.alert_code == "ALT-MUM-2026-001").first()
+    # Initial Development Emergency Alert over Velachery Lowland Basin
+    alert = db.query(EmergencyAlert).filter(EmergencyAlert.alert_code == "ALT-CHN-2026-001").first()
     if not alert:
         now = datetime.now(timezone.utc)
-        # Hindmata Polygon GeoJSON
-        hindmata_poly = {
+        # Velachery Polygon GeoJSON
+        velachery_poly = {
             "type": "Polygon",
             "coordinates": [[
-                [72.835, 19.005],
-                [72.850, 19.005],
-                [72.850, 19.020],
-                [72.835, 19.020],
-                [72.835, 19.005]
+                [80.2100, 12.9750],
+                [80.2250, 12.9750],
+                [80.2250, 12.9900],
+                [80.2100, 12.9900],
+                [80.2100, 12.9750]
             ]]
         }
         alert = EmergencyAlert(
-            alert_code="ALT-MUM-2026-001",
-            title="Severe Inundation Alert — Hindmata Saucer Basin",
-            location_name="Hindmata Chowk, Dadar East (Ward F/South)",
+            alert_code="ALT-CHN-2026-001",
+            title="Severe Low-Lying Inundation Alert — Velachery Basin",
+            location_name="Velachery Lake & Gandhi Salai Corridor",
             alert_type="FLOOD_INUNDATION",
             severity="CRITICAL",
             risk_score=92,
-            model_confidence=95,
-            forecast_horizon="+1H",
-            geometry_geojson=json.dumps(hindmata_poly),
-            description="Extreme depression basin water accumulation exceeding 55cm. Dr. Ambedkar Road low grade submerged. Traffic Police diversion active.",
-            recommended_action="Avoid traveling through Hindmata. Use Hindmata Flyover or Western Express Highway elevated bypass.",
-            model_version="XGBoost-v2.0-Mumbai",
+            model_confidence=94,
+            forecast_horizon="NOW",
+            geometry_geojson=json.dumps(velachery_poly),
+            description="Saucer depression index and high soil saturation indicate severe localized water accumulation risk.",
+            recommended_action="Avoid traveling through low-lying Velachery lake roads. Utilize elevated Taramani / Guindy bypass.",
+            model_version="XGBoost-v1.0-Chennai",
             status="ACTIVE",
             prediction_timestamp=now,
             created_at=now,
@@ -215,7 +184,6 @@ def init_db(db: Session) -> None:
         db.commit()
         db.refresh(alert)
 
-        # Deliver to citizen in Hindmata
         if citizen_user:
             delivery = AlertDelivery(
                 alert_id=alert.id,
@@ -227,4 +195,4 @@ def init_db(db: Session) -> None:
             db.add(delivery)
             db.commit()
 
-    print("[OK] Database initialized and development seed accounts created.")
+    print("[OK] Database initialized and development seed accounts created for Greater Chennai.")

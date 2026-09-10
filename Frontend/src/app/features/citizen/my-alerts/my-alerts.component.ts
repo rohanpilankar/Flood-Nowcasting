@@ -13,7 +13,7 @@ import { CitizenAlertService, TargetedAlert } from '../../../core/services/citiz
         <div>
           <span class="sub-tag">CITIZEN SAFETY ADVISORY</span>
           <h1>My Warning Alerts</h1>
-          <p>Personalized notifications targeted to your registered and live location in Greater Mumbai</p>
+          <p>Personalized notifications targeted to your registered and live location in Greater Chennai</p>
         </div>
         <button class="btn btn-outline" (click)="refreshAlerts()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

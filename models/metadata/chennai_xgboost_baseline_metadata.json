@@ -1,0 +1,119 @@
+{
+  "model_name": "Chennai Offline Spatial Flood Susceptibility Baseline",
+  "scientific_boundary": "Offline daily-scale 500m spatial susceptibility model. NOT a 0-3 hour nowcasting model.",
+  "dataset_path": "Data/final/chennai_flood_training.parquet",
+  "dataset_sha256": "ce2bcd5766c26ec6ef152f518f73dd72facfaf00906bc4399cc6dc2c66a2c7b5",
+  "dataset_row_count": 126816,
+  "dataset_column_count": 32,
+  "target": "flood_occurred",
+  "predictor_allowlist": [
+    "rainfall_daily_mm",
+    "rainfall_cum_2d_mm",
+    "rainfall_cum_3d_mm",
+    "rainfall_cum_7d_mm",
+    "rainfall_delta_mm",
+    "elevation_m",
+    "slope_deg",
+    "low_lying_score",
+    "built_up_ratio",
+    "water_ratio",
+    "vegetation_ratio",
+    "worldcover_class",
+    "soil_clay_0_5cm",
+    "dist_to_swd_m",
+    "dist_to_macro_drain_m",
+    "dist_to_micro_drain_m",
+    "dist_to_river_stream_m",
+    "dist_to_buckingham_canal_m",
+    "drainage_density_m_per_km2",
+    "building_count",
+    "building_area_m2",
+    "dist_to_hospital_m",
+    "hospital_count_1km",
+    "dist_to_fire_station_m",
+    "dist_to_police_m"
+  ],
+  "split_definition": {
+    "strategy": "event_aware_chronological_split",
+    "train_dates": "2015-10-01 to 2015-11-17 (14 dates)",
+    "validation_dates": "2015-11-30 to 2015-12-02 (3 dates)",
+    "test_dates": "2015-12-03 to 2015-12-10 (7 dates)",
+    "excluded_dates": "2015-11-18 to 2015-11-29 (8 dates)"
+  },
+  "split_counts": {
+    "train": {
+      "rows": 55482,
+      "positives": 1653,
+      "negatives": 53829
+    },
+    "validation": {
+      "rows": 11889,
+      "positives": 1653,
+      "negatives": 10236
+    },
+    "test": {
+      "rows": 27741,
+      "positives": 1102,
+      "negatives": 26639
+    },
+    "excluded": {
+      "rows": 31704,
+      "positives": 0,
+      "negatives": 31704
+    }
+  },
+  "class_weight": {
+    "scale_pos_weight": 32.56442831215971,
+    "formula": "TRAIN negative count / TRAIN positive count",
+    "train_negatives": 53829,
+    "train_positives": 1653
+  },
+  "hyperparameters": {
+    "n_estimators": 500,
+    "max_depth": 6,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "eval_metric": "aucpr",
+    "early_stopping_rounds": 25,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "hyperparameters_scale_pos_weight": 32.56442831215971,
+  "random_seed": 42,
+  "xgboost_version": "3.3.0",
+  "python_version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "early_stopping_configuration": {
+    "eval_metric": "aucpr",
+    "early_stopping_rounds": 25,
+    "eval_set": "VALIDATION set (Nov 30 - Dec 02)",
+    "best_iteration": 65
+  },
+  "threshold_selection_method": "Validation-only deterministic grid search [0.01, 0.99] maximizing F1 score with recall and lower-bound tie-breakers.",
+  "selected_threshold": 0.8400000000000001,
+  "test_metrics": {
+    "model_name": "Chennai Offline Spatial Flood Susceptibility Baseline",
+    "evaluation_partition": "TEST",
+    "date_range": "2015-12-03 to 2015-12-10",
+    "threshold": 0.8400000000000001,
+    "roc_auc": 0.8674866496585487,
+    "pr_auc": 0.4247231083853855,
+    "precision": 0.5381526104417671,
+    "recall": 0.4863883847549909,
+    "f1_score": 0.5109628217349858,
+    "brier_score": 0.056901365518569946,
+    "confusion_matrix": {
+      "true_positive": 536,
+      "false_positive": 460,
+      "false_negative": 566,
+      "true_negative": 26179
+    },
+    "counts": {
+      "actual_positives": 1102,
+      "actual_negatives": 26639,
+      "predicted_positives": 996,
+      "predicted_negatives": 26745
+    },
+    "probability_statement": "Raw outputs represent estimated decision scores / probabilities and have not undergone post-hoc empirical calibration. Brier score is reported without asserting calibration."
+  }
+}

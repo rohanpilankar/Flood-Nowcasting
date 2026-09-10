@@ -1,0 +1,130 @@
+{
+  "disclaimer": "Feature importance represents model reliance and does not establish physical causality. Do not claim that a highly important feature physically causes flooding.",
+  "feature_importance": {
+    "rainfall_daily_mm": {
+      "gain": 354.0605773925781,
+      "weight": 112.0,
+      "cover": 3269.708251953125
+    },
+    "rainfall_cum_2d_mm": {
+      "gain": 376.131591796875,
+      "weight": 146.0,
+      "cover": 1802.505126953125
+    },
+    "rainfall_cum_3d_mm": {
+      "gain": 1076.7987060546875,
+      "weight": 72.0,
+      "cover": 3102.90771484375
+    },
+    "rainfall_cum_7d_mm": {
+      "gain": 4507.30712890625,
+      "weight": 95.0,
+      "cover": 6475.95458984375
+    },
+    "rainfall_delta_mm": {
+      "gain": 413.5206604003906,
+      "weight": 63.0,
+      "cover": 1329.2164306640625
+    },
+    "elevation_m": {
+      "gain": 115.4413833618164,
+      "weight": 93.0,
+      "cover": 1167.6712646484375
+    },
+    "slope_deg": {
+      "gain": 94.97998046875,
+      "weight": 129.0,
+      "cover": 862.8163452148438
+    },
+    "low_lying_score": {
+      "gain": 56.94477462768555,
+      "weight": 65.0,
+      "cover": 572.6209716796875
+    },
+    "built_up_ratio": {
+      "gain": 249.13995361328125,
+      "weight": 122.0,
+      "cover": 2452.787841796875
+    },
+    "water_ratio": {
+      "gain": 81.60588836669922,
+      "weight": 58.0,
+      "cover": 1741.275634765625
+    },
+    "vegetation_ratio": {
+      "gain": 75.9159927368164,
+      "weight": 51.0,
+      "cover": 961.5654907226562
+    },
+    "worldcover_class": {
+      "gain": 45.65102767944336,
+      "weight": 8.0,
+      "cover": 680.1092529296875
+    },
+    "soil_clay_0_5cm": {
+      "gain": 48.745147705078125,
+      "weight": 73.0,
+      "cover": 624.2301025390625
+    },
+    "dist_to_swd_m": {
+      "gain": 1432.9833984375,
+      "weight": 184.0,
+      "cover": 3499.914794921875
+    },
+    "dist_to_macro_drain_m": {
+      "gain": 83.72844696044922,
+      "weight": 75.0,
+      "cover": 740.513671875
+    },
+    "dist_to_micro_drain_m": {
+      "gain": 51.99648666381836,
+      "weight": 82.0,
+      "cover": 872.8065185546875
+    },
+    "dist_to_river_stream_m": {
+      "gain": 52.38192367553711,
+      "weight": 61.0,
+      "cover": 525.94287109375
+    },
+    "dist_to_buckingham_canal_m": {
+      "gain": 119.49560546875,
+      "weight": 133.0,
+      "cover": 1532.2376708984375
+    },
+    "drainage_density_m_per_km2": {
+      "gain": 1041.899658203125,
+      "weight": 79.0,
+      "cover": 3911.7080078125
+    },
+    "building_count": {
+      "gain": 49.9932746887207,
+      "weight": 11.0,
+      "cover": 184.2718505859375
+    },
+    "building_area_m2": {
+      "gain": 62.96766662597656,
+      "weight": 32.0,
+      "cover": 1149.66357421875
+    },
+    "dist_to_hospital_m": {
+      "gain": 101.41187286376953,
+      "weight": 58.0,
+      "cover": 1190.1531982421875
+    },
+    "hospital_count_1km": {
+      "gain": 60.85713195800781,
+      "weight": 19.0,
+      "cover": 732.0890502929688
+    },
+    "dist_to_fire_station_m": {
+      "gain": 67.75361633300781,
+      "weight": 86.0,
+      "cover": 605.7445678710938
+    },
+    "dist_to_police_m": {
+      "gain": 78.59834289550781,
+      "weight": 75.0,
+      "cover": 616.0039672851562
+    }
+  }
+}

@@ -13,4 +13,9 @@ def get_preset_routes():
 @router.post("/safe-route", response_model=RoutePlanResultSchema)
 def calculate_safe_route(payload: RouteRequestSchema):
     service = FloodService.get_instance()
-    return service.calculate_safe_route(source=payload.source, destination=payload.destination)
+    src = payload.source or payload.origin or "Chennai Central"
+    return service.calculate_safe_route(
+        source=src,
+        destination=payload.destination,
+        vehicle_type=payload.vehicle_type or "car"
+    )

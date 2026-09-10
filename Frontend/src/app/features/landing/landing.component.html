@@ -19,9 +19,9 @@
           </svg>
         </div>
         <div class="metric-body">
-          <span class="metric-value font-mono">1,765</span>
+          <span class="metric-value font-mono">3,963</span>
           <span class="metric-label">500m Grid Sectors</span>
-          <span class="metric-sub">Greater Mumbai coverage</span>
+          <span class="metric-sub">Greater Chennai coverage</span>
         </div>
       </div>
 
@@ -32,8 +32,8 @@
           </svg>
         </div>
         <div class="metric-body">
-          <span class="metric-value font-mono">386</span>
-          <span class="metric-label">BMC Chronic Hotspots</span>
+          <span class="metric-value font-mono">15 Zones</span>
+          <span class="metric-label">GCC Vulnerable Hotspots</span>
           <span class="metric-sub">Monitored waterlogging points</span>
         </div>
       </div>
@@ -74,9 +74,9 @@
           </svg>
         </div>
         <div class="metric-body">
-          <span class="metric-value font-mono">24 Wards</span>
+          <span class="metric-value font-mono">15 Zones</span>
           <span class="metric-label">Municipal Administrative</span>
-          <span class="metric-sub">Ward A to T synchronized</span>
+          <span class="metric-sub">Zone 1 to 15 synchronized</span>
         </div>
       </div>
     </div>
@@ -107,7 +107,7 @@
         </div>
         <h3 class="feature-card__title">500m Hyper-Local Nowcasting</h3>
         <p class="feature-card__text">
-          Continuous inundation probability across 1,765 discrete spatial grid sectors. Leverages Copernicus GLO-30 Digital Elevation Models, saucer depression indices, and historical runoff coefficient weights.
+          Continuous susceptibility baseline across 3,963 discrete spatial grid sectors. Leverages Copernicus GLO-30 Digital Elevation Models, saucer depression indices, and historical runoff coefficient weights.
         </p>
         <div class="feature-card__tag">Spatial Resolution: 500m × 500m</div>
       </div>
@@ -150,7 +150,7 @@
         </div>
         <h3 class="feature-card__title">Radar & AWS Sensor Ingestion</h3>
         <p class="feature-card__text">
-          Synthesizes continuous feeds from 60 IMD/BMC Automatic Weather Stations with Doppler radar reflectivity. Calculates rolling antecedent precipitation indices (1h, 3h, 6h, 24h).
+          Synthesizes continuous feeds from IMD/GCC Automatic Weather Stations with Doppler radar reflectivity. Calculates rolling antecedent precipitation indices (1h, 3h, 6h, 24h).
         </p>
         <div class="feature-card__tag">Inverse Distance Weighting (IDW)</div>
       </div>
@@ -166,9 +166,9 @@
         </div>
         <h3 class="feature-card__title">Subway Inundation Guardian</h3>
         <p class="feature-card__text">
-          Dedicated surveillance for chronic urban flash flood points: Milan Subway, Andheri Subway, Hindmata, and King's Circle. Immediately flags unsafe water depth levels over 0.3m.
+          Dedicated surveillance for chronic urban flash flood points: Madley Subway, Gengu Reddy Subway, RBI Subway, and Velachery basin. Immediately flags unsafe water accumulation.
         </p>
-        <div class="feature-card__tag">Chronic Hotspots: 386 Tracked</div>
+        <div class="feature-card__tag">Chronic Hotspots: Monitored GCC Locations</div>
       </div>
 
       <!-- Feature 6 -->
@@ -181,7 +181,7 @@
         </div>
         <h3 class="feature-card__title">Emergency Broadcast Operations</h3>
         <p class="feature-card__text">
-          Enables BMC Emergency Operations Center (EOC) officers to dispatch targeted geo-fenced citizen warnings, coordinate high-capacity de-watering pumps, and monitor evacuation corridors.
+          Enables GCC Emergency Operations Center (Ripon Building) officers to dispatch targeted geo-fenced citizen warnings, coordinate high-capacity de-watering pumps, and monitor evacuation corridors.
         </p>
         <div class="feature-card__tag">CAP 1.2 Protocol Compliant</div>
       </div>
@@ -210,7 +210,7 @@
             <h4 class="step-title">Geospatial & Hydro Ingestion</h4>
           </div>
           <p class="step-desc">
-            Aggregates 60 AWS rain stations, Copernicus GLO-30 DEM elevation, OpenStreetMap road topologies, and BMC chronic waterlogging registries in EPSG:32643 metric space.
+            Aggregates IMD/GCC AWS rain stations, Copernicus GLO-30 DEM elevation, OpenStreetMap road topologies, and GCC vulnerable waterlogging registries in EPSG:4326 metric space.
           </p>
           <ul class="step-list">
             <li>Rolling rainfall accumulations (1h, 3h, 6h, 24h)</li>
@@ -232,14 +232,14 @@
         <div class="step-card">
           <div class="step-header">
             <span class="step-badge step-badge--ai">ML INFERENCE</span>
-            <h4 class="step-title">XGBoost v2.0 Surrogate Engine</h4>
+            <h4 class="step-title">XGBoost Baseline Engine</h4>
           </div>
           <p class="step-desc">
-            Fast surrogate inference replaces hours of hydrodynamic PDEs with 38.5ms machine learning evaluations per 500m sector. Outputs risk tier and water depth.
+            Fast baseline inference replaces hours of hydrodynamic PDEs with sub-second machine learning evaluations per 500m sector. Outputs susceptibility risk tier.
           </p>
           <ul class="step-list">
             <li>Multi-horizon outputs (NOW to +3H)</li>
-            <li>94.3% F1-score & 0.9997 ROC-AUC</li>
+            <li>Audited offline ROC-AUC 0.8675 & PR-AUC 0.4247</li>
           </ul>
         </div>
       </div>
@@ -260,7 +260,7 @@
             <h4 class="step-title">Safe Routing & Emergency Dispatch</h4>
           </div>
           <p class="step-desc">
-            Routes commuters safely via risk-penalized Dijkstra graphs while equipping BMC Incident Commanders with live telemetry and emergency broadcast dispatch tools.
+            Routes commuters safely via risk-penalized Dijkstra graphs while equipping GCC Incident Commanders with live telemetry and emergency broadcast dispatch tools.
           </p>
           <ul class="step-list">
             <li>Dynamic flyover bypass routing</li>
@@ -280,21 +280,21 @@
         <div class="section-badge">DYNAMIC SAFE ROUTER</div>
         <h2 class="showcase-title">Why Standard Navigation Fails During Urban Floods</h2>
         <p class="showcase-desc">
-          Conventional GPS maps optimize strictly for the shortest distance, unknowingly routing vehicles directly into submerged underpasses like Milan Subway and Hindmata. 
-          FloodWatch AI dynamically scales edge costs according to predicted water depth.
+          Conventional GPS maps optimize strictly for the shortest distance, unknowingly routing vehicles directly into submerged underpasses like Madley Subway and Gengu Reddy Subway. 
+          FloodWatch AI dynamically scales edge costs according to predicted inundation risk.
         </p>
 
         <div class="comparison-pills">
           <div class="comp-pill comp-pill--danger">
             <span class="pill-dot pill-dot--danger"></span>
             <div>
-              <strong>Conventional Navigation:</strong> Direct through depressed subway (Risk: High • Water: 0.95m • Flooded)
+              <strong>Conventional Navigation:</strong> Direct through depressed subway (Risk: High • Subway Underpass • Waterlogged)
             </div>
           </div>
           <div class="comp-pill comp-pill--success">
             <span class="pill-dot pill-dot--success"></span>
             <div>
-              <strong>FloodWatch AI Path:</strong> Diverts to Western Express Highway Elevated Flyover (Risk: Safe • Water: 0.00m)
+              <strong>FloodWatch AI Path:</strong> Diverts to Anna Salai & GST Road Elevated Corridors (Risk: Safe • High Ground)
             </div>
           </div>
         </div>
@@ -312,7 +312,7 @@
       <div class="mobility-graphic">
         <div class="route-card-preview">
           <div class="route-header">
-            <span class="route-route-tag">Route: Dadar Station → Andheri East</span>
+            <span class="route-route-tag">Route: Chennai Central → Chennai Airport</span>
             <span class="badge status-safe">Safe Path Found</span>
           </div>
 
@@ -320,13 +320,13 @@
             <div class="route-option route-option--unsafe">
               <div class="opt-header">
                 <span class="opt-title">Standard Shortest Route</span>
-                <span class="opt-tag tag-danger">AVOID • 0.95m FLOOD</span>
+                <span class="opt-tag tag-danger">AVOID • LOW SUBWAY</span>
               </div>
               <div class="opt-metrics">
-                <span>Distance: <strong>12.4 km</strong></span>
+                <span>Distance: <strong>16.5 km</strong></span>
                 <span>Est. Time: <strong class="text-danger">Trapped / Gridlock</strong></span>
               </div>
-              <div class="opt-warning">⚠️ Milan Subway submerged; impassable for light vehicles</div>
+              <div class="opt-warning">⚠️ Madley / Gengu Reddy Subways submerged; impassable for light vehicles</div>
             </div>
 
             <div class="route-option route-option--safe">
@@ -335,10 +335,10 @@
                 <span class="opt-tag tag-success">RECOMMENDED • SAFE</span>
               </div>
               <div class="opt-metrics">
-                <span>Distance: <strong>14.1 km (+1.7 km)</strong></span>
-                <span>Est. Time: <strong class="text-success">28 Mins</strong></span>
+                <span>Distance: <strong>18.2 km (+1.7 km)</strong></span>
+                <span>Est. Time: <strong class="text-success">42 Mins</strong></span>
               </div>
-              <div class="opt-success">✓ Uses elevated flyover; 0 flood exposure points</div>
+              <div class="opt-success">✓ Uses Anna Salai & Kathipara elevated flyover; 0 flood exposure points</div>
             </div>
           </div>
         </div>
@@ -354,7 +354,7 @@
       <div class="cta-content">
         <h2 class="cta-title">Ready to Experience Urban Flood Intelligence?</h2>
         <p class="cta-subtitle">
-          Explore real-time 500m nowcasting, test dynamic safe routing, or inspect the BMC disaster command console.
+          Explore real-time 500m nowcasting, test dynamic safe routing, or inspect the GCC disaster command console.
         </p>
         <div class="cta-buttons">
           <a routerLink="/dashboard" class="btn btn-primary btn-lg" id="cta-footer-dashboard">
@@ -389,7 +389,7 @@
           <span class="footer-title">FloodWatch AI</span>
         </div>
         <p class="footer-desc">
-          AI-Powered Urban Flood Nowcasting and Safe Mobility System for Greater Mumbai.
+          AI-Powered Urban Flood Nowcasting and Safe Mobility System for Greater Chennai.
         </p>
         <div class="system-status-pill">
           <span class="status-pulse-dot"></span>
@@ -417,7 +417,7 @@
           <li><a routerLink="/login">Unified Portal Login</a></li>
           <li><a routerLink="/register">Citizen Safety Sign Up</a></li>
           <li><a routerLink="/citizen/dashboard">Citizen Portal</a></li>
-          <li><a routerLink="/government/dashboard">BMC EOC Command Console</a></li>
+          <li><a routerLink="/government/dashboard">GCC EOC Command Console</a></li>
           <li><a routerLink="/admin">MLOps & System Settings</a></li>
         </ul>
       </div>
@@ -427,24 +427,24 @@
         <h4 class="footer-heading">Emergency Helplines</h4>
         <ul class="emergency-list">
           <li>
-            <span class="em-label">BMC Disaster Control:</span>
-            <span class="em-number font-mono">1916</span>
+            <span class="em-label">GCC Disaster Control:</span>
+            <span class="em-number font-mono">1913</span>
           </li>
           <li>
-            <span class="em-label">National Disaster (NDRF):</span>
-            <span class="em-number font-mono">1078</span>
+            <span class="em-label">State Disaster (TNDMA):</span>
+            <span class="em-number font-mono">1070</span>
           </li>
           <li>
             <span class="em-label">Ambulance Service:</span>
             <span class="em-number font-mono">108</span>
           </li>
           <li>
-            <span class="em-label">Mumbai Police:</span>
+            <span class="em-label">Chennai Police:</span>
             <span class="em-number font-mono">100 / 112</span>
           </li>
         </ul>
         <div class="emergency-notice">
-          In life-threatening flood emergencies, dial 1916 or 112 immediately.
+          In life-threatening flood emergencies, dial 1913 or 112 immediately.
         </div>
       </div>
     </div>
@@ -452,7 +452,7 @@
     <!-- Bottom Row: Copyright & Legal -->
     <div class="footer-bottom">
       <div class="copyright-text">
-        © {{ currentYear }} FloodWatch AI. Built for Brihanmumbai Municipal Corporation (BMC) Greater Mumbai.
+        © {{ currentYear }} FloodWatch AI. Built for Greater Chennai Corporation (GCC).
       </div>
 
       <div class="footer-bottom-links">

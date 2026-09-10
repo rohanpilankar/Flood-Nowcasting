@@ -10,9 +10,9 @@ class FloodZoneSchema(BaseModel):
     riskLevel: str # 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
     riskScore: int # 0 - 100
     predictionTime: str # 'NOW' | '+30M' | '+1H' | '+2H' | '+3H'
-    rainfall: float # mm/hr
+    rainfall: float # mm
     elevation: float # meters
-    waterDepth: float # meters
+    waterDepth: Optional[float] = None # continuous meters; null if unmeasured
     runoffCoefficient: float
     slope: str
     summary: str
@@ -20,6 +20,8 @@ class FloodZoneSchema(BaseModel):
     drainageStatus: str
     builtUpDensity: int
     isSimulated: bool = False
+    probability: Optional[float] = None
+    provenanceStatus: Optional[str] = "MODEL_PREDICTED"
 
 class SystemKPIsSchema(BaseModel):
     currentRainfall: float

@@ -43,7 +43,7 @@ import { MapLegendComponent } from '../../shared/components/map-legend/map-legen
             </svg>
             <input
               type="text"
-              placeholder="Search locality (e.g. Katraj, Baner)..."
+              placeholder="Search locality (e.g. Velachery, Adyar, T. Nagar)..."
               [(ngModel)]="searchQuery"
               (keyup.enter)="searchLocality()"
               class="search-input"
@@ -517,7 +517,7 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.mapCanvas) return;
 
     this.map = L.map(this.mapCanvas.nativeElement, {
-      center: [19.0760, 72.8777],
+      center: [13.0827, 80.2707],
       zoom: 11,
       zoomControl: false,
       attributionControl: false
@@ -555,29 +555,30 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
       let fillColor = '#10b981';
       let borderColor = '#059669';
 
-      if (zone.riskLevel === 'HIGH' || zone.riskScore >= 80) {
+      if (zone.riskLevel === 'CRITICAL' || zone.riskScore >= 84) {
         fillColor = '#ef4444';
         borderColor = '#b91c1c';
-      } else if (zone.riskLevel === 'MEDIUM' || zone.riskScore >= 50) {
+      } else if (zone.riskLevel === 'HIGH' || zone.riskScore >= 50) {
         fillColor = '#f59e0b';
         borderColor = '#d97706';
-      } else if (zone.riskLevel === 'LOW' || zone.riskScore >= 20) {
+      } else if (zone.riskLevel === 'MEDIUM' || zone.riskScore >= 15) {
         fillColor = '#06b6d4';
         borderColor = '#0891b2';
       }
 
       const rect = L.rectangle(zone.bounds, {
         color: borderColor,
-        weight: 2,
+        weight: 1.5,
         fillColor: fillColor,
-        fillOpacity: 0.38
+        fillOpacity: 0.35
       });
 
       rect.bindTooltip(`
         <div style="font-family: inherit;">
           <strong style="color: #60a5fa;">${zone.gridId}</strong>: ${zone.name}<br/>
-          Risk Score: <strong>${zone.riskScore}%</strong> (${zone.riskLevel})<br/>
-          Water Depth: <strong>${zone.waterDepth}m</strong><br/>
+          Historical Susceptibility: <strong>${zone.riskScore}%</strong> (${zone.riskLevel})<br/>
+          Elevation: <strong>${zone.elevation}m MSL</strong><br/>
+          Drainage: <em>${zone.drainageStatus}</em><br/>
           <em>Click for detailed telemetry</em>
         </div>
       `, { sticky: true });
@@ -595,13 +596,14 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.roadGroup.clearLayers();
     if (!this.layers.roads) return;
 
-    // Mumbai Arterial Road Network
+    // Greater Chennai Arterial Road Network & Monitored Underpasses
     const roadLines = [
-      { coords: [[19.010, 72.841], [19.013, 72.843], [19.016, 72.845]], status: 'UNSAFE', label: 'Dr. Ambedkar Road (Hindmata Basin Choke)' },
-      { coords: [[19.081, 72.840], [19.083, 72.841], [19.085, 72.842]], status: 'BLOCKED', label: 'Milan Subway (-3.0m Underpass Inundation)' },
-      { coords: [[19.118, 72.843], [19.120, 72.844], [19.122, 72.845]], status: 'BLOCKED', label: 'Andheri Subway (Mogra Nallah Choke)' },
-      { coords: [[19.065, 72.874], [19.068, 72.876], [19.072, 72.879]], status: 'CAUTION', label: 'LBS Marg (Kurla Kamani SCLR Link)' },
-      { coords: [[18.910, 72.820], [18.960, 72.835], [19.020, 72.850], [19.065, 72.855], [19.120, 72.848], [19.230, 72.855]], status: 'SAFE', label: 'Western Express Highway (Elevated Flyover Corridor)' }
+      { coords: [[13.0030, 80.2010], [13.0150, 80.2150], [13.0350, 80.2300], [13.0600, 80.2500]], status: 'SAFE', label: 'Anna Salai / Kathipara Elevated Flyover Corridor' },
+      { coords: [[12.9250, 80.1100], [12.9650, 80.1500], [13.0067, 80.2026]], status: 'SAFE', label: 'Grand Southern Trunk (GST) Road' },
+      { coords: [[12.9850, 80.2450], [12.9500, 80.2400], [12.9010, 80.2280]], status: 'SAFE', label: 'Rajiv Gandhi Salai (OMR IT Expressway)' },
+      { coords: [[13.1180, 80.2610], [13.1190, 80.2620]], status: 'UNSAFE', label: 'Vyasarpadi Railway Subway (Susceptible Depression)' },
+      { coords: [[13.1090, 80.2650], [13.1105, 80.2660]], status: 'UNSAFE', label: 'Ganesapuram Railway Underpass (Susceptible Grade)' },
+      { coords: [[13.0360, 80.2280], [13.0370, 80.2290]], status: 'CAUTION', label: 'Madley Subway T. Nagar (Low Clearance)' }
     ];
 
     roadLines.forEach(r => {
@@ -621,20 +623,20 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.drainageGroup.clearLayers();
     if (!this.layers.drainage) return;
 
-    // Mumbai Mithi River, Poisar & Mahim Creek Drainage System
-    const drainageLines = [
-      [[19.128, 72.905], [19.095, 72.885], [19.068, 72.868], [19.045, 72.845]],
-      [[19.210, 72.865], [19.200, 72.845], [19.195, 72.825]],
-      [[19.160, 72.860], [19.150, 72.840], [19.145, 72.825]]
+    // Greater Chennai Surface Water Channels (Adyar, Cooum, Buckingham Canal)
+    const surfaceRivers = [
+      { coords: [[12.9850, 80.0500], [12.9980, 80.1200], [13.0080, 80.1800], [13.0110, 80.2200], [13.0125, 80.2500], [13.0090, 80.2780]], label: 'Adyar River Channel (GCC Basin GIS)' },
+      { coords: [[13.0720, 80.1400], [13.0740, 80.1800], [13.0750, 80.2200], [13.0760, 80.2550], [13.0690, 80.2850]], label: 'Cooum River Channel (GCC Basin GIS)' },
+      { coords: [[13.1500, 80.2950], [13.1000, 80.2900], [13.0500, 80.2750], [13.0000, 80.2550], [12.9500, 80.2500], [12.8700, 80.2450]], label: 'Buckingham Canal Navigation Corridor' }
     ];
 
-    drainageLines.forEach(coords => {
-      const line = L.polyline(coords as any, {
+    surfaceRivers.forEach(river => {
+      const line = L.polyline(river.coords as any, {
         color: '#06b6d4',
         weight: 3,
-        opacity: 0.7
+        opacity: 0.75
       });
-      line.bindTooltip('Mithi River / Municipal Stormwater Channel (BMC GIS)');
+      line.bindTooltip(river.label);
       this.drainageGroup.addLayer(line);
     });
   }
@@ -643,11 +645,11 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rainfallGroup.clearLayers();
     if (!this.layers.rainfall) return;
 
-    // Real BMC AWS / IMD Radar Cells
+    // Real IMD & GCC Automated Weather Station (AWS) Cells
     const radarCells = [
-      { center: [19.0832, 72.8415], radius: 3200, color: '#ef4444', label: 'Santacruz AWS Heavy Cell (54.0 mm/hr)' },
-      { center: [19.0125, 72.8428], radius: 2800, color: '#f97316', label: 'Dadar-Hindmata Intense Cell (48.6 mm/hr)' },
-      { center: [19.0682, 72.8765], radius: 2400, color: '#f59e0b', label: 'Kurla AWS Cell (44.2 mm/hr)' }
+      { center: [12.9941, 80.1807], radius: 3500, color: '#ef4444', label: 'Chennai Airport Meenambakkam AWS (24.5 mm/hr)' },
+      { center: [13.0626, 80.2425], radius: 2800, color: '#f97316', label: 'Nungambakkam Regional Met Center (22.0 mm/hr)' },
+      { center: [13.0117, 80.0575], radius: 4000, color: '#f59e0b', label: 'Chembarambakkam Catchment Station (28.0 mm/hr)' }
     ];
 
     radarCells.forEach(c => {

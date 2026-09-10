@@ -2,9 +2,11 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 class RouteRequestSchema(BaseModel):
-    source: str
+    source: Optional[str] = None
+    origin: Optional[str] = None
     destination: str
     mode: Optional[str] = "vehicle"
+    vehicle_type: Optional[str] = "car" # 'car' | 'SUV' | 'truck' | 'rescue'
 
 class RouteOptionSchema(BaseModel):
     id: str

@@ -25,7 +25,7 @@ import { environment } from '../../../../environments/environment';
             </svg>
           </div>
           <h1 class="brand-title">Citizen Safety Registration</h1>
-          <p class="brand-subtitle">Receive hyper-local flood alerts & safe mobility routes across Greater Mumbai</p>
+          <p class="brand-subtitle">Receive hyper-local flood alerts & safe mobility routes across Greater Chennai</p>
         </div>
 
         <!-- Wizard Stepper Indicator -->

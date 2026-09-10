@@ -72,7 +72,7 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
           </svg>
           <input
             type="text"
-            placeholder="Filter by locality or road (e.g. Katraj, Subway)..."
+            placeholder="Filter by locality or road (e.g. Velachery, Subway)..."
             [(ngModel)]="searchQuery"
             class="filter-search-input"
           />

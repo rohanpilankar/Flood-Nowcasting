@@ -1,6 +1,6 @@
 """
 FloodWatch AI — FastAPI Backend Application
-SIH26085 — AI-Powered Urban Flood Nowcasting and Safe Mobility System (Greater Mumbai)
+SIH26085 — AI-Powered Urban Flood Susceptibility and Safe Mobility System (Greater Chennai Corporation)
 """
 
 import sys
@@ -33,13 +33,13 @@ async def lifespan(app: FastAPI):
     # Warm up model and preload grid forecasts
     print("[STARTUP] Initializing FloodWatch AI Nowcasting and Safe Routing Engine...")
     FloodService.get_instance()
-    print("[READY] All Mumbai GIS spatial features, XGBoost model, and RBAC auth ready for requests.")
+    print("[READY] All Chennai GIS spatial features, XGBoost model, and RBAC auth ready for requests.")
     yield
     print("[SHUTDOWN] FloodWatch AI service stopping.")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="High-resolution AI-powered urban flood nowcasting and risk-aware safe routing engine for Greater Mumbai.",
+    description="High-resolution AI-powered urban flood susceptibility and risk-aware safe routing engine for Greater Chennai.",
     version="2.0.0",
     lifespan=lifespan
 )

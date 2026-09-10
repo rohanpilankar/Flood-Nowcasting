@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 class FloodAlertSchema(BaseModel):
@@ -14,5 +14,7 @@ class FloodAlertSchema(BaseModel):
     timestamp: str
     acknowledged: bool
     aiConfidence: int
-    recommendedAction: str
     isSimulated: bool = False
+    status: str = "ACTIVE" # 'ACTIVE' | 'ACKNOWLEDGED' | 'RESOLVED'
+    source: str = "GCC Emergency Operations Center"
+    reason: Optional[str] = None

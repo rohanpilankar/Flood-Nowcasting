@@ -13,7 +13,7 @@ export interface DataFeedStatus {
 export interface ModelMetrics {
   name: string;
   version: string;
-  status: 'ACTIVE_PROTOTYPE' | 'TRAINING' | 'OFFLINE';
+  status: 'ACTIVE_PROTOTYPE' | 'ACTIVE_BASELINE' | 'TRAINING' | 'OFFLINE';
   algorithm: string;
   prototypeF1Score: number;
   prototypePrecision: number;

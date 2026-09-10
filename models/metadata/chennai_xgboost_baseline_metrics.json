@@ -1,0 +1,25 @@
+{
+  "model_name": "Chennai Offline Spatial Flood Susceptibility Baseline",
+  "evaluation_partition": "TEST",
+  "date_range": "2015-12-03 to 2015-12-10",
+  "threshold": 0.8400000000000001,
+  "roc_auc": 0.8674866496585487,
+  "pr_auc": 0.4247231083853855,
+  "precision": 0.5381526104417671,
+  "recall": 0.4863883847549909,
+  "f1_score": 0.5109628217349858,
+  "brier_score": 0.056901365518569946,
+  "confusion_matrix": {
+    "true_positive": 536,
+    "false_positive": 460,
+    "false_negative": 566,
+    "true_negative": 26179
+  },
+  "counts": {
+    "actual_positives": 1102,
+    "actual_negatives": 26639,
+    "predicted_positives": 996,
+    "predicted_negatives": 26745
+  },
+  "probability_statement": "Raw outputs represent estimated decision scores / probabilities and have not undergone post-hoc empirical calibration. Brier score is reported without asserting calibration."
+}

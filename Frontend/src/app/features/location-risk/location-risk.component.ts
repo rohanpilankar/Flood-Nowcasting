@@ -50,7 +50,7 @@ interface ForecastTimelineStep {
             <input
               type="text"
               class="location-input"
-              placeholder="Enter location, area, or coordinates (e.g. Katraj, Baner)..."
+              placeholder="Enter location, area, or coordinates (e.g. Velachery, T. Nagar)..."
               [(ngModel)]="searchQuery"
               (keyup.enter)="onSearch()"
             />
@@ -100,7 +100,9 @@ interface ForecastTimelineStep {
             <div class="score-meta-box">
               <div class="s-meta-item">
                 <span class="s-label">Water Depth</span>
-                <span class="s-val font-mono">{{ zoneData.waterDepth }} m</span>
+                <span class="s-val font-mono" title="Hydraulic depth modeling awaiting 1D/2D Saint-Venant solver connection">
+                  {{ zoneData.waterDepth != null && zoneData.waterDepth > 0 ? zoneData.waterDepth + ' m' : 'Unavailable*' }}
+                </span>
               </div>
               <div class="s-meta-divider"></div>
               <div class="s-meta-item">
@@ -110,9 +112,12 @@ interface ForecastTimelineStep {
             </div>
 
             <p class="zone-summary-text">{{ zoneData.summary }}</p>
+            <p class="depth-disclaimer-note" style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem;">
+              * Note: The Chennai XGBoost baseline predicts spatial flood probability. Physical water depth requires hydrodynamic solver integration.
+            </p>
 
             <div class="card-footer-action">
-              <a [routerLink]="['/safe-route']" [queryParams]="{ from: selectedLocalityName, to: 'Shivajinagar' }" class="btn btn-secondary btn-sm" style="width: 100%;">
+              <a [routerLink]="['/safe-route']" [queryParams]="{ from: selectedLocalityName, to: 'T. Nagar' }" class="btn btn-secondary btn-sm" style="width: 100%;">
                 Find Safe Evacuation Route from {{ selectedLocalityName }} →
               </a>
             </div>
@@ -227,9 +232,9 @@ interface ForecastTimelineStep {
       } @else {
         <app-empty-state
           title="Location Not Found"
-          description="We could not find flood analysis data for the specified query. Try searching for Katraj, Shivajinagar, Baner, or Hadapsar."
-          actionLabel="Reset to Katraj"
-          (action)="selectQuickLocation('Katraj')"
+          description="We could not find flood analysis data for the specified query. Try searching for Velachery, Guindy, T. Nagar, or Adyar."
+          actionLabel="Reset to Velachery"
+          (action)="selectQuickLocation('Velachery')"
         ></app-empty-state>
       }
     </div>
@@ -526,19 +531,20 @@ interface ForecastTimelineStep {
   `]
 })
 export class LocationRiskComponent implements OnInit {
-  searchQuery = 'Katraj';
-  selectedLocalityName = 'Katraj';
+  searchQuery = 'Velachery';
+  selectedLocalityName = 'Velachery';
   loading = false;
   zoneData: FloodZone | null = null;
 
   readonly quickLocations = [
-    'Katraj',
-    'Shivajinagar',
-    'Hadapsar',
-    'Baner',
-    'Wakad',
-    'Kothrud',
-    'Hinjewadi'
+    'Velachery',
+    'Guindy',
+    'T. Nagar',
+    'Adyar',
+    'Saidapet',
+    'Mylapore',
+    'Tambaram',
+    'Perungudi'
   ];
 
   forecastTimeline: ForecastTimelineStep[] = [];

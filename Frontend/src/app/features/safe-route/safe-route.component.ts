@@ -70,6 +70,19 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             </div>
           </div>
 
+          <!-- Vehicle Type -->
+          <div class="input-field-group">
+            <span class="field-label">Vehicle Type:</span>
+            <div class="input-wrap">
+              <select [(ngModel)]="vehicleType" class="route-input" style="padding-left: 0.75rem; cursor: pointer;">
+                <option value="car">Car (Sedan/Hatch)</option>
+                <option value="SUV">SUV (High Clearance)</option>
+                <option value="truck">Heavy Commercial Truck</option>
+                <option value="rescue">Emergency / Rescue Vehicle</option>
+              </select>
+            </div>
+          </div>
+
           <button
             type="button"
             class="btn btn-primary btn-find"
@@ -588,8 +601,9 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
 export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('routeMapCanvas') routeMapCanvas!: ElementRef;
 
-  sourceLocation = 'Dadar';
-  destinationLocation = 'Andheri';
+  sourceLocation = 'Chennai Central';
+  destinationLocation = 'Chennai Airport';
+  vehicleType = 'car';
   presetRoutes: PresetRoute[] = [];
   routePlan: RoutePlanResult | null = null;
   loading = false;
@@ -607,6 +621,7 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
     this.route.queryParams.subscribe(params => {
       if (params['from']) this.sourceLocation = params['from'];
       if (params['to']) this.destinationLocation = params['to'];
+      if (params['vehicle']) this.vehicleType = params['vehicle'];
     });
   }
 
@@ -633,7 +648,7 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.routeMapCanvas) return;
 
     this.map = L.map(this.routeMapCanvas.nativeElement, {
-      center: [19.0760, 72.8777],
+      center: [13.0827, 80.2707],
       zoom: 12,
       zoomControl: false,
       attributionControl: false
@@ -651,7 +666,7 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
 
   calculateRoute(): void {
     this.loading = true;
-    this.routingService.calculateSafeRoute(this.sourceLocation, this.destinationLocation).subscribe({
+    this.routingService.calculateSafeRoute(this.sourceLocation, this.destinationLocation, this.vehicleType).subscribe({
       next: plan => {
         this.routePlan = plan;
         this.renderRouteOnMap(plan);

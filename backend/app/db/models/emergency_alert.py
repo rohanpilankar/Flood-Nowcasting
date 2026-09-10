@@ -18,7 +18,7 @@ class EmergencyAlert(Base):
     geometry_geojson = Column(Text, nullable=False) # Alert Polygon GeoJSON string
     description = Column(Text, nullable=False)
     recommended_action = Column(Text, nullable=False)
-    model_version = Column(String, default="XGBoost-v2.0-Mumbai", nullable=False)
+    model_version = Column(String, default="XGBoost-v1.0-Chennai", nullable=False)
     status = Column(String, default="ACTIVE", nullable=False) # ACTIVE, ACKNOWLEDGED, EXPIRED, RESOLVED
 
     prediction_timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)

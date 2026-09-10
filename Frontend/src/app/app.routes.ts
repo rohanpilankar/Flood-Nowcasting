@@ -55,7 +55,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/government/government-dashboard/government-dashboard.component').then(m => m.GovernmentDashboardComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['GOVERNMENT_VIEWER', 'GOVERNMENT_OPERATOR', 'GOVERNMENT_SUPERVISOR', 'ADMIN'] },
-    title: 'FloodWatch AI — BMC EOC Command Console'
+    title: 'FloodWatch AI — GCC EOC Command Console'
   },
 
   // Public / Monitored Operations
@@ -67,7 +67,7 @@ export const routes: Routes = [
   {
     path: 'flood-map',
     loadComponent: () => import('./features/flood-map/flood-map.component').then(m => m.FloodMapComponent),
-    title: 'FloodWatch AI — Greater Mumbai GIS Flood Risk Map'
+    title: 'FloodWatch AI — Greater Chennai GIS Flood Risk Map'
   },
   {
     path: 'location-risk',

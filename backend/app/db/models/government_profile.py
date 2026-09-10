@@ -13,7 +13,7 @@ class GovernmentProfile(Base):
     designation = Column(String, nullable=False)
     official_email = Column(String, nullable=False)
     official_phone = Column(String, nullable=False)
-    jurisdiction = Column(String, default="Greater Mumbai (All Wards)", nullable=False)
+    jurisdiction = Column(String, default="Greater Chennai (All Zones)", nullable=False)
     verification_status = Column(String, default="PENDING", nullable=False) # PENDING, VERIFIED, SUSPENDED
     verified_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     verified_at = Column(DateTime(timezone=True), nullable=True)

@@ -35,7 +35,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
         <div class="header-titles">
           <h1 class="welcome-heading">{{ greeting }}, Admin</h1>
           <p class="welcome-sub">
-            Monitor real-time flood conditions and AI-powered predictions across Greater Mumbai.
+            Monitor real-time flood conditions and AI-powered predictions across Greater Chennai.
           </p>
         </div>
         <div class="header-meta">
@@ -126,6 +126,137 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
         </div>
       }
 
+      <!-- Operational Diagnostics Grid: Flood Risk Index, Catchment Stress, Soil Saturation, Drainage State -->
+      <div class="ops-diagnostics-grid">
+        <!-- Transparent Flood Risk Index (Section 12) -->
+        <div class="card ops-diag-card">
+          <div class="ops-card-header">
+            <div>
+              <span class="ops-card-label">Transparent Index</span>
+              <h4 class="ops-card-title">Flood Risk Index</h4>
+            </div>
+            <div class="risk-index-badge font-mono">
+              <span class="score-large">78</span><span class="score-denom">/100</span>
+            </div>
+          </div>
+          <p class="ops-card-sub">Contributing environmental drivers:</p>
+          <div class="drivers-list">
+            <div class="driver-item">
+              <span class="d-name">Rainfall Intensity</span>
+              <span class="d-val font-mono text-danger">HIGH (42 mm/h)</span>
+              <span class="src-tag tag-obs">OBSERVED</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">Drainage Stress</span>
+              <span class="d-val font-mono text-danger">HIGH (85% load)</span>
+              <span class="src-tag tag-derived">DERIVED</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">Terrain Vulnerability</span>
+              <span class="d-val font-mono text-warning">MODERATE (DEM)</span>
+              <span class="src-tag tag-derived">DERIVED</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">Historical Susceptibility</span>
+              <span class="d-val font-mono text-danger">HIGH (XGBoost)</span>
+              <span class="src-tag tag-model">MODEL</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Catchment Stress Indicator (Section 10) -->
+        <div class="card ops-diag-card">
+          <div class="ops-card-header">
+            <div>
+              <span class="ops-card-label">Hydrologic Balance</span>
+              <h4 class="ops-card-title">Catchment Load / Stress</h4>
+            </div>
+            <span class="badge status-caution font-mono">82% STRESSED</span>
+          </div>
+          <p class="ops-card-sub">Adyar & Cooum basin hydrologic loading:</p>
+          <div class="drivers-list">
+            <div class="driver-item">
+              <span class="d-name">Precipitation Rate</span>
+              <span class="d-val font-mono">34.5 mm/hr</span>
+              <span class="src-tag tag-obs">OBSERVED</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">Antecedent Rain (24h)</span>
+              <span class="d-val font-mono">118.4 mm</span>
+              <span class="src-tag tag-obs">OBSERVED</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">Runoff Coefficient</span>
+              <span class="d-val font-mono">0.78 (Urban)</span>
+              <span class="src-tag tag-derived">DERIVED</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">Drainage Surcharge</span>
+              <span class="d-val font-mono text-caution">Elevated Outfall</span>
+              <span class="src-tag tag-derived">DERIVED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Soil Saturation Interface (Section 11) -->
+        <div class="card ops-diag-card">
+          <div class="ops-card-header">
+            <div>
+              <span class="ops-card-label">Infiltration Telemetry</span>
+              <h4 class="ops-card-title">Soil Saturation</h4>
+            </div>
+            <span class="badge font-mono status-dim">UNAVAILABLE</span>
+          </div>
+          <p class="ops-card-sub">Subsurface moisture data contract:</p>
+          <div class="soil-state-box">
+            <div class="soil-icon-row">
+              <span class="soil-status-text">Data Unavailable</span>
+            </div>
+            <p class="soil-desc">
+              Satellite soil-moisture and in-situ TDR probe telemetry awaiting GCC sensor grid deployment. Interface schema is established for future ingestion.
+            </p>
+            <div class="driver-item" style="margin-top: 0.5rem;">
+              <span class="d-name">Telemetry Status:</span>
+              <span class="src-tag tag-unavail">UNAVAILABLE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drainage Network & Surcharge State (Section 8 & 9) -->
+        <div class="card ops-diag-card">
+          <div class="ops-card-header">
+            <div>
+              <span class="ops-card-label">Storm Water Network</span>
+              <h4 class="ops-card-title">Drainage Hydraulic State</h4>
+            </div>
+            <span class="badge status-safe font-mono">INTERFACE READY</span>
+          </div>
+          <p class="ops-card-sub">Macro-canals & 2023 SWD lines:</p>
+          <div class="drivers-list">
+            <div class="driver-item">
+              <span class="d-name">Surface Waterways</span>
+              <span class="d-val font-mono">4 Rivers / Canals</span>
+              <span class="src-tag tag-obs">OBSERVED</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">SWD Network (KML)</span>
+              <span class="d-val font-mono">GCC 2023 GIS</span>
+              <span class="src-tag tag-obs">OBSERVED</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">Live Pipe Surcharge</span>
+              <span class="d-val font-mono text-muted">Awaiting sensors</span>
+              <span class="src-tag tag-unavail">UNAVAILABLE</span>
+            </div>
+            <div class="driver-item">
+              <span class="d-name">Hydraulic Solver</span>
+              <span class="d-val font-mono text-muted">1D/2D Saint-Venant</span>
+              <span class="src-tag tag-unavail">NOT CONNECTED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Main Area: Left (Map Overview) & Right (Active Alerts) -->
       <div class="dashboard-main-columns">
         <!-- Left: Live Flood Risk Overview -->
@@ -147,6 +278,31 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             ></app-time-selector>
           </div>
 
+          <!-- Advanced Map Layer Controls (Section 22) -->
+          <div class="map-layers-bar">
+            <span class="layers-bar-label">GIS Layers:</span>
+            <div class="layer-chips">
+              <label class="layer-chip active">
+                <input type="checkbox" checked disabled> Flood Risk (500m)
+              </label>
+              <label class="layer-chip active">
+                <input type="checkbox" [checked]="layerRadar" (change)="layerRadar = !layerRadar"> Doppler Radar
+              </label>
+              <label class="layer-chip active">
+                <input type="checkbox" [checked]="layerHotspots" (change)="layerHotspots = !layerHotspots"> Hotspots
+              </label>
+              <label class="layer-chip active">
+                <input type="checkbox" [checked]="layerDrainage" (change)="layerDrainage = !layerDrainage"> Drainage (SWD)
+              </label>
+              <label class="layer-chip disabled" title="Hydrodynamic depth model awaiting connection">
+                <input type="checkbox" disabled> Flood Depth <span class="layer-status-pill">Pending</span>
+              </label>
+              <label class="layer-chip">
+                <input type="checkbox" [checked]="layerRoutes" (change)="layerRoutes = !layerRoutes"> Safe Corridors
+              </label>
+            </div>
+          </div>
+
           <!-- Leaflet Map Container -->
           <div class="map-wrapper">
             <div #miniMapContainer class="leaflet-map-canvas"></div>
@@ -154,7 +310,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
               <app-map-legend></app-map-legend>
             </div>
             <div class="map-actions-bar">
-              <span class="map-info-text">Greater Mumbai BMC Grid (500m Resolution)</span>
+              <span class="map-info-text">Greater Chennai Corporation (GCC) 500m Metric Grid</span>
               <a routerLink="/flood-map" class="btn btn-primary btn-sm">
                 Open Fullscreen GIS Map →
               </a>
@@ -200,7 +356,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             <div class="inspection-modal-header">
               <div class="inspection-title-group">
                 <h3 class="inspection-modal-title">{{ selectedZone.name }}</h3>
-                <span class="inspection-grid-id font-mono">{{ selectedZone.gridId }} • Greater Mumbai</span>
+                <span class="inspection-grid-id font-mono">{{ selectedZone.gridId }} • Greater Chennai</span>
               </div>
               <button
                 type="button"
@@ -227,8 +383,10 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
                   <span class="ins-value font-mono" [style.color]="getRiskColor(selectedZone.riskScore)">{{ selectedZone.riskScore }}%</span>
                 </div>
                 <div class="ins-item">
-                  <span class="ins-label">Estimated Water Depth</span>
-                  <span class="ins-value font-mono">{{ selectedZone.waterDepth }} m</span>
+                  <span class="ins-label">Physical Water Depth</span>
+                  <span class="ins-value font-mono text-muted" title="Hydraulic depth modeling awaiting 1D/2D Saint-Venant solver connection">
+                    Depth unavailable*
+                  </span>
                 </div>
                 <div class="ins-item">
                   <span class="ins-label">Topographic Elevation</span>
@@ -240,6 +398,9 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
                 <p>
                   Sector <strong>{{ selectedZone.name }}</strong> evaluated at forecast horizon 
                   <strong>{{ currentHorizon }}</strong>. Telemetry indicates saucer depression risk factors with drainage outfall distance of 420m.
+                </p>
+                <p class="depth-disclaimer-note" style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.35rem;">
+                  * Note: The Chennai XGBoost baseline model predicts spatial flood occurrence susceptibility. Physical water depths require hydrodynamic solver integration. Centimeter depths are strictly not fabricated.
                 </p>
               </div>
 
@@ -289,7 +450,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
                   <tr>
                     <td class="location-cell">
                       <strong>{{ item.location }}</strong>
-                      <span class="sub-locality">Greater Mumbai (BMC)</span>
+                      <span class="sub-locality">Greater Chennai (GCC)</span>
                     </td>
                     <td>
                       <app-risk-badge [level]="item.currentRisk"></app-risk-badge>
@@ -341,41 +502,49 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             <div class="status-row">
               <div class="status-name-group">
                 <span class="status-icon-dot"></span>
-                <span class="service-name">Rainfall Doppler Radar</span>
+                <span class="service-name">MODEL (XGBoost Baseline)</span>
               </div>
-              <span class="badge status-safe font-mono">OPERATIONAL</span>
+              <span class="badge status-safe font-mono">ACTIVE</span>
             </div>
 
             <div class="status-row">
               <div class="status-name-group">
                 <span class="status-icon-dot"></span>
-                <span class="service-name">GIS DEM Processing</span>
+                <span class="service-name">DATABASE (3,963 Grid Cells)</span>
               </div>
-              <span class="badge status-safe font-mono">OPERATIONAL</span>
+              <span class="badge status-safe font-mono">CONNECTED</span>
             </div>
 
             <div class="status-row">
               <div class="status-name-group">
                 <span class="status-icon-dot"></span>
-                <span class="service-name">ML Prediction Engine (XGBoost)</span>
+                <span class="service-name">MAP DATA (GCC 500m Metric Grid)</span>
               </div>
-              <span class="badge status-safe font-mono">OPERATIONAL</span>
+              <span class="badge status-safe font-mono">AVAILABLE</span>
             </div>
 
             <div class="status-row">
               <div class="status-name-group">
                 <span class="status-icon-dot"></span>
-                <span class="service-name">Flood-Aware Routing Engine</span>
+                <span class="service-name">RAINFALL PROVIDER (Telemetry / Radar)</span>
               </div>
-              <span class="badge status-safe font-mono">OPERATIONAL</span>
+              <span class="badge status-safe font-mono">CONNECTED</span>
             </div>
 
             <div class="status-row">
               <div class="status-name-group">
                 <span class="status-icon-dot"></span>
-                <span class="service-name">PostGIS Spatial Database</span>
+                <span class="service-name">DRAINAGE DATA (KML 2023 SWD)</span>
               </div>
-              <span class="badge status-safe font-mono">OPERATIONAL</span>
+              <span class="badge status-safe font-mono">CONNECTED</span>
+            </div>
+
+            <div class="status-row">
+              <div class="status-name-group">
+                <span class="status-icon-dot dot-inactive" style="background-color: #f59e0b; box-shadow: 0 0 6px #f59e0b;"></span>
+                <span class="service-name">HYDRAULIC SOLVER (1D/2D Saint-Venant)</span>
+              </div>
+              <span class="badge status-caution font-mono">NOT CONNECTED</span>
             </div>
           </div>
 
@@ -821,6 +990,174 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       color: var(--text-main);
       font-weight: 600;
     }
+
+    // Operational Diagnostics Grid (Section 10, 11, 12)
+    .ops-diagnostics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      @media (max-width: 1200px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+      }
+    }
+    .ops-diag-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+    .ops-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .ops-card-label {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .ops-card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 0.15rem;
+    }
+    .ops-card-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .risk-index-badge {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+    }
+    .score-large {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ef4444;
+    }
+    .score-denom {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .drivers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .driver-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      background-color: var(--bg-darkest);
+      padding: 0.35rem 0.6rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+    .d-name {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .d-val {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .src-tag {
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.15rem 0.35rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .tag-obs { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .tag-derived { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .tag-model { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .tag-unavail { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+
+    .soil-state-box {
+      background-color: var(--bg-darkest);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .soil-status-text {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+    .soil-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    // Map Layer Controls (Section 22)
+    .map-layers-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      background-color: var(--bg-darkest);
+      border-bottom: 1px solid var(--border-light);
+      flex-wrap: wrap;
+    }
+    .layers-bar-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .layer-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .layer-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 0.2rem 0.55rem;
+      cursor: pointer;
+      user-select: none;
+      &.active {
+        color: var(--text-main);
+        border-color: var(--brand-primary);
+      }
+      &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      input[type="checkbox"] {
+        accent-color: var(--brand-primary);
+      }
+    }
+    .layer-status-pill {
+      font-size: 0.6rem;
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      padding: 0.05rem 0.3rem;
+      border-radius: 3px;
+    }
   `]
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -836,6 +1173,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   recentPredictions: RecentPrediction[] = [];
   floodZones: FloodZone[] = [];
   selectedZone: FloodZone | null = null;
+
+  layerRadar = true;
+  layerHotspots = true;
+  layerDrainage = true;
+  layerRoutes = false;
 
   private map?: L.Map;
   private zoneLayersGroup = L.layerGroup();
@@ -923,9 +1265,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private initMiniMap(): void {
     if (!this.miniMapContainer || this.map) return;
 
-    // Center on Greater Mumbai area with Canvas hardware acceleration
+    // Center on Greater Chennai area with Canvas hardware acceleration
     this.map = L.map(this.miniMapContainer.nativeElement, {
-      center: [19.0760, 72.8777],
+      center: [13.0827, 80.2707],
       zoom: 11,
       zoomControl: false,
       attributionControl: false,
@@ -1037,11 +1379,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       // Find from recent predictions
       const pred = this.recentPredictions.find(p => p.location === locationName);
       this.selectedZone = {
-        gridId: 'MUM-' + Math.floor(1000 + Math.random() * 9000),
+        gridId: 'CHN-' + Math.floor(1000 + Math.random() * 9000),
         name: locationName + ' Basin',
-        latitude: 19.076,
-        longitude: 72.877,
-        bounds: [[19.07, 72.87], [19.08, 72.88]],
+        latitude: 13.0827,
+        longitude: 80.2707,
+        bounds: [[13.07, 80.26], [13.09, 80.28]],
         riskLevel: pred?.currentRisk || 'MEDIUM',
         riskScore: pred?.confidence || 65,
         predictionTime: this.currentHorizon,

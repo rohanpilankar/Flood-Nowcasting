@@ -62,3 +62,7 @@ htmlcov/
 *.db
 *.sqlite3
 !data/floodwatch.db.example
+
+# Large raw archive (>100MB exceeds GitHub hard limit)
+Data/raw/Chennai_WorldCover_2021_v200.zip
+

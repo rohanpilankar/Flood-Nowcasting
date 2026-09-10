@@ -24,7 +24,7 @@ class AreaRiskRankSchema(BaseModel):
 
 class InundationHistoryPointSchema(BaseModel):
     hour: str
-    avgWaterDepthCm: float
+    avgWaterDepthCm: Optional[float] = None
     affectedRoadsCount: int
 
 class AnalyticsSummarySchema(BaseModel):

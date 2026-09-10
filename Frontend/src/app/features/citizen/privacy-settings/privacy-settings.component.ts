@@ -85,11 +85,11 @@ import { AuthService } from '../../../core/auth/auth.service';
               <div class="form-row">
                 <input type="text" [(ngModel)]="newPlace.label" placeholder="Label (e.g. Home, Office)" class="form-control" />
                 <select [(ngModel)]="newPlace.wardPreset" (change)="applyWardPreset()" class="form-control">
-                  <option value="">-- Select Mumbai Ward Preset --</option>
-                  <option value="Dadar">Ward F/N: Dadar / Hindmata (19.0178, 72.8478)</option>
-                  <option value="Kurla">Ward L: Kurla West / LBS (19.0688, 72.8797)</option>
-                  <option value="Andheri">Ward K/W: Andheri Subway (19.1197, 72.8464)</option>
-                  <option value="Bandra">Ward H/E: Bandra BKC (19.0596, 72.8656)</option>
+                  <option value="">-- Select Chennai Zone Preset --</option>
+                  <option value="TNagar">Zone 10: T. Nagar / Madley (13.0418, 80.2335)</option>
+                  <option value="Velachery">Zone 13: Velachery Basin (12.9815, 80.2180)</option>
+                  <option value="Egmore">Zone 9: Egmore / Gengu Reddy (13.0780, 80.2605)</option>
+                  <option value="Central">Zone 5: Chennai Central (13.0827, 80.2707)</option>
                 </select>
               </div>
               <div class="form-row">
@@ -489,8 +489,8 @@ export class PrivacySettingsComponent implements OnInit {
   newPlace = {
     label: '',
     wardPreset: '',
-    latitude: 19.0178,
-    longitude: 72.8478
+    latitude: 13.0827,
+    longitude: 80.2707
   };
 
   newContact: EmergencyContact = {
@@ -542,18 +542,18 @@ export class PrivacySettingsComponent implements OnInit {
   }
 
   applyWardPreset(): void {
-    if (this.newPlace.wardPreset === 'Dadar') {
-      this.newPlace.latitude = 19.0178;
-      this.newPlace.longitude = 72.8478;
-    } else if (this.newPlace.wardPreset === 'Kurla') {
-      this.newPlace.latitude = 19.0688;
-      this.newPlace.longitude = 72.8797;
-    } else if (this.newPlace.wardPreset === 'Andheri') {
-      this.newPlace.latitude = 19.1197;
-      this.newPlace.longitude = 72.8464;
-    } else if (this.newPlace.wardPreset === 'Bandra') {
-      this.newPlace.latitude = 19.0596;
-      this.newPlace.longitude = 72.8656;
+    if (this.newPlace.wardPreset === 'TNagar') {
+      this.newPlace.latitude = 13.0418;
+      this.newPlace.longitude = 80.2335;
+    } else if (this.newPlace.wardPreset === 'Velachery') {
+      this.newPlace.latitude = 12.9815;
+      this.newPlace.longitude = 80.2180;
+    } else if (this.newPlace.wardPreset === 'Egmore') {
+      this.newPlace.latitude = 13.0780;
+      this.newPlace.longitude = 80.2605;
+    } else if (this.newPlace.wardPreset === 'Central') {
+      this.newPlace.latitude = 13.0827;
+      this.newPlace.longitude = 80.2707;
     }
   }
 

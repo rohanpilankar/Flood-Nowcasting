@@ -5,5 +5,5 @@ export const environment = {
   appName: 'FloodWatch AI',
   appSubtitle: 'Urban Flood Nowcasting & Safe Mobility System',
   sihProjectCode: 'SIH26085',
-  version: '2.0.0-mumbai'
+  version: '2.0.0-chennai'
 };

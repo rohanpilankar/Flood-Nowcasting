@@ -1,0 +1,115 @@
+{
+  "dataset_canonical_sha256": "ce2bcd5766c26ec6ef152f518f73dd72facfaf00906bc4399cc6dc2c66a2c7b5",
+  "chronological_split": {
+    "strategy": "event_aware_chronological_split",
+    "description": "Deterministic event-aware temporal split. TRAIN contains baseline pre-event days plus the first flood wave (Nov 15-17, 2015). VALIDATION contains the initial peak of the second flood episode (Nov 30 - Dec 02, 2015) with real positive observations for early stopping and threshold selection. TEST contains the subsequent catastrophic inundation and recession dates (Dec 03 - Dec 10, 2015) for one-time final evaluation. Intermediate recession dates (Nov 18-29) are EXCLUDED to prevent post-event transition leakage.",
+    "alignment_date": "2026-09-10",
+    "scientific_evaluation_limitation": "The validation and test periods are portions of the same broader second flood episode. Therefore the evaluation represents forward-in-time extrapolation on a later phase of the second flood episode, and does NOT represent independent-event generalization to a completely unseen flood event.",
+    "spatial_overlap_disclosure": {
+      "unique_grid_cells_train": 3963,
+      "unique_grid_cells_val": 3963,
+      "unique_grid_cells_test": 3963,
+      "train_intersect_val": 3963,
+      "train_intersect_test": 3963,
+      "val_intersect_test": 3963,
+      "train_val_test_intersection": 3963,
+      "note": "The same 3,963 grid cells occur across all temporal partitions. This is a temporal city-specific susceptibility setting, not an accidental duplication, but model performance is not being evaluated under strict spatial holdout."
+    },
+    "train": {
+      "date_range": "2015-10-01 to 2015-11-17",
+      "date_count": 14,
+      "dates": [
+        "2015-10-01",
+        "2015-10-28",
+        "2015-10-30",
+        "2015-11-02",
+        "2015-11-05",
+        "2015-11-08",
+        "2015-11-10",
+        "2015-11-11",
+        "2015-11-12",
+        "2015-11-13",
+        "2015-11-14",
+        "2015-11-15",
+        "2015-11-16",
+        "2015-11-17"
+      ],
+      "rows": 55482,
+      "positives": 1653,
+      "negatives": 53829,
+      "positive_rate_pct": 2.9793
+    },
+    "validation": {
+      "date_range": "2015-11-30 to 2015-12-02",
+      "date_count": 3,
+      "dates": [
+        "2015-11-30",
+        "2015-12-01",
+        "2015-12-02"
+      ],
+      "rows": 11889,
+      "positives": 1653,
+      "negatives": 10236,
+      "positive_rate_pct": 13.9036
+    },
+    "test": {
+      "date_range": "2015-12-03 to 2015-12-10",
+      "date_count": 7,
+      "dates": [
+        "2015-12-03",
+        "2015-12-04",
+        "2015-12-05",
+        "2015-12-06",
+        "2015-12-07",
+        "2015-12-09",
+        "2015-12-10"
+      ],
+      "rows": 27741,
+      "positives": 1102,
+      "negatives": 26639,
+      "positive_rate_pct": 3.9725
+    },
+    "excluded": {
+      "date_range": "2015-11-18 to 2015-11-29",
+      "date_count": 8,
+      "dates": [
+        "2015-11-19",
+        "2015-11-20",
+        "2015-11-21",
+        "2015-11-22",
+        "2015-11-23",
+        "2015-11-24",
+        "2015-11-26",
+        "2015-11-29"
+      ],
+      "rows": 31704,
+      "positives": 0,
+      "negatives": 31704,
+      "positive_rate_pct": 0.0
+    }
+  },
+  "spatial_split": {
+    "strategy": "spatial_latitudinal_block_split",
+    "south_block": {
+      "description": "South Chennai (Adyar Basin, OMR, Velachery, Sholinganallur)",
+      "bounds": "lat < 13.00 N",
+      "rows": 45536,
+      "positive_count": 984,
+      "positive_rate_pct": 2.16
+    },
+    "central_block": {
+      "description": "Central Chennai (Cooum Basin, GCC Core, Anna Nagar, T. Nagar, Mylapore)",
+      "bounds": "13.00 N <= lat <= 13.12 N",
+      "rows": 36224,
+      "positive_count": 2584,
+      "positive_rate_pct": 7.13
+    },
+    "north_block": {
+      "description": "North Chennai (Kosasthalaiyar Basin, Madhavaram, Puzhal, Manali, Tondiarpet)",
+      "bounds": "lat > 13.12 N",
+      "rows": 45056,
+      "positive_count": 840,
+      "positive_rate_pct": 1.86
+    }
+  }
+}

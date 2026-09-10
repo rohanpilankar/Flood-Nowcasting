@@ -2,19 +2,27 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "FloodWatch AI"
+    PROJECT_NAME: str = "FloodWatch AI — Greater Chennai"
     API_V1_STR: str = "/api/v1"
     SIH_PROJECT_CODE: str = "SIH26085"
-    STUDY_AREA: str = "Greater Mumbai / Brihanmumbai Municipal Corporation (BMC)"
-    MODEL_VERSION: str = "XGBoost-v2.0-Mumbai"
-    DATA_MODE: str = "mumbai_real_pipeline"
+    STUDY_AREA: str = "Greater Chennai Corporation (GCC) & Contiguous Catchment"
+    MODEL_VERSION: str = "XGBoost-v1.0-Chennai"
+    DATA_MODE: str = "chennai_real_pipeline"
     USE_DEVELOPMENT_FALLBACK: bool = False
     CORS_ORIGINS: list[str] = ["http://localhost:4200", "http://127.0.0.1:4200", "*"]
     PORT: int = 8000
     HOST: str = "0.0.0.0"
 
+    # Geographic Bounding Box & Center (Chennai UTM 44N / WGS84)
+    DEFAULT_LAT: float = 13.0827
+    DEFAULT_LON: float = 80.2707
+    BOUNDS_MIN_LAT: float = 12.85
+    BOUNDS_MAX_LAT: float = 13.25
+    BOUNDS_MIN_LON: float = 80.09
+    BOUNDS_MAX_LON: float = 80.35
+
     # Security & JWT
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "sih26085-mumbai-floodwatch-ai-secret-key-2026-prod")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "sih26085-chennai-floodwatch-ai-secret-key-2026-prod")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

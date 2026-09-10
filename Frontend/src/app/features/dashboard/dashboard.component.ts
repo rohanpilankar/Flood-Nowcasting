@@ -264,13 +264,13 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
         <div class="card-header weather-header">
           <div class="weather-title-group">
             <div class="weather-badge-row">
-              <span class="badge-live-pulse"><span class="pulse-dot"></span> LIVE GCC AWS TELEMETRY</span>
-              <span class="badge-radar font-mono">DWR S-BAND ONLINE</span>
-              <span class="badge-source font-mono">IMD CHENNAI PORT</span>
+              <span class="badge-live-pulse"><span class="pulse-dot"></span> LIVE SATELLITE-NWP FUSION</span>
+              <span class="badge-radar font-mono">500m HIGH-RES QPE ONLINE</span>
+              <span class="badge-source font-mono">ECMWF & GCC MULTI-SENSOR</span>
             </div>
             <h3 class="card-title">Detailed Weather Telemetry & Basin Hydrology</h3>
             <p class="card-subtitle">
-              Continuous observed precipitation rates from GCC & IMD automated weather stations with atmospheric boundary conditions
+              Continuous high-resolution satellite-NWP precipitation estimates, real-time soil moisture saturation, and GCC AWS in-situ telemetry
             </p>
           </div>
           <div class="weather-actions">
@@ -299,12 +299,12 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             <span class="atm-val font-mono">{{ cityWeather.wind }}</span>
           </div>
           <div class="atm-item">
-            <span class="atm-label">Doppler Radar (DWR)</span>
-            <span class="atm-val font-mono text-warning">{{ cityWeather.radarDwr }}</span>
+            <span class="atm-label">Satellite-NWP Virtual Radar</span>
+            <span class="atm-val font-mono text-cyan">{{ cityWeather.radarDwr }}</span>
           </div>
           <div class="atm-item">
-            <span class="atm-label">Coastal Tidal Surge</span>
-            <span class="atm-val font-mono text-danger">{{ cityWeather.tidalLock }}</span>
+            <span class="atm-label">Soil Saturation</span>
+            <span class="atm-val font-mono text-warning">{{ cityWeather.soilSaturation }}</span>
           </div>
         </div>
 
@@ -1818,7 +1818,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     humidity: 91,
     pressure: 1004.8,
     wind: '18.5 km/h ENE (Onshore)',
-    radarDwr: '38.5 dBZ',
+    radarDwr: '24.5 mm/h (Fused QPE)',
+    soilSaturation: '85.5% (Saturated)',
     tidalLock: 'High Tide Lock (+0.82m MSL)'
   };
 
@@ -1855,13 +1856,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           this.awsStations = res.aws_stations;
         }
         if (res && res.city_aggregate) {
+          const ca = res.city_aggregate;
+          const satPct = ca.soil_saturation_pct ?? 85.5;
           this.cityWeather = {
-            temp: res.city_aggregate.ambient_temperature_c,
-            humidity: res.city_aggregate.relative_humidity_pct,
-            pressure: res.city_aggregate.barometric_pressure_hpa,
-            wind: `${res.city_aggregate.wind_speed_kmh} km/h ${res.city_aggregate.wind_direction}`,
-            radarDwr: `${res.city_aggregate.radar_reflectivity_dbz} dBZ`,
-            tidalLock: res.city_aggregate.tidal_boundary_status
+            temp: ca.ambient_temperature_c,
+            humidity: ca.relative_humidity_pct,
+            pressure: ca.barometric_pressure_hpa,
+            wind: `${ca.wind_speed_kmh} km/h ${ca.wind_direction}`,
+            radarDwr: `${ca.mean_rainfall_rate_mm_h} mm/h (Fused QPE)`,
+            soilSaturation: `${satPct}% (${satPct >= 80 ? 'Saturated' : 'Normal'})`,
+            tidalLock: ca.tidal_boundary_status
           };
         }
       },

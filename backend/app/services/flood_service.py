@@ -751,31 +751,58 @@ class FloodService:
 
         # Apply tidal lock backwater penalty to coastal/estuary sectors if enabled
         if tidal_lock_penalty > 0.0:
-            coastal_mask = df["dist_to_buckingham_canal_m"] < 2500.0
-            df.loc[coastal_mask, "low_lying_score"] = df.loc[coastal_mask, "low_lying_score"] * (1.0 + tidal_lock_penalty * 0.4)
+            coastal_mask = df["dist_to_buckingham_canal_m"] < 3000.0
+            df.loc[coastal_mask, "low_lying_score"] = df.loc[coastal_mask, "low_lying_score"] * (1.0 + tidal_lock_penalty * 0.5)
             df.loc[coastal_mask, "low_lying_score"] = df.loc[coastal_mask, "low_lying_score"].clip(upper=1.0)
 
-        # Run vectorized inference
+        # Run vectorized ML inference with XGBoost model
         X = df[AUDITED_PREDICTORS]
         dmat = xgb.DMatrix(X, feature_names=AUDITED_PREDICTORS)
-        probs = self.model.predict(dmat)
+        raw_ml_probs = self.model.predict(dmat)
+
+        # Vectorized Hydrodynamic Surcharge Calculation
+        # Chennai stormwater drains capacity ~ 30-40 mm/day
+        elev = df["elevation_m"].values
+        low_lying = df["low_lying_score"].values
+        built_up = df["built_up_ratio"].values
+        swd_dist = df["dist_to_swd_m"].values
+        canal_dist = df["dist_to_buckingham_canal_m"].values
+
+        # Physical topographic basin vulnerability [0, 1]
+        topo_vuln = (
+            0.40 * low_lying +
+            0.25 * np.clip(1.0 - (elev / 18.0), 0.0, 1.0) +
+            0.20 * built_up +
+            0.15 * np.clip(swd_dist / 400.0, 0.0, 1.0)
+        )
+        if tidal_lock_penalty > 0.0:
+            coastal_factor = np.clip(1.0 - (canal_dist / 3000.0), 0.0, 1.0)
+            topo_vuln = np.clip(topo_vuln + coastal_factor * (tidal_lock_penalty * 0.25), 0.0, 1.0)
+
+        surge_pressure = (rainfall_daily_mm - 40.0) + max(0.0, rainfall_delta_mm) * 1.6 + (rainfall_cum_3d_mm * 0.22)
+        k = 0.016
+        hydro_prob = 1.0 / (1.0 + np.exp(-k * (surge_pressure - (1.0 - topo_vuln) * 180.0)))
+        hydro_prob = np.clip(hydro_prob * (0.15 + 0.85 * topo_vuln), 0.002, 0.985)
+
+        # Unified flood susceptibility: Maximum of ML learned pattern and hydrodynamic surcharge
+        sim_probs = np.maximum(raw_ml_probs, hydro_prob)
 
         # Compile simulation metrics
-        total_cells = len(probs)
-        inundated_mask = probs >= 0.50
+        total_cells = len(sim_probs)
+        inundated_mask = sim_probs >= 0.50
         inundated_count = int(np.sum(inundated_mask))
-        critical_count = int(np.sum(probs >= 0.75))
-        moderate_count = int(np.sum((probs >= 0.25) & (probs < 0.50)))
-        low_count = int(np.sum(probs < 0.25))
+        critical_count = int(np.sum(sim_probs >= 0.75))
+        moderate_count = int(np.sum((sim_probs >= 0.25) & (sim_probs < 0.50)))
+        low_count = int(np.sum(sim_probs < 0.25))
 
         # Each 500m x 500m cell = 0.25 km2
         inundated_area_km2 = round(inundated_count * 0.25, 2)
 
         # Identify top impacted localities
-        df["prob"] = probs
-        df["risk_score"] = (probs * 100).astype(int)
+        df["prob"] = sim_probs
+        df["risk_score"] = (sim_probs * 100).astype(int)
 
-        top_cells = df.sort_values(by="prob", ascending=False).head(35)
+        top_cells = df.sort_values(by="prob", ascending=False).head(45)
         impacted_zones = []
         for _, row in top_cells.iterrows():
             gid = row["grid_id"]
@@ -822,7 +849,7 @@ class FloodService:
                 "critical_sectors_count": critical_count,
                 "moderate_sectors_count": moderate_count,
                 "low_risk_sectors_count": low_count,
-                "mean_risk_probability": round(float(np.mean(probs)), 4),
+                "mean_risk_probability": round(float(np.mean(sim_probs)), 4),
                 "population_exposure_index": int(inundated_count * 1850),
                 "critical_infrastructure_at_risk": int(min(65, math.ceil(inundated_count * 0.14)))
             },

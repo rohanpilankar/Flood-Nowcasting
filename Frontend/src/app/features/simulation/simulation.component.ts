@@ -92,7 +92,7 @@ export interface SimResult {
                 <span class="slider-name">24h Rainfall Loading</span>
                 <span class="slider-val font-mono text-cyan">{{ rainfallDaily }} mm</span>
               </div>
-              <input type="range" class="range-input" min="10" max="400" step="5" [(ngModel)]="rainfallDaily" />
+              <input type="range" class="range-input" min="10" max="400" step="5" [(ngModel)]="rainfallDaily" (input)="onSliderChange()" (change)="onSliderChange()" />
               <div class="range-bounds"><span>10 mm (Light)</span><span>200 mm (Heavy)</span><span>400 mm (Catastrophic)</span></div>
             </div>
 
@@ -102,7 +102,7 @@ export interface SimResult {
                 <span class="slider-name">Antecedent 3-Day Cumulative</span>
                 <span class="slider-val font-mono">{{ rainfallCum3d }} mm</span>
               </div>
-              <input type="range" class="range-input" min="0" max="600" step="10" [(ngModel)]="rainfallCum3d" />
+              <input type="range" class="range-input" min="0" max="600" step="10" [(ngModel)]="rainfallCum3d" (input)="onSliderChange()" (change)="onSliderChange()" />
               <div class="range-bounds"><span>0 mm (Dry Soil)</span><span>300 mm (Saturated)</span><span>600 mm (Super-saturated)</span></div>
             </div>
 
@@ -112,7 +112,7 @@ export interface SimResult {
                 <span class="slider-name">Hourly Surge Delta (ΔR)</span>
                 <span class="slider-val font-mono">{{ rainfallDelta }} mm/h</span>
               </div>
-              <input type="range" class="range-input" min="-20" max="100" step="5" [(ngModel)]="rainfallDelta" />
+              <input type="range" class="range-input" min="-20" max="100" step="5" [(ngModel)]="rainfallDelta" (input)="onSliderChange()" (change)="onSliderChange()" />
               <div class="range-bounds"><span>-20 (Receding)</span><span>0 (Steady)</span><span>+100 (Cloudburst Pulse)</span></div>
             </div>
 
@@ -122,7 +122,7 @@ export interface SimResult {
                 <span class="slider-name">Coastal Tidal Lock Factor</span>
                 <span class="slider-val font-mono text-amber">{{ (tidalLock * 100) | number:'1.0-0' }}% Restriction</span>
               </div>
-              <input type="range" class="range-input" min="0.0" max="1.0" step="0.1" [(ngModel)]="tidalLock" />
+              <input type="range" class="range-input" min="0.0" max="1.0" step="0.1" [(ngModel)]="tidalLock" (input)="onSliderChange()" (change)="onSliderChange()" />
               <div class="range-bounds"><span>0% (Free Discharge)</span><span>50% (Spring Tide)</span><span>100% (High Tide Outfall Blocked)</span></div>
             </div>
           </div>
@@ -199,7 +199,7 @@ export interface SimResult {
               <span class="badge-count font-mono" *ngIf="simulationResult">{{ simulationResult.impacted_zones.length }} zones</span>
             </div>
             <div class="localities-list" *ngIf="simulationResult">
-              <div class="locality-item" *ngFor="let zone of simulationResult.impacted_zones.slice(0, 8)" (click)="focusOnZone(zone)">
+              <div class="locality-item" *ngFor="let zone of simulationResult.impacted_zones.slice(0, 15)" (click)="focusOnZone(zone)">
                 <div class="loc-main">
                   <span class="loc-name">{{ zone.locality }}</span>
                   <span class="loc-id font-mono">{{ zone.gridId }}</span>
@@ -676,6 +676,7 @@ export class SimulationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private map: L.Map | null = null;
   private sectorLayersGroup: L.LayerGroup = L.layerGroup();
+  private debounceTimer: any = null;
 
   constructor(private http: HttpClient) {}
 
@@ -688,9 +689,21 @@ export class SimulationComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
     if (this.map) {
       this.map.remove();
     }
+  }
+
+  onSliderChange(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    this.debounceTimer = setTimeout(() => {
+      this.executeSimulation();
+    }, 180);
   }
 
   loadPreset(daily: number, cum3d: number, delta: number, tide: number): void {
@@ -747,6 +760,10 @@ export class SimulationComponent implements OnInit, AfterViewInit, OnDestroy {
       this.map?.invalidateSize();
       this.renderSimulatedSectors();
     }, 150);
+
+    setTimeout(() => {
+      this.map?.invalidateSize();
+    }, 450);
   }
 
   private createLocalSimFallback(daily: number, cum3d: number, tide: number): SimResult {

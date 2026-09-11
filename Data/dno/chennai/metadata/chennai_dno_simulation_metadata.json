@@ -1,0 +1,150 @@
+{
+  "project": "FloodWatch AI",
+  "study_area": "Greater Chennai Corporation (GCC)",
+  "pilot_domain": "Adyar\u2013Velachery Basin",
+  "bounding_box_utm44n": [
+    410000.0,
+    1431000.0,
+    420000.0,
+    1441000.0
+  ],
+  "crs": "EPSG:32644",
+  "grid_dimensions": [
+    128,
+    128
+  ],
+  "cell_size_meters": 78.125,
+  "dataset_classification": "SIMULATED HYDRODYNAMIC TRAINING DATA",
+  "historical_observational_validation": {
+    "total_points_in_domain": 154,
+    "hit_rate_5cm_pct": 15.6,
+    "hit_rate_10cm_pct": 11.7
+  },
+  "event_splits": {
+    "TRAIN": [
+      "event_01_2015_deluge"
+    ],
+    "VAL": [
+      "event_02_michaung_surge"
+    ],
+    "TEST": [
+      "event_03_monsoon_moderate"
+    ]
+  },
+  "simulations": {
+    "event_01_2015_deluge": {
+      "metadata": {
+        "dataset_label": "SIMULATED HYDRODYNAMIC TRAINING DATA",
+        "solver": "LISFLOOD-FP 2D Inertial Formulation (Bates et al. 2010 / de Almeida et al. 2012)",
+        "grid_dimensions": [
+          128,
+          128
+        ],
+        "cell_size_meters": 78.125,
+        "horizon_steps": 24,
+        "save_interval_sec": 300.0,
+        "total_duration_sec": 7200.0,
+        "internal_timestep_sec": 1.0,
+        "execution_time_sec": 2.905,
+        "h_stats": {
+          "min": 0.0016450881958007812,
+          "max": 2.369314670562744,
+          "mean": 0.04527853801846504,
+          "final_pct_wet_cells": 19.8
+        },
+        "u_stats": {
+          "min": -0.9271690249443054,
+          "max": 1.3734439611434937,
+          "mean": 0.006075209006667137,
+          "nan_count": 0
+        },
+        "v_stats": {
+          "min": -1.2014940977096558,
+          "max": 1.0649019479751587,
+          "mean": 0.005733698606491089,
+          "nan_count": 0
+        }
+      },
+      "split": "TRAIN",
+      "sim_path": "d:\\FloodAI\\Data\\dno\\chennai\\simulations\\event_01_2015_deluge_hydro_sim.npz",
+      "tensor_x_path": "d:\\FloodAI\\Data\\dno\\chennai\\tensors\\event_01_2015_deluge_input_tensor.pt",
+      "tensor_y_path": "d:\\FloodAI\\Data\\dno\\chennai\\tensors\\event_01_2015_deluge_target_tensor.pt"
+    },
+    "event_02_michaung_surge": {
+      "metadata": {
+        "dataset_label": "SIMULATED HYDRODYNAMIC TRAINING DATA",
+        "solver": "LISFLOOD-FP 2D Inertial Formulation (Bates et al. 2010 / de Almeida et al. 2012)",
+        "grid_dimensions": [
+          128,
+          128
+        ],
+        "cell_size_meters": 78.125,
+        "horizon_steps": 24,
+        "save_interval_sec": 300.0,
+        "total_duration_sec": 7200.0,
+        "internal_timestep_sec": 1.0,
+        "execution_time_sec": 5.741,
+        "h_stats": {
+          "min": 0.0024318695068359375,
+          "max": 2.4475083351135254,
+          "mean": 0.04756970331072807,
+          "final_pct_wet_cells": 20.39
+        },
+        "u_stats": {
+          "min": -1.6320573091506958,
+          "max": 1.3840595483779907,
+          "mean": 0.006388435605913401,
+          "nan_count": 0
+        },
+        "v_stats": {
+          "min": -1.2385634183883667,
+          "max": 0.968824565410614,
+          "mean": 0.006035957485437393,
+          "nan_count": 0
+        }
+      },
+      "split": "VAL",
+      "sim_path": "d:\\FloodAI\\Data\\dno\\chennai\\simulations\\event_02_michaung_surge_hydro_sim.npz",
+      "tensor_x_path": "d:\\FloodAI\\Data\\dno\\chennai\\tensors\\event_02_michaung_surge_input_tensor.pt",
+      "tensor_y_path": "d:\\FloodAI\\Data\\dno\\chennai\\tensors\\event_02_michaung_surge_target_tensor.pt"
+    },
+    "event_03_monsoon_moderate": {
+      "metadata": {
+        "dataset_label": "SIMULATED HYDRODYNAMIC TRAINING DATA",
+        "solver": "LISFLOOD-FP 2D Inertial Formulation (Bates et al. 2010 / de Almeida et al. 2012)",
+        "grid_dimensions": [
+          128,
+          128
+        ],
+        "cell_size_meters": 78.125,
+        "horizon_steps": 24,
+        "save_interval_sec": 300.0,
+        "total_duration_sec": 7200.0,
+        "internal_timestep_sec": 1.0,
+        "execution_time_sec": 3.004,
+        "h_stats": {
+          "min": 0.0008225440979003906,
+          "max": 0.9606794118881226,
+          "mean": 0.017746208235621452,
+          "final_pct_wet_cells": 11.49
+        },
+        "u_stats": {
+          "min": -1.090564489364624,
+          "max": 1.2336218357086182,
+          "mean": 0.0028004914056509733,
+          "nan_count": 0
+        },
+        "v_stats": {
+          "min": -1.3091626167297363,
+          "max": 1.263331651687622,
+          "mean": 0.002619602484628558,
+          "nan_count": 0
+        }
+      },
+      "split": "TEST",
+      "sim_path": "d:\\FloodAI\\Data\\dno\\chennai\\simulations\\event_03_monsoon_moderate_hydro_sim.npz",
+      "tensor_x_path": "d:\\FloodAI\\Data\\dno\\chennai\\tensors\\event_03_monsoon_moderate_input_tensor.pt",
+      "tensor_y_path": "d:\\FloodAI\\Data\\dno\\chennai\\tensors\\event_03_monsoon_moderate_target_tensor.pt"
+    }
+  }
+}

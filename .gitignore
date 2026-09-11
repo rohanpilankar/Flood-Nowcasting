@@ -66,3 +66,6 @@ htmlcov/
 # Large raw archive (>100MB exceeds GitHub hard limit)
 Data/raw/Chennai_WorldCover_2021_v200.zip
 
+# Large model checkpoints (>100MB exceeds GitHub hard limit)
+models/urban_flood_dno/checkpoints/
+

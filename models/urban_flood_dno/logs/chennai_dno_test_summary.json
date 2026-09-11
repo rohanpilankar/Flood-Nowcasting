@@ -1,0 +1,47 @@
+{
+  "experiment": "Experiment 1 \u2014 Controlled DNO Training",
+  "dataset_classification": "SIMULATED HYDRODYNAMIC TRAINING DATA",
+  "model_parameters": 4470437,
+  "epochs_completed": 30,
+  "best_epoch": 30,
+  "best_val_loss": 0.9259027242660522,
+  "final_train_loss": 0.9312893152236938,
+  "test_metrics_event_03": {
+    "water_depth_H": {
+      "mae": 0.053328994661569595,
+      "rmse": 0.06605218350887299,
+      "max_err": 0.9046293497085571,
+      "corr": 0.12467091648751623
+    },
+    "velocity_U": {
+      "mae": 0.030772382393479347,
+      "rmse": 0.04344994202256203,
+      "max_err": 1.2201052904129028,
+      "corr": 0.32411230057026086
+    },
+    "velocity_V": {
+      "mae": 0.02636071853339672,
+      "rmse": 0.04074866324663162,
+      "max_err": 1.3145461082458496,
+      "corr": 0.2636449848573786
+    },
+    "wet_cell_csi_5cm": 0.11099538759113227,
+    "peak_depth_true_m": 0.9606794118881226,
+    "peak_depth_pred_m": 0.16598227620124817,
+    "peak_depth_error_m": -0.7946971356868744,
+    "timing_error_minutes": -80.0
+  },
+  "speed_benchmark": {
+    "hydrodynamic_simulation_sec": 3.004,
+    "dno_inference_sec": 0.0357270999999173,
+    "speedup_factor": 84.08183143907436
+  },
+  "checkpoints": {
+    "best": "D:\\FloodAI\\models\\urban_flood_dno\\checkpoints\\chennai_dno\\best_dno_checkpoint.pt",
+    "final": "D:\\FloodAI\\models\\urban_flood_dno\\checkpoints\\chennai_dno\\final_dno_checkpoint.pt"
+  },
+  "plots": {
+    "spatial": "D:\\FloodAI\\outputs\\chennai_dno\\chennai_dno_test_spatial_comparison.png",
+    "temporal": "D:\\FloodAI\\outputs\\chennai_dno\\chennai_dno_test_temporal_hydrograph.png"
+  }
+}

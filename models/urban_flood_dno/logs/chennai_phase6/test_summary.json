@@ -1,0 +1,314 @@
+{
+  "experiment": "Phase 6 \u2014 Experimental Chennai DNO Training & Evaluation",
+  "dataset": {
+    "total_events": 30,
+    "train_events": [
+      "storm_001",
+      "storm_002",
+      "storm_004",
+      "storm_005",
+      "storm_006",
+      "storm_009",
+      "storm_010",
+      "storm_012",
+      "storm_013",
+      "storm_015",
+      "storm_017",
+      "storm_018",
+      "storm_019",
+      "storm_020",
+      "storm_021",
+      "storm_023",
+      "storm_025",
+      "storm_026",
+      "storm_027",
+      "storm_029",
+      "storm_030"
+    ],
+    "val_events": [
+      "storm_003",
+      "storm_008",
+      "storm_014",
+      "storm_022"
+    ],
+    "test_events": [
+      "storm_007",
+      "storm_011",
+      "storm_016",
+      "storm_024",
+      "storm_028"
+    ]
+  },
+  "model": {
+    "total_params": 4470437,
+    "config": {
+      "num_channels": 5,
+      "width": 10,
+      "initial_step": 1,
+      "pad": 0,
+      "factor": 1,
+      "input_channels": [
+        "H0",
+        "U0",
+        "V0",
+        "P",
+        "Z"
+      ],
+      "target_channels": [
+        "H",
+        "U",
+        "V"
+      ],
+      "berlin_weights_loaded": false,
+      "random_seeds": {
+        "python": 42,
+        "numpy": 42,
+        "torch": 42,
+        "cuda": 42
+      }
+    }
+  },
+  "training": {
+    "epochs_completed": 50,
+    "best_epoch": 50,
+    "best_val_loss": 0.0038857858162373304,
+    "final_train_loss": 0.0043047882638694275,
+    "best_checkpoint": "D:\\FloodAI\\models\\urban_flood_dno\\checkpoints\\chennai_phase6\\best_dno_checkpoint.pt"
+  },
+  "aggregate_test_metrics": {
+    "mean_H_MAE_m": 0.1863700956106186,
+    "mean_H_RMSE_m": 0.3870344370603561,
+    "mean_U_MAE_mps": 0.16254436671733857,
+    "mean_U_RMSE_mps": 0.23737731277942659,
+    "mean_V_MAE_mps": 0.15879738628864287,
+    "mean_V_RMSE_mps": 0.23281065821647645,
+    "mean_flood_IoU_5cm": 0.47922058168563525,
+    "mean_flood_IoU_10cm": 0.3465942952615526,
+    "mean_peak_depth_error_m": -1.5329504013061523,
+    "overall_speedup_factor": 85.58603452997872,
+    "total_hydrodynamic_runtime_sec": 53.498999999999995,
+    "total_dno_inference_sec": 0.6250902999981918
+  },
+  "per_event_test_results": {
+    "storm_007": {
+      "H_metrics": {
+        "mae": 0.2177884578704834,
+        "rmse": 0.45236530900001526,
+        "max_err": 7.600687026977539,
+        "corr": 0.6705031881131137
+      },
+      "U_metrics": {
+        "mae": 0.16569076478481293,
+        "rmse": 0.243116095662117,
+        "max_err": 6.0487446784973145,
+        "corr": 0.6496436726454581
+      },
+      "V_metrics": {
+        "mae": 0.16590897738933563,
+        "rmse": 0.24113109707832336,
+        "max_err": 5.828242301940918,
+        "corr": 0.6464978341867598
+      },
+      "extent_5cm": {
+        "threshold_m": 0.05,
+        "intersection": 158186,
+        "union": 302727,
+        "iou": 0.5225368070902165,
+        "precision": 0.5785881492318946,
+        "recall": 0.8436001770543909
+      },
+      "extent_10cm": {
+        "threshold_m": 0.1,
+        "intersection": 84934,
+        "union": 223230,
+        "iou": 0.38047753438157955,
+        "precision": 0.4253463006179826,
+        "recall": 0.7829317306096863
+      },
+      "peak_depth_true_m": 9.728425979614258,
+      "peak_depth_pred_m": 9.800798416137695,
+      "peak_depth_error_m": 0.0723724365234375,
+      "peak_depth_pct_error": 0.7439275035354398,
+      "peak_timing_error_min": -15.0,
+      "inference_seconds": 0.1872294000004331,
+      "hydrodynamic_seconds": 6.26,
+      "speedup_factor": 33.43491994305125
+    },
+    "storm_011": {
+      "H_metrics": {
+        "mae": 0.06715503334999084,
+        "rmse": 0.13998748362064362,
+        "max_err": 3.7264294624328613,
+        "corr": 0.5668678803312724
+      },
+      "U_metrics": {
+        "mae": 0.09955344349145889,
+        "rmse": 0.13949847221374512,
+        "max_err": 5.861154556274414,
+        "corr": 0.3315189838622312
+      },
+      "V_metrics": {
+        "mae": 0.08859547972679138,
+        "rmse": 0.12742233276367188,
+        "max_err": 5.150522232055664,
+        "corr": 0.33327318783129134
+      },
+      "extent_5cm": {
+        "threshold_m": 0.05,
+        "intersection": 28913,
+        "union": 177147,
+        "iou": 0.16321473126838162,
+        "precision": 0.1673903478301144,
+        "recall": 0.8674246969878795
+      },
+      "extent_10cm": {
+        "threshold_m": 0.1,
+        "intersection": 11057,
+        "union": 98532,
+        "iou": 0.1122173507083993,
+        "precision": 0.11561183199322451,
+        "recall": 0.7926164874551971
+      },
+      "peak_depth_true_m": 4.402328014373779,
+      "peak_depth_pred_m": 4.471621036529541,
+      "peak_depth_error_m": 0.06929302215576172,
+      "peak_depth_pct_error": 1.5740086138406135,
+      "peak_timing_error_min": 115.0,
+      "inference_seconds": 0.03474699999969744,
+      "hydrodynamic_seconds": 11.646,
+      "speedup_factor": 335.1656258123409
+    },
+    "storm_016": {
+      "H_metrics": {
+        "mae": 0.08149819076061249,
+        "rmse": 0.16449472308158875,
+        "max_err": 3.608621597290039,
+        "corr": 0.6491555508063604
+      },
+      "U_metrics": {
+        "mae": 0.12028514593839645,
+        "rmse": 0.17537948489189148,
+        "max_err": 7.945949077606201,
+        "corr": 0.5168856730599071
+      },
+      "V_metrics": {
+        "mae": 0.11409810185432434,
+        "rmse": 0.17113330960273743,
+        "max_err": 5.686946868896484,
+        "corr": 0.523402497958337
+      },
+      "extent_5cm": {
+        "threshold_m": 0.05,
+        "intersection": 79666,
+        "union": 229207,
+        "iou": 0.3475722818238535,
+        "precision": 0.3753633909261816,
+        "recall": 0.8243925659174635
+      },
+      "extent_10cm": {
+        "threshold_m": 0.1,
+        "intersection": 34025,
+        "union": 128809,
+        "iou": 0.26415079691636456,
+        "precision": 0.2915895379130673,
+        "recall": 0.7373336800589434
+      },
+      "peak_depth_true_m": 4.776896953582764,
+      "peak_depth_pred_m": 5.0907464027404785,
+      "peak_depth_error_m": 0.31384944915771484,
+      "peak_depth_pct_error": 6.570153223052505,
+      "peak_timing_error_min": 0.0,
+      "inference_seconds": 0.05971059999865247,
+      "hydrodynamic_seconds": 13.179,
+      "speedup_factor": 220.71457999580343
+    },
+    "storm_024": {
+      "H_metrics": {
+        "mae": 0.21563071012496948,
+        "rmse": 0.44000670313835144,
+        "max_err": 8.00948715209961,
+        "corr": 0.7067854921597969
+      },
+      "U_metrics": {
+        "mae": 0.19477461278438568,
+        "rmse": 0.28055673837661743,
+        "max_err": 9.981081008911133,
+        "corr": 0.6800610551517737
+      },
+      "V_metrics": {
+        "mae": 0.19503702223300934,
+        "rmse": 0.2788131535053253,
+        "max_err": 4.5671491622924805,
+        "corr": 0.6759407493867258
+      },
+      "extent_5cm": {
+        "threshold_m": 0.05,
+        "intersection": 209525,
+        "union": 328302,
+        "iou": 0.6382081132615701,
+        "precision": 0.6657970498700341,
+        "recall": 0.9390307848822879
+      },
+      "extent_10cm": {
+        "threshold_m": 0.1,
+        "intersection": 114404,
+        "union": 262157,
+        "iou": 0.43639498468474996,
+        "precision": 0.4600727886916132,
+        "recall": 0.8945080377806968
+      },
+      "peak_depth_true_m": 13.699956893920898,
+      "peak_depth_pred_m": 9.46358585357666,
+      "peak_depth_error_m": -4.236371040344238,
+      "peak_depth_pct_error": -30.922513648375414,
+      "peak_timing_error_min": -10.0,
+      "inference_seconds": 0.2765648999993573,
+      "hydrodynamic_seconds": 11.355,
+      "speedup_factor": 41.057270825135035
+    },
+    "storm_028": {
+      "H_metrics": {
+        "mae": 0.34977808594703674,
+        "rmse": 0.7383179664611816,
+        "max_err": 10.043600082397461,
+        "corr": 0.7692134730017621
+      },
+      "U_metrics": {
+        "mae": 0.23241786658763885,
+        "rmse": 0.34833577275276184,
+        "max_err": 6.359425067901611,
+        "corr": 0.6888508645679464
+      },
+      "V_metrics": {
+        "mae": 0.23034735023975372,
+        "rmse": 0.3455533981323242,
+        "max_err": 5.715487957000732,
+        "corr": 0.6842608170378361
+      },
+      "extent_5cm": {
+        "threshold_m": 0.05,
+        "intersection": 244634,
+        "union": 337626,
+        "iou": 0.724570974984154,
+        "precision": 0.7747466430200152,
+        "recall": 0.9179512195121952
+      },
+      "extent_10cm": {
+        "threshold_m": 0.1,
+        "intersection": 158316,
+        "union": 293324,
+        "iou": 0.5397308096166696,
+        "precision": 0.5810465120546708,
+        "recall": 0.8835929520630899
+      },
+      "peak_depth_true_m": 17.74352264404297,
+      "peak_depth_pred_m": 13.859626770019531,
+      "peak_depth_error_m": -3.8838958740234375,
+      "peak_depth_pct_error": -21.889091314837515,
+      "peak_timing_error_min": -10.0,
+      "inference_seconds": 0.06683840000005148,
+      "hydrodynamic_seconds": 11.059,
+      "speedup_factor": 165.45877818726183
+    }
+  }
+}

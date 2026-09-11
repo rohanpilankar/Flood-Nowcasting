@@ -1,0 +1,645 @@
+{
+  "study": "Phase 7A.1 \u2014 Native-Scale Normalization Contract Resolution",
+  "checkpoint_evaluated": "D:\\FloodAI\\models\\urban_flood_dno\\checkpoints\\chennai_phase6\\best_dno_checkpoint.pt",
+  "normalization_mismatch_detected": true,
+  "mismatch_location": "EVALUATION ONLY (Training used raw physical targets directly; evaluation mistakenly applied 5x multiplier)",
+  "training_validity": "VALID (Model learned directly in native physical units)",
+  "old_vs_corrected_summary": [
+    {
+      "event_id": "storm_011",
+      "metric": "H_MAE_m",
+      "phase6_reported": 0.06715503334999084,
+      "phase7a_reproduced": 0.06715503334999084,
+      "phase7a1_corrected": 0.013431004248559475,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "H_RMSE_m",
+      "phase6_reported": 0.13998748362064362,
+      "phase7a_reproduced": 0.13998748362064362,
+      "phase7a1_corrected": 0.027997495606541634,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "H_Bias_m",
+      "phase6_reported": 0.052420202642679214,
+      "phase7a_reproduced": 0.052420202642679214,
+      "phase7a1_corrected": 0.010484040714800358,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "True_Peak_m",
+      "phase6_reported": 4.402328014373779,
+      "phase7a_reproduced": 4.402328014373779,
+      "phase7a1_corrected": 0.8804656267166138,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "Pred_Peak_m",
+      "phase6_reported": 4.471621036529541,
+      "phase7a_reproduced": 4.471621036529541,
+      "phase7a1_corrected": 0.8943241834640503,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "Peak_Error_m",
+      "phase6_reported": 0.06929302215576172,
+      "phase7a_reproduced": 0.06929302215576172,
+      "phase7a1_corrected": 0.013858556747436523,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "Peak_Pct_Error",
+      "phase6_reported": 1.57400315548003,
+      "phase7a_reproduced": 1.57400315548003,
+      "phase7a1_corrected": 1.57400315548003,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "Pearson_Corr",
+      "phase6_reported": 0.5668678803312724,
+      "phase7a_reproduced": 0.5668678803312724,
+      "phase7a1_corrected": 0.5668678796590582,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "Spearman_Corr",
+      "phase6_reported": 0.5089695915485567,
+      "phase7a_reproduced": 0.5089695915485567,
+      "phase7a1_corrected": 0.5089695914095571,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "U_MAE_mps",
+      "phase6_reported": 0.09955344349145889,
+      "phase7a_reproduced": 0.09955344349145889,
+      "phase7a1_corrected": 0.01991068571805954,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_011",
+      "metric": "V_MAE_mps",
+      "phase6_reported": 0.08859547972679138,
+      "phase7a_reproduced": 0.08859547972679138,
+      "phase7a1_corrected": 0.017719095572829247,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "H_MAE_m",
+      "phase6_reported": 0.08149819076061249,
+      "phase7a_reproduced": 0.08149819076061249,
+      "phase7a1_corrected": 0.016299638897180557,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "H_RMSE_m",
+      "phase6_reported": 0.16449472308158875,
+      "phase7a_reproduced": 0.16449472308158875,
+      "phase7a1_corrected": 0.03289894014596939,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "H_Bias_m",
+      "phase6_reported": 0.0316493846476078,
+      "phase7a_reproduced": 0.0316493846476078,
+      "phase7a1_corrected": 0.0063298773020505905,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "True_Peak_m",
+      "phase6_reported": 4.776896953582764,
+      "phase7a_reproduced": 4.776896953582764,
+      "phase7a1_corrected": 0.9553793668746948,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "Pred_Peak_m",
+      "phase6_reported": 5.0907464027404785,
+      "phase7a_reproduced": 5.0907464027404785,
+      "phase7a1_corrected": 1.0181492567062378,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "Peak_Error_m",
+      "phase6_reported": 0.31384944915771484,
+      "phase7a_reproduced": 0.31384944915771484,
+      "phase7a1_corrected": 0.06276988983154297,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "Peak_Pct_Error",
+      "phase6_reported": 6.570153387013193,
+      "phase7a_reproduced": 6.570153387013193,
+      "phase7a1_corrected": 6.570153387013193,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "Pearson_Corr",
+      "phase6_reported": 0.6491555508063604,
+      "phase7a_reproduced": 0.6491555508063604,
+      "phase7a1_corrected": 0.6491555508188535,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "Spearman_Corr",
+      "phase6_reported": 0.475622737713329,
+      "phase7a_reproduced": 0.475622737713329,
+      "phase7a1_corrected": 0.4756227376741706,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "U_MAE_mps",
+      "phase6_reported": 0.12028514593839645,
+      "phase7a_reproduced": 0.12028514593839645,
+      "phase7a1_corrected": 0.024057036265730858,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_016",
+      "metric": "V_MAE_mps",
+      "phase6_reported": 0.11409810185432434,
+      "phase7a_reproduced": 0.11409810185432434,
+      "phase7a1_corrected": 0.02281961776316166,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "H_MAE_m",
+      "phase6_reported": 0.2177884578704834,
+      "phase7a_reproduced": 0.2177884578704834,
+      "phase7a1_corrected": 0.04355768859386444,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "H_RMSE_m",
+      "phase6_reported": 0.45236530900001526,
+      "phase7a_reproduced": 0.45236530900001526,
+      "phase7a1_corrected": 0.09047306329011917,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "H_Bias_m",
+      "phase6_reported": 0.051499996334314346,
+      "phase7a_reproduced": 0.051499996334314346,
+      "phase7a1_corrected": 0.010300000198185444,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "True_Peak_m",
+      "phase6_reported": 9.728425979614258,
+      "phase7a_reproduced": 9.728425979614258,
+      "phase7a1_corrected": 1.9456852674484253,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "Pred_Peak_m",
+      "phase6_reported": 9.800798416137695,
+      "phase7a_reproduced": 9.800798416137695,
+      "phase7a1_corrected": 1.9601596593856812,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "Peak_Error_m",
+      "phase6_reported": 0.0723724365234375,
+      "phase7a_reproduced": 0.0723724365234375,
+      "phase7a1_corrected": 0.01447439193725586,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "Peak_Pct_Error",
+      "phase6_reported": 0.7439225747048802,
+      "phase7a_reproduced": 0.7439225747048802,
+      "phase7a1_corrected": 0.7439225747048802,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "Pearson_Corr",
+      "phase6_reported": 0.6705031881131137,
+      "phase7a_reproduced": 0.6705031881131137,
+      "phase7a1_corrected": 0.6705031881785941,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "Spearman_Corr",
+      "phase6_reported": 0.47687969183563494,
+      "phase7a_reproduced": 0.47687969183563494,
+      "phase7a1_corrected": 0.4768796918989904,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "U_MAE_mps",
+      "phase6_reported": 0.16569076478481293,
+      "phase7a_reproduced": 0.16569076478481293,
+      "phase7a1_corrected": 0.033138152211904526,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_007",
+      "metric": "V_MAE_mps",
+      "phase6_reported": 0.16590897738933563,
+      "phase7a_reproduced": 0.16590897738933563,
+      "phase7a1_corrected": 0.03318179398775101,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "H_MAE_m",
+      "phase6_reported": 0.21563071012496948,
+      "phase7a_reproduced": 0.21563071012496948,
+      "phase7a1_corrected": 0.04312613233923912,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "H_RMSE_m",
+      "phase6_reported": 0.44000670313835144,
+      "phase7a_reproduced": 0.44000670313835144,
+      "phase7a1_corrected": 0.08800134062767029,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "H_Bias_m",
+      "phase6_reported": 0.05634330213069916,
+      "phase7a_reproduced": 0.05634330213069916,
+      "phase7a1_corrected": 0.011268661357462406,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "True_Peak_m",
+      "phase6_reported": 13.699956893920898,
+      "phase7a_reproduced": 13.699956893920898,
+      "phase7a1_corrected": 2.7399914264678955,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "Pred_Peak_m",
+      "phase6_reported": 9.46358585357666,
+      "phase7a_reproduced": 9.46358585357666,
+      "phase7a1_corrected": 1.8927172422409058,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "Peak_Error_m",
+      "phase6_reported": -4.236371040344238,
+      "phase7a_reproduced": -4.236371040344238,
+      "phase7a1_corrected": -0.8472741842269897,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "Peak_Pct_Error",
+      "phase6_reported": -30.922512240091393,
+      "phase7a_reproduced": -30.922512240091393,
+      "phase7a1_corrected": -30.922512240091393,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "Pearson_Corr",
+      "phase6_reported": 0.7067854921597969,
+      "phase7a_reproduced": 0.7067854921597969,
+      "phase7a1_corrected": 0.7067854920742989,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "Spearman_Corr",
+      "phase6_reported": 0.6294192788367233,
+      "phase7a_reproduced": 0.6294192788367233,
+      "phase7a1_corrected": 0.629419278790309,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "U_MAE_mps",
+      "phase6_reported": 0.19477461278438568,
+      "phase7a_reproduced": 0.19477461278438568,
+      "phase7a1_corrected": 0.03895492106676102,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_024",
+      "metric": "V_MAE_mps",
+      "phase6_reported": 0.19503702223300934,
+      "phase7a_reproduced": 0.19503702223300934,
+      "phase7a1_corrected": 0.03900740668177605,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "H_MAE_m",
+      "phase6_reported": 0.34977808594703674,
+      "phase7a_reproduced": 0.34977808594703674,
+      "phase7a1_corrected": 0.06995562463998795,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "H_RMSE_m",
+      "phase6_reported": 0.7383179664611816,
+      "phase7a_reproduced": 0.7383179664611816,
+      "phase7a1_corrected": 0.14766359329223633,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "H_Bias_m",
+      "phase6_reported": -0.020459746941924095,
+      "phase7a_reproduced": -0.020459746941924095,
+      "phase7a1_corrected": -0.004091949202120304,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "True_Peak_m",
+      "phase6_reported": 17.74352264404297,
+      "phase7a_reproduced": 17.74352264404297,
+      "phase7a1_corrected": 3.5487043857574463,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "Pred_Peak_m",
+      "phase6_reported": 13.859626770019531,
+      "phase7a_reproduced": 13.859626770019531,
+      "phase7a1_corrected": 2.771925449371338,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "Peak_Error_m",
+      "phase6_reported": -3.8838958740234375,
+      "phase7a_reproduced": -3.8838958740234375,
+      "phase7a1_corrected": -0.7767789363861084,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "Peak_Pct_Error",
+      "phase6_reported": -21.889085478736217,
+      "phase7a_reproduced": -21.889085478736217,
+      "phase7a1_corrected": -21.889085478736217,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "Pearson_Corr",
+      "phase6_reported": 0.7692134730017621,
+      "phase7a_reproduced": 0.7692134730017621,
+      "phase7a1_corrected": 0.7692134728800654,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "Spearman_Corr",
+      "phase6_reported": 0.5903831458423452,
+      "phase7a_reproduced": 0.5903831458423452,
+      "phase7a1_corrected": 0.590383145940328,
+      "scale_factor": "1x",
+      "invariant": "YES"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "U_MAE_mps",
+      "phase6_reported": 0.23241786658763885,
+      "phase7a_reproduced": 0.23241786658763885,
+      "phase7a1_corrected": 0.046483565121889114,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    },
+    {
+      "event_id": "storm_028",
+      "metric": "V_MAE_mps",
+      "phase6_reported": 0.23034735023975372,
+      "phase7a_reproduced": 0.23034735023975372,
+      "phase7a1_corrected": 0.046069469302892685,
+      "scale_factor": "5x -> 1x",
+      "invariant": "NO (5x scale)"
+    }
+  ],
+  "corrected_per_event_metrics": [
+    {
+      "event_id": "storm_011",
+      "rainfall_mm": 12.0,
+      "severity_category": "Low",
+      "profile": "multi_peak",
+      "peak_intensity_mm_hr": 12.8,
+      "H_MAE_m": 0.013431004248559475,
+      "H_RMSE_m": 0.027997495606541634,
+      "H_Bias_m": 0.010484040714800358,
+      "H_Max_Actual_m": 0.8804656267166138,
+      "H_Max_Pred_m": 0.8943241834640503,
+      "Peak_Error_m": 0.013858556747436523,
+      "Peak_Pct_Error": 1.57400315548003,
+      "H_Interior_MAE_m": 0.013175164349377155,
+      "H_Interior_Max_Actual_m": 0.7267618179321289,
+      "H_Interior_Max_Pred_m": 0.6974977850914001,
+      "H_Interior_Peak_Error_m": -0.02926403284072876,
+      "U_MAE_mps": 0.01991068571805954,
+      "U_RMSE_mps": 0.027899691835045815,
+      "U_Bias_mps": -0.001135975937359035,
+      "V_MAE_mps": 0.017719095572829247,
+      "V_RMSE_mps": 0.025484470650553703,
+      "V_Bias_mps": 0.00407340656965971,
+      "Pearson_Correlation": 0.5668678796590582,
+      "Spearman_Correlation": 0.5089695914095571
+    },
+    {
+      "event_id": "storm_016",
+      "rainfall_mm": 28.0,
+      "severity_category": "Moderate",
+      "profile": "uniform",
+      "peak_intensity_mm_hr": 14.88,
+      "H_MAE_m": 0.016299638897180557,
+      "H_RMSE_m": 0.03289894014596939,
+      "H_Bias_m": 0.0063298773020505905,
+      "H_Max_Actual_m": 0.9553793668746948,
+      "H_Max_Pred_m": 1.0181492567062378,
+      "Peak_Error_m": 0.06276988983154297,
+      "Peak_Pct_Error": 6.570153387013193,
+      "H_Interior_MAE_m": 0.016069453209638596,
+      "H_Interior_Max_Actual_m": 0.8230555057525635,
+      "H_Interior_Max_Pred_m": 0.8219408392906189,
+      "H_Interior_Peak_Error_m": -0.00111466646194458,
+      "U_MAE_mps": 0.024057036265730858,
+      "U_RMSE_mps": 0.035075895488262177,
+      "U_Bias_mps": -0.0021460738498717546,
+      "V_MAE_mps": 0.02281961776316166,
+      "V_RMSE_mps": 0.03422665596008301,
+      "V_Bias_mps": 0.002355852397158742,
+      "Pearson_Correlation": 0.6491555508188535,
+      "Spearman_Correlation": 0.4756227376741706
+    },
+    {
+      "event_id": "storm_007",
+      "rainfall_mm": 60.0,
+      "severity_category": "Heavy",
+      "profile": "front_loaded",
+      "peak_intensity_mm_hr": 87.38,
+      "H_MAE_m": 0.04355768859386444,
+      "H_RMSE_m": 0.09047306329011917,
+      "H_Bias_m": 0.010300000198185444,
+      "H_Max_Actual_m": 1.9456852674484253,
+      "H_Max_Pred_m": 1.9601596593856812,
+      "Peak_Error_m": 0.01447439193725586,
+      "Peak_Pct_Error": 0.7439225747048802,
+      "H_Interior_MAE_m": 0.043348003178834915,
+      "H_Interior_Max_Actual_m": 1.9456852674484253,
+      "H_Interior_Max_Pred_m": 1.9601596593856812,
+      "H_Interior_Peak_Error_m": 0.01447439193725586,
+      "U_MAE_mps": 0.033138152211904526,
+      "U_RMSE_mps": 0.0486232191324234,
+      "U_Bias_mps": 0.00029501624521799386,
+      "V_MAE_mps": 0.03318179398775101,
+      "V_RMSE_mps": 0.04822622612118721,
+      "V_Bias_mps": 0.0017268462106585503,
+      "Pearson_Correlation": 0.6705031881785941,
+      "Spearman_Correlation": 0.4768796918989904
+    },
+    {
+      "event_id": "storm_024",
+      "rainfall_mm": 95.0,
+      "severity_category": "Very Heavy",
+      "profile": "multi_peak",
+      "peak_intensity_mm_hr": 101.3,
+      "H_MAE_m": 0.04312613233923912,
+      "H_RMSE_m": 0.08800134062767029,
+      "H_Bias_m": 0.011268661357462406,
+      "H_Max_Actual_m": 2.7399914264678955,
+      "H_Max_Pred_m": 1.8927172422409058,
+      "Peak_Error_m": -0.8472741842269897,
+      "Peak_Pct_Error": -30.922512240091393,
+      "H_Interior_MAE_m": 0.042966146022081375,
+      "H_Interior_Max_Actual_m": 2.7399914264678955,
+      "H_Interior_Max_Pred_m": 1.8927172422409058,
+      "H_Interior_Peak_Error_m": -0.8472741842269897,
+      "U_MAE_mps": 0.03895492106676102,
+      "U_RMSE_mps": 0.05611134320497513,
+      "U_Bias_mps": -0.0011571074137464166,
+      "V_MAE_mps": 0.03900740668177605,
+      "V_RMSE_mps": 0.0557626336812973,
+      "V_Bias_mps": 0.000995366950519383,
+      "Pearson_Correlation": 0.7067854920742989,
+      "Spearman_Correlation": 0.629419278790309
+    },
+    {
+      "event_id": "storm_028",
+      "rainfall_mm": 135.0,
+      "severity_category": "Extreme",
+      "profile": "back_loaded",
+      "peak_intensity_mm_hr": 176.4,
+      "H_MAE_m": 0.06995562463998795,
+      "H_RMSE_m": 0.14766359329223633,
+      "H_Bias_m": -0.004091949202120304,
+      "H_Max_Actual_m": 3.5487043857574463,
+      "H_Max_Pred_m": 2.771925449371338,
+      "Peak_Error_m": -0.7767789363861084,
+      "Peak_Pct_Error": -21.889085478736217,
+      "H_Interior_MAE_m": 0.06975903362035751,
+      "H_Interior_Max_Actual_m": 3.5487043857574463,
+      "H_Interior_Max_Pred_m": 2.771925449371338,
+      "H_Interior_Peak_Error_m": -0.7767789363861084,
+      "U_MAE_mps": 0.046483565121889114,
+      "U_RMSE_mps": 0.06966715306043625,
+      "U_Bias_mps": -0.0002928689355030656,
+      "V_MAE_mps": 0.046069469302892685,
+      "V_RMSE_mps": 0.0691106766462326,
+      "V_Bias_mps": -0.0007843460771255195,
+      "Pearson_Correlation": 0.7692134728800654,
+      "Spearman_Correlation": 0.590383145940328
+    }
+  ],
+  "aggregate_corrected_metrics": {
+    "mean_H_MAE_m": 0.037274017743766305,
+    "mean_H_RMSE_m": 0.07740688659250736,
+    "mean_H_Bias_m": 0.006858126074075699,
+    "mean_U_MAE_mps": 0.03250887207686901,
+    "mean_V_MAE_mps": 0.03175947666168213,
+    "mean_Pearson_Corr": 0.6725051167221741,
+    "mean_Spearman_Corr": 0.5362548891426709
+  }
+}

@@ -791,6 +791,10 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
     .dashboard-header {
       display: flex;
@@ -800,30 +804,53 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       gap: 1rem;
       padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border-light);
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+    .header-titles {
+      min-width: 0;
+      flex: 1 1 280px;
     }
     .welcome-heading {
-      font-size: 1.65rem;
+      font-size: clamp(1.25rem, 2.5vw, 1.65rem);
       font-weight: 700;
       color: var(--text-main);
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
     .welcome-sub {
       font-size: 0.875rem;
       color: var(--text-muted);
       margin-top: 0.2rem;
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
     .header-meta {
       display: flex;
       align-items: center;
       gap: 1rem;
+      flex-wrap: wrap;
       background-color: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
       padding: 0.5rem 1rem;
       box-shadow: var(--shadow-sm);
+      box-sizing: border-box;
+      min-width: 0;
+      max-width: 100%;
+
+      @media (max-width: 640px) {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+      }
     }
     .meta-item {
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
     .meta-label {
       font-size: 0.68rem;
@@ -835,6 +862,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       font-size: 0.8125rem;
       font-weight: 600;
       color: var(--text-main);
+      white-space: nowrap;
     }
     .status-live {
       display: flex;
@@ -860,11 +888,16 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1.25rem;
-      @media (max-width: 1200px) {
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
+      @media (max-width: 1300px) {
         grid-template-columns: repeat(2, 1fr);
       }
       @media (max-width: 640px) {
         grid-template-columns: 1fr;
+        gap: 0.875rem;
       }
     }
     .kpi-icon {
@@ -882,6 +915,10 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: grid;
       grid-template-columns: 1.6fr 1fr;
       gap: 1.25rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
       @media (max-width: 1100px) {
         grid-template-columns: 1fr;
       }
@@ -899,6 +936,9 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
     .map-preview-card {
       display: flex;
       flex-direction: column;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .map-wrapper {
       position: relative;
@@ -946,6 +986,9 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
     .alerts-panel-card {
       display: flex;
       flex-direction: column;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .view-all-link {
       font-size: 0.8125rem;
@@ -1085,13 +1128,27 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: grid;
       grid-template-columns: 1.6fr 1fr;
       gap: 1.25rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
       @media (max-width: 1100px) {
         grid-template-columns: 1fr;
       }
     }
+    .predictions-card,
+    .system-status-card {
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
 
     .table-responsive {
       overflow-x: auto;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+      -webkit-overflow-scrolling: touch;
     }
     .data-table {
       width: 100%;
@@ -1220,11 +1277,16 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1.25rem;
-      @media (max-width: 1200px) {
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
+      @media (max-width: 1300px) {
         grid-template-columns: repeat(2, 1fr);
       }
-      @media (max-width: 640px) {
+      @media (max-width: 680px) {
         grid-template-columns: 1fr;
+        gap: 0.875rem;
       }
     }
     .ops-diag-card {
@@ -1235,6 +1297,11 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       border: 1px solid var(--border-light);
       border-radius: var(--radius-md);
       padding: 1rem;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
     .ops-card-header {
       display: flex;
@@ -1439,13 +1506,19 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       background: rgba(2, 6, 23, 0.6);
       border-top: 1px solid var(--border-light);
       border-bottom: 1px solid var(--border-light);
-      @media (max-width: 1100px) { grid-template-columns: repeat(3, 1fr); }
-      @media (max-width: 600px) { grid-template-columns: repeat(2, 1fr); }
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
+      @media (max-width: 1300px) { grid-template-columns: repeat(3, 1fr); }
+      @media (max-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+      @media (max-width: 400px) { grid-template-columns: 1fr; }
     }
     .atm-item {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+      min-width: 0;
     }
     .atm-label {
       font-size: 0.68rem;
@@ -1460,6 +1533,9 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
     }
     .aws-stations-section {
       padding: 1rem 1.25rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
     }
     .aws-stations-title {
       display: flex;
@@ -1469,6 +1545,9 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      min-width: 0;
     }
     .aws-count {
       color: var(--brand-primary);
@@ -1478,7 +1557,11 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 0.75rem;
-      @media (max-width: 1200px) { grid-template-columns: repeat(2, 1fr); }
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
+      @media (max-width: 1300px) { grid-template-columns: repeat(2, 1fr); }
       @media (max-width: 640px) { grid-template-columns: 1fr; }
     }
     .aws-card {
@@ -1489,6 +1572,9 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
       transition: transform 0.15s ease, border-color 0.15s ease;
       &:hover {
         border-color: rgba(56, 189, 248, 0.4);
@@ -1650,13 +1736,18 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       border: 1px solid var(--border-light);
       border-radius: var(--radius-md);
       padding: 0.85rem 1.25rem;
-      @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
-      @media (max-width: 500px) { grid-template-columns: 1fr; }
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
+      @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
+      @media (max-width: 520px) { grid-template-columns: 1fr; }
     }
     .summary-stat {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+      min-width: 0;
     }
     .s-label {
       font-size: 0.68rem;
@@ -1673,6 +1764,10 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
       @media (max-width: 1300px) { grid-template-columns: repeat(2, 1fr); }
       @media (max-width: 700px) { grid-template-columns: 1fr; }
     }
@@ -1684,6 +1779,11 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow-wrap: anywhere;
+      word-break: normal;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       &.is-flooding {
         border-color: rgba(239, 68, 68, 0.4);

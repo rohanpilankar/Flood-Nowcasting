@@ -16,6 +16,7 @@ import { RiskBadgeComponent } from '../risk-badge/risk-badge.component';
           @if (alert.acknowledged) {
             <span class="badge status-safe">Acknowledged</span>
           }
+        </div>
         <div class="alert-top-right">
           <span class="alert-time">{{ alert.generatedTime }}</span>
           <button
@@ -83,12 +84,15 @@ import { RiskBadgeComponent } from '../risk-badge/risk-badge.component';
       background-color: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-md);
-      padding: 1rem;
+      padding: 1.15rem;
       box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      gap: 0.75rem;
       transition: all var(--transition-fast);
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
 
       &:hover {
         border-color: rgba(148, 163, 184, 0.3);
@@ -103,15 +107,19 @@ import { RiskBadgeComponent } from '../risk-badge/risk-badge.component';
       align-items: center;
       justify-content: space-between;
       gap: 0.5rem;
+      flex-wrap: wrap;
+      width: 100%;
+      min-width: 0;
     }
     .alert-top-right {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex-shrink: 0;
     }
     .alert-dismiss-btn {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: var(--radius-sm);
       color: var(--text-dim);
       background: transparent;
@@ -131,6 +139,7 @@ import { RiskBadgeComponent } from '../risk-badge/risk-badge.component';
       align-items: center;
       gap: 0.5rem;
       flex-wrap: wrap;
+      min-width: 0;
     }
     .alert-id {
       font-size: 0.75rem;
@@ -145,12 +154,21 @@ import { RiskBadgeComponent } from '../risk-badge/risk-badge.component';
       font-weight: 600;
       color: var(--text-main);
       margin: 0;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      white-space: normal;
+      min-width: 0;
     }
     .alert-desc {
-      font-size: 0.835rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      line-height: 1.45;
+      line-height: 1.5;
       margin: 0;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      white-space: normal;
+      min-width: 0;
     }
     .alert-meta-grid {
       display: grid;
@@ -160,10 +178,19 @@ import { RiskBadgeComponent } from '../risk-badge/risk-badge.component';
       border-radius: var(--radius-sm);
       padding: 0.5rem 0.65rem;
       gap: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
+      @media (max-width: 420px) {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+      }
     }
     .meta-col {
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
     .meta-label {
       font-size: 0.68rem;
@@ -180,9 +207,13 @@ import { RiskBadgeComponent } from '../risk-badge/risk-badge.component';
       font-size: 0.78rem;
       background-color: rgba(59, 130, 246, 0.08);
       border-left: 3px solid var(--brand-primary);
-      padding: 0.4rem 0.6rem;
+      padding: 0.5rem 0.65rem;
       border-radius: 2px;
-      line-height: 1.4;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      min-width: 0;
+      box-sizing: border-box;
     }
     .advisory-title {
       font-weight: 600;
@@ -197,7 +228,9 @@ import { RiskBadgeComponent } from '../risk-badge/risk-badge.component';
       align-items: center;
       justify-content: flex-end;
       gap: 0.5rem;
-      margin-top: 0.2rem;
+      margin-top: 0.25rem;
+      flex-wrap: wrap;
+      min-width: 0;
     }
   `]
 })

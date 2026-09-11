@@ -118,11 +118,24 @@ import { ThemeService } from '../../../core/services/theme.service';
       position: sticky;
       top: 0;
       z-index: 1000;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
+      @media (max-width: 768px) {
+        padding: 0 1rem;
+      }
+      @media (max-width: 480px) {
+        padding: 0 0.75rem;
+      }
     }
     .header-left {
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      min-width: 0;
+      flex-shrink: 1;
     }
     .mobile-menu-toggle {
       display: none;
@@ -137,7 +150,12 @@ import { ThemeService } from '../../../core/services/theme.service';
       font-size: 0.82rem;
       color: var(--text-muted);
       font-weight: 500;
-      @media (max-width: 640px) {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+
+      @media (max-width: 820px) {
         display: none;
       }
     }
@@ -145,6 +163,12 @@ import { ThemeService } from '../../../core/services/theme.service';
       display: flex;
       align-items: center;
       gap: 0.65rem;
+      flex-shrink: 0;
+      min-width: 0;
+
+      @media (max-width: 480px) {
+        gap: 0.35rem;
+      }
     }
     .live-clock-pill {
       display: flex;
@@ -256,6 +280,15 @@ import { ThemeService } from '../../../core/services/theme.service';
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex-shrink: 0;
+
+      @media (max-width: 480px) {
+        gap: 0.3rem;
+        .btn {
+          padding: 0.35rem 0.55rem;
+          font-size: 0.72rem;
+        }
+      }
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }

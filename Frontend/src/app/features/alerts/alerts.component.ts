@@ -108,22 +108,31 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
 
     .title-with-badge {
       display: flex;
       align-items: center;
       gap: 0.65rem;
+      min-width: 0;
     }
     .page-title {
       font-size: 1.45rem;
       font-weight: 700;
       color: var(--text-main);
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
     .page-sub {
       font-size: 0.825rem;
       color: var(--text-muted);
       margin-top: 0.15rem;
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
 
     .alerts-header {
@@ -132,12 +141,26 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+    .header-text-block {
+      min-width: 0;
     }
     .alert-counts-grid {
       display: flex;
       align-items: center;
       gap: 0.75rem;
       flex-wrap: wrap;
+      min-width: 0;
+
+      @media (max-width: 680px) {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
     }
     .count-pill {
       display: flex;
@@ -147,6 +170,7 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
       border-radius: var(--radius-sm);
       padding: 0.4rem 0.85rem;
       min-width: 95px;
+      box-sizing: border-box;
     }
     .c-label {
       font-size: 0.68rem;
@@ -181,12 +205,16 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
       flex-wrap: wrap;
       gap: 1rem;
       padding: 0.75rem 1.25rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
     }
     .filter-pills {
       display: flex;
       align-items: center;
       gap: 0.4rem;
       flex-wrap: wrap;
+      min-width: 0;
     }
     .filter-pill-btn {
       display: inline-flex;
@@ -223,6 +251,13 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
       display: flex;
       align-items: center;
       width: 280px;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+
+      @media (max-width: 768px) {
+        width: 100%;
+      }
 
       svg {
         position: absolute;
@@ -256,10 +291,15 @@ import { EmptyStateComponent } from '../../shared/components/empty-state/empty-s
     // Alerts Grid
     .alerts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
       gap: 1.25rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+
       @media (max-width: 640px) {
         grid-template-columns: 1fr;
+        gap: 1rem;
       }
     }
   `]

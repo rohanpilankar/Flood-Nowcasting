@@ -189,6 +189,9 @@ button {
   padding: 1.25rem;
   box-shadow: var(--shadow-sm);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
 
   &:hover {
     border-color: rgba(148, 163, 184, 0.25);

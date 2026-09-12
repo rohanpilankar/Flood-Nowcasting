@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 class DataFeedStatusSchema(BaseModel):
@@ -6,7 +6,7 @@ class DataFeedStatusSchema(BaseModel):
     category: str # 'RADAR' | 'IOT' | 'GIS' | 'ROAD_NETWORK' | 'HISTORICAL'
     status: str # 'OPERATIONAL' | 'DEGRADED' | 'MAINTENANCE' | 'PROTOTYPE_SIMULATED'
     lastUpdate: str
-    sampleFrequency: str
+    sampleFrequency: Optional[str] = "Continuous / In-situ"
     sourceType: str
     isSimulated: bool = False
 
@@ -46,8 +46,6 @@ class SihDisclaimerSchema(BaseModel):
 class AdminSystemOverviewSchema(BaseModel):
     dataFeeds: List[DataFeedStatusSchema]
     modelMetrics: ModelMetricsSchema
-    microservices: MicroserviceHealthSchema = None
-    microservicesList: List[MicroserviceHealthSchema] = []
-    microservices: List[MicroserviceHealthSchema]
+    microservices: List[MicroserviceHealthSchema] = []
     systemLoad: SystemLoadSchema
     sihDisclaimer: SihDisclaimerSchema

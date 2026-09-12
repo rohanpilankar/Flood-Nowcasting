@@ -34,6 +34,15 @@ async def lifespan(app: FastAPI):
     print("[STARTUP] Initializing FloodWatch AI Nowcasting and Safe Routing Engine...")
     FloodService.get_instance()
     print("[READY] All Chennai GIS spatial features, XGBoost model, and RBAC auth ready for requests.")
+
+    # Initialize experimental DNO Hydrodynamic service
+    try:
+        from backend.app.services.dno_inference_service import DNOInferenceService
+        DNOInferenceService.get_instance()
+        print("[READY] Chennai Phase 7C DNO Hydrodynamic inference service initialized.")
+    except Exception as e:
+        print(f"[WARN] DNO Hydrodynamic service warmup deferred: {e}")
+
     yield
     print("[SHUTDOWN] FloodWatch AI service stopping.")
 
@@ -55,6 +64,10 @@ app.add_middleware(
 
 # Mount API v1 router
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# Mount direct alias for /api/dno endpoints
+from backend.app.api.routes import dno
+app.include_router(dno.router, prefix="/api")
 
 @app.get("/")
 def root():

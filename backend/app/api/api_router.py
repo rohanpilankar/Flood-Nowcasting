@@ -15,7 +15,8 @@ from backend.app.api.routes import (
     rainfall,
     drainage,
     simulation,
-    emergency
+    emergency,
+    dno
 )
 
 api_router = APIRouter()
@@ -53,3 +54,4 @@ api_router.include_router(flood.router, tags=["Flood Nowcasting & Risk"])
 api_router.include_router(routing.router, tags=["Safe Mobility & Routing"])
 api_router.include_router(analytics.router, tags=["Flood Analytics"])
 api_router.include_router(health.router, tags=["System Health & Admin MLOps"])
+api_router.include_router(dno.router)

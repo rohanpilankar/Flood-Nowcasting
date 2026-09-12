@@ -8,6 +8,8 @@ import { environment } from '../../../environments/environment';
 import { FloodService } from '../../core/services/flood.service';
 import { AlertService } from '../../core/services/alert.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { DnoService } from '../../core/services/dno.service';
+import { DNOPredictResponse, DNOTimestepForecast, PreparedStormEvent, DNOHealthResponse } from '../../core/models/dno.model';
 import { SystemKPIs, FloodZone, RecentPrediction, PredictionTime } from '../../core/models/flood-risk.model';
 import { FloodAlert } from '../../core/models/alert.model';
 import { StatCardComponent } from '../../shared/components/stat-card/stat-card.component';
@@ -376,8 +378,8 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
               <label class="layer-chip active">
                 <input type="checkbox" [checked]="layerDrainage" (change)="layerDrainage = !layerDrainage"> Drainage (SWD)
               </label>
-              <label class="layer-chip disabled" title="Hydrodynamic depth model awaiting connection">
-                <input type="checkbox" disabled> Flood Depth <span class="layer-status-pill">Pending</span>
+              <label class="layer-chip" [class.active]="layerDno" title="Toggle Chennai Phase 7C DNO Hydrodynamic Water Depth Layer">
+                <input type="checkbox" [checked]="layerDno" (change)="toggleDnoLayer()"> Hydrodynamic Depth (DNO) <span class="layer-status-pill online">Phase 7C</span>
               </label>
               <label class="layer-chip">
                 <input type="checkbox" [checked]="layerRoutes" (change)="layerRoutes = !layerRoutes"> Safe Corridors
@@ -393,9 +395,14 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             </div>
             <div class="map-actions-bar">
               <span class="map-info-text">Greater Chennai Corporation (GCC) 500m Metric Grid</span>
-              <a routerLink="/flood-map" class="btn btn-primary btn-sm">
-                Open Fullscreen GIS Map →
-              </a>
+              <div class="map-btn-group">
+                <button type="button" class="btn btn-secondary btn-sm" (click)="focusDnoPilot()" title="Center on Adyar-Velachery Pilot Catchment">
+                  Focus DNO Basin (10km)
+                </button>
+                <a routerLink="/flood-map" class="btn btn-primary btn-sm">
+                  Open Fullscreen GIS Map →
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -429,6 +436,280 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             }
           </div>
         </div>
+      </div>
+
+      <!-- AI HYDRODYNAMIC NOWCAST (Chennai Phase 7C DNO) -->
+      <div class="card dno-hydrodynamic-card">
+        <!-- Header -->
+        <div class="dno-card-header">
+          <div class="dno-title-group">
+            <div class="dno-badge-row">
+              <span class="dno-pill-pulse"><span class="pulse-dot-cyan"></span> AI HYDRODYNAMIC NOWCAST</span>
+              <span class="dno-tag font-mono">CHENNAI PHASE 7C DNO</span>
+              <span class="dno-tag font-mono">ALPHA = 1.00</span>
+              <span class="dno-tag font-mono">128 × 128 (78.1m)</span>
+              <span class="dno-tag-device font-mono" [class.device-cuda]="dnoService.health()?.device?.includes('cuda')">
+                ⚡ {{ (dnoService.health()?.device || 'CUDA/CPU') | uppercase }}
+              </span>
+            </div>
+            <h3 class="dno-main-title">Chennai Hydrodynamic Depth & Velocity Forecasting</h3>
+            <p class="dno-sub-text">
+              High-resolution Deep Neural Operator (DNO) surrogate simulating physical 2D Navier-Stokes/Saint-Venant
+              water depth (H), velocity vectors (U, V), and localized saucer ponding across the Adyar–Velachery pilot basin.
+            </p>
+          </div>
+
+          <!-- Event Selector & Action -->
+          <div class="dno-event-controls">
+            <div class="dno-select-wrap">
+              <label class="dno-select-label">Select Chennai Flood Event:</label>
+              <select
+                class="dno-event-select font-mono"
+                [value]="dnoService.selectedEventId()"
+                (change)="onDnoEventChange($event)"
+                [disabled]="dnoService.isPredicting()"
+              >
+                @for (ev of dnoService.availableEvents()?.events; track ev.id) {
+                  <option [value]="ev.id">
+                    {{ ev.id }} • {{ ev.rainfall_mm }}mm ({{ ev.category }})
+                  </option>
+                }
+              </select>
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary dno-run-btn"
+              (click)="runDnoForecast()"
+              [disabled]="dnoService.isPredicting()"
+            >
+              @if (dnoService.isPredicting()) {
+                <span class="btn-spinner"></span> Simulating Hydrodynamics...
+              } @else {
+                🌊 Run Hydrodynamic Forecast
+              }
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading State Indicator -->
+        @if (dnoService.isPredicting()) {
+          <div class="dno-loading-banner">
+            <div class="dno-spinner"></div>
+            <div>
+              <div class="dno-load-title">Running DNO Hydrodynamic Forecast on {{ dnoService.selectedEventId() }}...</div>
+              <div class="dno-load-sub">Fourier operator evaluating 24 time steps on 128x128 spatial grid</div>
+            </div>
+          </div>
+        }
+
+        <!-- Error State -->
+        @if (dnoService.errorMessage()) {
+          <div class="dno-error-banner">
+            <span class="dno-err-icon">⚠️</span>
+            <span>{{ dnoService.errorMessage() }}</span>
+          </div>
+        }
+
+        <!-- Prediction Content (When Available) -->
+        @if (dnoService.currentPrediction(); as pred) {
+          <!-- Top KPI Metrics -->
+          <div class="dno-kpi-strip">
+            <div class="dno-kpi-card">
+              <div class="kpi-label">Peak Water Depth (Hmax)</div>
+              <div class="kpi-val-row">
+                <span class="kpi-number text-cyan font-mono">{{ pred.summary.peak_depth_m.toFixed(2) }}</span>
+                <span class="kpi-unit">meters</span>
+              </div>
+              <div class="kpi-sub">Domain maximum over 120m</div>
+            </div>
+
+            <div class="dno-kpi-card">
+              <div class="kpi-label">Current Step Depth (Hmax)</div>
+              <div class="kpi-val-row">
+                <span class="kpi-number text-warning font-mono">{{ currentDnoForecast?.max_depth_m?.toFixed(2) || '0.00' }}</span>
+                <span class="kpi-unit">meters</span>
+              </div>
+              <div class="kpi-sub">At lead time T+{{ dnoService.selectedLeadMinutes() }}m</div>
+            </div>
+
+            <div class="dno-kpi-card">
+              <div class="kpi-label">Peak Velocity (Vmax)</div>
+              <div class="kpi-val-row">
+                <span class="kpi-number text-highlight font-mono">{{ (currentDnoForecast?.max_velocity_mps || pred.summary.peak_velocity_mps).toFixed(2) }}</span>
+                <span class="kpi-unit">m/s</span>
+              </div>
+              <div class="kpi-sub">Surface flow vector speed</div>
+            </div>
+
+            <div class="dno-kpi-card">
+              <div class="kpi-label">Inundated Footprint (>0.05m)</div>
+              <div class="kpi-val-row">
+                <span class="kpi-number text-danger font-mono">{{ ((currentDnoForecast?.flooded_area_m2 || 0) / 1000000).toFixed(2) }}</span>
+                <span class="kpi-unit">km²</span>
+              </div>
+              <div class="kpi-sub">{{ currentDnoForecast?.flood_extent?.cells_gt_0_05m || 0 }} wet cells (78m grid)</div>
+            </div>
+
+            <div class="dno-kpi-card">
+              <div class="kpi-label">Severe Flood Area (>0.50m)</div>
+              <div class="kpi-val-row">
+                <span class="kpi-number text-danger font-mono">{{ ((currentDnoForecast?.flood_extent?.area_m2_gt_0_50m || 0) / 1000000).toFixed(2) }}</span>
+                <span class="kpi-unit">km²</span>
+              </div>
+              <div class="kpi-sub">{{ currentDnoForecast?.flood_extent?.cells_gt_0_50m || 0 }} critical cells</div>
+            </div>
+
+            <div class="dno-kpi-card">
+              <div class="kpi-label">Inference Latency</div>
+              <div class="kpi-val-row">
+                <span class="kpi-number text-cyan font-mono">{{ pred.diagnostics.inference_latency_ms.toFixed(1) }}</span>
+                <span class="kpi-unit">ms</span>
+              </div>
+              <div class="kpi-sub">Total req: {{ pred.diagnostics.total_latency_ms.toFixed(0) }}ms</div>
+            </div>
+          </div>
+
+          <!-- Forecast Timeline Controller -->
+          <div class="dno-timeline-container">
+            <div class="timeline-header">
+              <div class="timeline-title-wrap">
+                <span class="timeline-icon">⏱</span>
+                <span class="timeline-title">Forecast Lead Timeline (0 to 120 Minutes)</span>
+                <span class="timeline-curr-step font-mono">
+                  T+{{ dnoService.selectedLeadMinutes() }} MIN (Step {{ (dnoService.selectedLeadMinutes() / 5) }}/24)
+                </span>
+              </div>
+              <div class="timeline-actions">
+                <button type="button" class="btn-step" (click)="prevDnoStep()" [disabled]="dnoService.selectedLeadMinutes() <= 5">
+                  ◀ -5m
+                </button>
+                <button type="button" class="btn-step btn-play" (click)="toggleDnoPlayback()">
+                  {{ dnoPlayingTimeline ? '⏸ Pause' : '▶ Play Animation' }}
+                </button>
+                <button type="button" class="btn-step" (click)="nextDnoStep()" [disabled]="dnoService.selectedLeadMinutes() >= 120">
+                  +5m ▶
+                </button>
+              </div>
+            </div>
+
+            <!-- Slider Range -->
+            <div class="timeline-slider-track">
+              <input
+                type="range"
+                min="5"
+                max="120"
+                step="5"
+                [value]="dnoService.selectedLeadMinutes()"
+                (input)="onDnoTimelineChange($event)"
+                class="dno-timeline-slider"
+              />
+              <div class="timeline-ticks">
+                <span class="tick" [class.active]="dnoService.selectedLeadMinutes() === 5">T+5m</span>
+                <span class="tick" [class.active]="dnoService.selectedLeadMinutes() === 30">T+30m</span>
+                <span class="tick" [class.active]="dnoService.selectedLeadMinutes() === 60">T+60m</span>
+                <span class="tick" [class.active]="dnoService.selectedLeadMinutes() === 90">T+90m</span>
+                <span class="tick" [class.active]="dnoService.selectedLeadMinutes() === 120">T+120m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hydrodynamic Extent Thresholds & Depth Severity Bins -->
+          <div class="dno-details-grid">
+            <!-- Flood Extent Thresholds -->
+            <div class="dno-detail-card">
+              <h4 class="detail-card-title">Threshold Inundation Footprint at T+{{ dnoService.selectedLeadMinutes() }}m</h4>
+              <p class="detail-card-sub">Established physical depth thresholds (native meters):</p>
+              <div class="threshold-rows">
+                <div class="th-item">
+                  <span class="th-label">> 0.05m (Thin Runoff)</span>
+                  <span class="th-val font-mono">{{ currentDnoForecast?.flood_extent?.cells_gt_0_05m || 0 }} cells</span>
+                  <span class="th-area font-mono text-cyan">{{ (((currentDnoForecast?.flood_extent?.area_m2_gt_0_05m || 0) / 1000000)).toFixed(2) }} km²</span>
+                </div>
+                <div class="th-item">
+                  <span class="th-label">> 0.10m (Ankle-deep)</span>
+                  <span class="th-val font-mono">{{ currentDnoForecast?.flood_extent?.cells_gt_0_10m || 0 }} cells</span>
+                  <span class="th-area font-mono text-cyan">{{ (((currentDnoForecast?.flood_extent?.area_m2_gt_0_10m || 0) / 1000000)).toFixed(2) }} km²</span>
+                </div>
+                <div class="th-item">
+                  <span class="th-label">> 0.20m (Curb Overtopping)</span>
+                  <span class="th-val font-mono">{{ currentDnoForecast?.flood_extent?.cells_gt_0_20m || 0 }} cells</span>
+                  <span class="th-area font-mono text-warning">{{ (((currentDnoForecast?.flood_extent?.area_m2_gt_0_20m || 0) / 1000000)).toFixed(2) }} km²</span>
+                </div>
+                <div class="th-item">
+                  <span class="th-label">> 0.50m (Wheel Submersion)</span>
+                  <span class="th-val font-mono">{{ currentDnoForecast?.flood_extent?.cells_gt_0_50m || 0 }} cells</span>
+                  <span class="th-area font-mono text-danger">{{ (((currentDnoForecast?.flood_extent?.area_m2_gt_0_50m || 0) / 1000000)).toFixed(2) }} km²</span>
+                </div>
+                <div class="th-item">
+                  <span class="th-label">> 1.00m (Severe Inundation)</span>
+                  <span class="th-val font-mono">{{ currentDnoForecast?.flood_extent?.cells_gt_1_00m || 0 }} cells</span>
+                  <span class="th-area font-mono text-danger">{{ (((currentDnoForecast?.flood_extent?.area_m2_gt_1_00m || 0) / 1000000)).toFixed(2) }} km²</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Severity Distribution Bins -->
+            <div class="dno-detail-card">
+              <h4 class="detail-card-title">Depth Severity Distribution Bins</h4>
+              <p class="detail-card-sub">Discrete model-derived depth classification across 16,384 cells:</p>
+              <div class="severity-bars">
+                <div class="sev-row">
+                  <span class="sev-name">Dry (<0.05m)</span>
+                  <div class="sev-bar-bg"><div class="sev-bar-fill fill-dry" [style.width.%]="((currentDnoForecast?.depth_severity_cells?.dry_under_5cm || 0) / 16384) * 100"></div></div>
+                  <span class="sev-count font-mono">{{ currentDnoForecast?.depth_severity_cells?.dry_under_5cm || 0 }}</span>
+                </div>
+                <div class="sev-row">
+                  <span class="sev-name">Low (0.05–0.10m)</span>
+                  <div class="sev-bar-bg"><div class="sev-bar-fill fill-low" [style.width.%]="((currentDnoForecast?.depth_severity_cells?.low_5_to_10cm || 0) / 16384) * 100"></div></div>
+                  <span class="sev-count font-mono">{{ currentDnoForecast?.depth_severity_cells?.low_5_to_10cm || 0 }}</span>
+                </div>
+                <div class="sev-row">
+                  <span class="sev-name">Minor (0.10–0.20m)</span>
+                  <div class="sev-bar-bg"><div class="sev-bar-fill fill-minor" [style.width.%]="((currentDnoForecast?.depth_severity_cells?.minor_10_to_20cm || 0) / 16384) * 100"></div></div>
+                  <span class="sev-count font-mono">{{ currentDnoForecast?.depth_severity_cells?.minor_10_to_20cm || 0 }}</span>
+                </div>
+                <div class="sev-row">
+                  <span class="sev-name">Moderate (0.20–0.50m)</span>
+                  <div class="sev-bar-bg"><div class="sev-bar-fill fill-mod" [style.width.%]="((currentDnoForecast?.depth_severity_cells?.moderate_20_to_50cm || 0) / 16384) * 100"></div></div>
+                  <span class="sev-count font-mono">{{ currentDnoForecast?.depth_severity_cells?.moderate_20_to_50cm || 0 }}</span>
+                </div>
+                <div class="sev-row">
+                  <span class="sev-name">Severe (0.50–1.00m)</span>
+                  <div class="sev-bar-bg"><div class="sev-bar-fill fill-sev" [style.width.%]="((currentDnoForecast?.depth_severity_cells?.severe_50cm_to_1m || 0) / 16384) * 100"></div></div>
+                  <span class="sev-count font-mono">{{ currentDnoForecast?.depth_severity_cells?.severe_50cm_to_1m || 0 }}</span>
+                </div>
+                <div class="sev-row">
+                  <span class="sev-name">Very Severe (1.00–2.00m)</span>
+                  <div class="sev-bar-bg"><div class="sev-bar-fill fill-vsev" [style.width.%]="((currentDnoForecast?.depth_severity_cells?.very_severe_1_to_2m || 0) / 16384) * 100"></div></div>
+                  <span class="sev-count font-mono">{{ currentDnoForecast?.depth_severity_cells?.very_severe_1_to_2m || 0 }}</span>
+                </div>
+                <div class="sev-row">
+                  <span class="sev-name">Extreme Deep Pooling (>2.00m)</span>
+                  <div class="sev-bar-bg"><div class="sev-bar-fill fill-ext" [style.width.%]="((currentDnoForecast?.depth_severity_cells?.extreme_over_2m || 0) / 16384) * 100"></div></div>
+                  <span class="sev-count font-mono text-danger">{{ currentDnoForecast?.depth_severity_cells?.extreme_over_2m || 0 }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Operational Separation & Architecture Callout -->
+          <div class="dno-separation-panel">
+            <div class="sep-box sep-operational">
+              <div class="sep-badge font-mono">PRODUCTION MODEL</div>
+              <h5 class="sep-title">Operational Flood Risk (XGBoost)</h5>
+              <p class="sep-desc">
+                Primary GCC-wide flood-risk classifier trained on audited spatial predictors. Governs safe routing, citizen SMS/push warnings, and macro evacuation corridors across 3,963 terrestrial sectors.
+              </p>
+            </div>
+            <div class="sep-box sep-experimental">
+              <div class="sep-badge font-mono">EXPERIMENTAL SURROGATE</div>
+              <h5 class="sep-title">Hydrodynamic Nowcast (Chennai Phase 7C DNO)</h5>
+              <p class="sep-desc">
+                Neural operator simulating non-linear 2D depth (H) and velocity (U, V) over a 120-minute horizon. Operates on prepared hydrodynamic storm events in the Adyar–Velachery pilot catchment (128 × 128 grid).
+              </p>
+            </div>
+          </div>
+        }
       </div>
 
       <!-- Zone Quick Inspection Modal / Drawer -->
@@ -1878,12 +2159,436 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
       text-decoration: none;
       &:hover { text-decoration: underline; }
     }
+
+    /* DNO Hydrodynamic Nowcast Styles */
+    .dno-hydrodynamic-card {
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.08);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .dno-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .dno-title-group {
+      flex: 1 1 340px;
+      min-width: 0;
+    }
+    .dno-badge-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .dno-pill-pulse {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #06b6d4;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: var(--radius-full);
+      padding: 0.2rem 0.65rem;
+    }
+    .pulse-dot-cyan {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #06b6d4;
+      box-shadow: 0 0 8px #06b6d4;
+      animation: dnoPulse 1.8s infinite;
+    }
+    @keyframes dnoPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .dno-tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 0.15rem 0.45rem;
+    }
+    .dno-tag-device {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: var(--radius-sm);
+      padding: 0.15rem 0.5rem;
+    }
+    .device-cuda {
+      color: #06b6d4;
+      background: rgba(6, 182, 212, 0.1);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+    .dno-main-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 0.35rem 0;
+    }
+    .dno-sub-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 0;
+    }
+    .dno-event-controls {
+      display: flex;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .dno-select-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .dno-select-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+    .dno-event-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      border-radius: var(--radius-md);
+      padding: 0.45rem 0.75rem;
+      font-size: 0.8rem;
+      outline: none;
+      min-width: 220px;
+      &:focus { border-color: #06b6d4; }
+    }
+    .dno-run-btn {
+      padding: 0.45rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+      border: none;
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #0369a1 0%, #0891b2 100%);
+      }
+    }
+    .dno-loading-banner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px dashed rgba(6, 182, 212, 0.4);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+    }
+    .dno-spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid rgba(6, 182, 212, 0.2);
+      border-top-color: #06b6d4;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .dno-load-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .dno-load-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .dno-error-banner {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dno-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.75rem;
+    }
+    .dno-kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .kpi-label {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .kpi-val-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+    }
+    .kpi-number {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .kpi-unit {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .kpi-sub {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+    }
+    .dno-timeline-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .timeline-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .timeline-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .timeline-curr-step {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #06b6d4;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-sm);
+    }
+    .timeline-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      padding: 0.3rem 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      &:hover:not(:disabled) { border-color: #06b6d4; color: #06b6d4; }
+      &:disabled { opacity: 0.4; cursor: not-allowed; }
+    }
+    .btn-play {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: rgba(6, 182, 212, 0.4);
+      color: #06b6d4;
+    }
+    .timeline-slider-track {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .dno-timeline-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+      background: var(--bg-card);
+      accent-color: #06b6d4;
+      cursor: pointer;
+    }
+    .timeline-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+    .timeline-ticks .tick.active {
+      color: #06b6d4;
+      font-weight: 700;
+    }
+    .dno-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+    .dno-detail-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+    .detail-card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 0.25rem 0;
+    }
+    .detail-card-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin: 0 0 0.75rem 0;
+    }
+    .threshold-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .th-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.35rem 0.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+    }
+    .th-label { color: var(--text-muted); }
+    .th-val { color: var(--text-dim); font-size: 0.7rem; }
+    .th-area { font-weight: 600; }
+    .severity-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .sev-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 45px;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+    }
+    .sev-name { color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sev-bar-bg {
+      height: 6px;
+      background: var(--bg-card);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .sev-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+    .fill-dry { background: #64748b; }
+    .fill-low { background: #3b82f6; }
+    .fill-minor { background: #06b6d4; }
+    .fill-mod { background: #f59e0b; }
+    .fill-sev { background: #ea580c; }
+    .fill-vsev { background: #dc2626; }
+    .fill-ext { background: #7f1d1d; }
+    .sev-count { text-align: right; color: var(--text-dim); }
+    .dno-separation-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-light);
+    }
+    .sep-box {
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+    }
+    .sep-operational {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .sep-experimental {
+      background: rgba(6, 182, 212, 0.05);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+    }
+    .sep-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0.1rem 0.4rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.35rem;
+    }
+    .sep-operational .sep-badge {
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+    }
+    .sep-experimental .sep-badge {
+      color: #06b6d4;
+      background: rgba(6, 182, 212, 0.15);
+    }
+    .sep-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 0.25rem 0;
+    }
+    .sep-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin: 0;
+    }
+    .map-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
   `]
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('miniMapContainer') miniMapContainer!: ElementRef;
 
   private http: HttpClient = inject(HttpClient);
+  public dnoService: DnoService = inject(DnoService);
+
+  layerDno = true;
+  dnoPlayingTimeline = false;
+  private dnoPlayTimer?: any;
+  currentDnoForecast: DNOTimestepForecast | null = null;
+  private dnoLayerGroup = L.layerGroup();
+  private dnoPilotBoundsRect?: L.Rectangle;
+  private cachedGeoJsonMap = new Map<number, any>();
 
   greeting = 'Good Afternoon';
   currentDate = '';
@@ -1947,6 +2652,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadRecentPredictions();
     this.loadWeatherTelemetry();
     this.runEtaPrediction();
+    this.loadDnoHealthAndEvents();
   }
 
   loadWeatherTelemetry(): void {
@@ -2088,6 +2794,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.dnoPlayTimer) {
+      clearInterval(this.dnoPlayTimer);
+      this.dnoPlayTimer = undefined;
+    }
     if (this.resizeHandler && typeof window !== 'undefined') {
       window.removeEventListener('resize', this.resizeHandler);
     }
@@ -2157,6 +2867,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }).addTo(this.map);
 
     this.zoneLayersGroup.addTo(this.map);
+
+    // Chennai Phase 7C DNO Pilot Catchment boundary (Adyar-Velachery 10km x 10km)
+    const pilotBounds: L.LatLngBoundsExpression = [
+      [12.943196, 80.170273],
+      [13.033893, 80.262192]
+    ];
+    this.dnoPilotBoundsRect = L.rectangle(pilotBounds, {
+      color: '#00e5ff',
+      weight: 2,
+      dashArray: '6, 6',
+      fillColor: '#00e5ff',
+      fillOpacity: 0.04
+    });
+    this.dnoPilotBoundsRect.bindTooltip(`
+      <div style="font-family: inherit; font-size: 0.8rem;">
+        <strong style="color: #00e5ff;">Chennai DNO Pilot Catchment</strong><br/>
+        Adyar–Velachery Basin (10 km × 10 km)<br/>
+        Grid: 128 × 128 (78.1m resolution)
+      </div>
+    `, { sticky: true });
+
+    this.dnoLayerGroup.addLayer(this.dnoPilotBoundsRect);
+    this.dnoLayerGroup.addTo(this.map);
 
     requestAnimationFrame(() => {
       this.map?.invalidateSize();
@@ -2289,5 +3022,224 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (score >= 80) return '#ef4444';
     if (score >= 50) return '#f59e0b';
     return '#10b981';
+  }
+
+  // ==========================================
+  // CHENNAI PHASE 7C DNO HYDRODYNAMIC METHODS
+  // ==========================================
+
+  private loadDnoHealthAndEvents(): void {
+    this.dnoService.getHealth().subscribe();
+    this.dnoService.getEvents().subscribe({
+      next: (resp) => {
+        if (resp && resp.events && resp.events.length > 0) {
+          const hasStorm11 = resp.events.find(e => e.id === 'storm_011');
+          if (hasStorm11) {
+            this.dnoService.selectedEventId.set('storm_011');
+          } else {
+            this.dnoService.selectedEventId.set(resp.events[0].id);
+          }
+          // Auto-run forecast for initial visualization
+          this.runDnoForecast();
+        }
+      }
+    });
+  }
+
+  onDnoEventChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    if (target && target.value) {
+      this.dnoService.selectedEventId.set(target.value);
+    }
+  }
+
+  runDnoForecast(): void {
+    const eventId = this.dnoService.selectedEventId();
+    if (!eventId) return;
+
+    this.cachedGeoJsonMap.clear();
+    this.dnoService.predict({
+      event_id: eventId,
+      include_spatial_grids: false
+    }).subscribe({
+      next: (resp) => {
+        this.updateCurrentDnoForecast();
+        this.loadDnoGeoJson(this.dnoService.selectedLeadMinutes());
+      },
+      error: (err) => {
+        console.error('[DNO Predict Error]', err);
+      }
+    });
+  }
+
+  onDnoTimelineChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target) {
+      const minutes = parseInt(target.value, 10);
+      this.setDnoLeadMinutes(minutes);
+    }
+  }
+
+  setDnoLeadMinutes(minutes: number): void {
+    this.dnoService.setLeadMinutes(minutes);
+    this.updateCurrentDnoForecast();
+    this.loadDnoGeoJson(this.dnoService.selectedLeadMinutes());
+  }
+
+  prevDnoStep(): void {
+    const curr = this.dnoService.selectedLeadMinutes();
+    if (curr > 5) {
+      this.setDnoLeadMinutes(curr - 5);
+    }
+  }
+
+  nextDnoStep(): void {
+    const curr = this.dnoService.selectedLeadMinutes();
+    if (curr < 120) {
+      this.setDnoLeadMinutes(curr + 5);
+    }
+  }
+
+  toggleDnoPlayback(): void {
+    if (this.dnoPlayingTimeline) {
+      if (this.dnoPlayTimer) {
+        clearInterval(this.dnoPlayTimer);
+        this.dnoPlayTimer = undefined;
+      }
+      this.dnoPlayingTimeline = false;
+    } else {
+      this.dnoPlayingTimeline = true;
+      this.dnoPlayTimer = setInterval(() => {
+        let nextMin = this.dnoService.selectedLeadMinutes() + 5;
+        if (nextMin > 120) {
+          nextMin = 5;
+        }
+        this.setDnoLeadMinutes(nextMin);
+      }, 1500);
+    }
+  }
+
+  private updateCurrentDnoForecast(): void {
+    this.currentDnoForecast = this.dnoService.getCurrentTimestepForecast();
+  }
+
+  loadDnoGeoJson(leadMinutes: number): void {
+    const eventId = this.dnoService.selectedEventId();
+    if (!eventId) return;
+
+    if (this.cachedGeoJsonMap.has(leadMinutes)) {
+      const cached = this.cachedGeoJsonMap.get(leadMinutes);
+      this.renderDnoGeoJsonOnMap(cached);
+      return;
+    }
+
+    this.dnoService.getForecastGeoJson(eventId, leadMinutes, 0.10, 1500).subscribe({
+      next: (geoJson) => {
+        this.cachedGeoJsonMap.set(leadMinutes, geoJson);
+        this.renderDnoGeoJsonOnMap(geoJson);
+      },
+      error: (err) => {
+        console.warn('[DNO GeoJSON Error]', err);
+      }
+    });
+  }
+
+  renderDnoGeoJsonOnMap(geoJson: any): void {
+    if (!this.map) return;
+    this.dnoLayerGroup.clearLayers();
+
+    // Re-add pilot catchment boundary outline
+    if (this.dnoPilotBoundsRect) {
+      this.dnoLayerGroup.addLayer(this.dnoPilotBoundsRect);
+    }
+
+    if (!this.layerDno || !geoJson || !geoJson.features) return;
+
+    const geoJsonLayer = L.geoJSON(geoJson, {
+      style: (feature: any) => {
+        const depth = feature?.properties?.depth_m || 0;
+        let fillColor = '#00e5ff'; // cyan
+        let fillOpacity = 0.55;
+        let strokeColor = '#00b4d8';
+
+        if (depth >= 1.0) {
+          fillColor = '#ef4444'; // red (severe)
+          strokeColor = '#b91c1c';
+          fillOpacity = 0.85;
+        } else if (depth >= 0.50) {
+          fillColor = '#f97316'; // deep orange
+          strokeColor = '#c2410c';
+          fillOpacity = 0.75;
+        } else if (depth >= 0.20) {
+          fillColor = '#f59e0b'; // amber
+          strokeColor = '#d97706';
+          fillOpacity = 0.65;
+        } else if (depth >= 0.10) {
+          fillColor = '#06b6d4'; // teal
+          strokeColor = '#0891b2';
+          fillOpacity = 0.55;
+        }
+
+        return {
+          fillColor: fillColor,
+          color: strokeColor,
+          weight: 1,
+          fillOpacity: fillOpacity
+        };
+      },
+      onEachFeature: (feature: any, layer: L.Layer) => {
+        const p = feature.properties || {};
+        const depth = (p.depth_m !== undefined) ? Number(p.depth_m).toFixed(2) : '0.00';
+        const u = (p.velocity_u_mps !== undefined) ? Number(p.velocity_u_mps).toFixed(2) : '0.00';
+        const v = (p.velocity_v_mps !== undefined) ? Number(p.velocity_v_mps).toFixed(2) : '0.00';
+        const velMag = (p.velocity_magnitude_mps !== undefined) ? Number(p.velocity_magnitude_mps).toFixed(2) : '0.00';
+        const sev = p.severity || 'MODERATE';
+        const leadMin = p.lead_time_minutes ?? this.dnoService.selectedLeadMinutes();
+
+        layer.bindTooltip(`
+          <div style="font-family: inherit; font-size: 0.8rem; line-height: 1.4;">
+            <div style="font-weight: 700; color: #00e5ff; margin-bottom: 2px;">Chennai Phase 7C DNO Cell</div>
+            <div>Lead Time: <strong>T+${leadMin}m</strong></div>
+            <div>Water Depth (H): <strong>${depth} m</strong></div>
+            <div>Velocity Magnitude: <strong>${velMag} m/s</strong></div>
+            <div>Vectors: <strong>U=${u} m/s, V=${v} m/s</strong></div>
+            <div>Severity: <strong style="color: #f59e0b;">${sev}</strong></div>
+            <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 2px;">Resolution: 78.1m Grid Cell</div>
+          </div>
+        `, { sticky: true });
+      }
+    });
+
+    this.dnoLayerGroup.addLayer(geoJsonLayer);
+  }
+
+  toggleDnoLayer(): void {
+    this.layerDno = !this.layerDno;
+    if (!this.map) return;
+    if (this.layerDno) {
+      if (!this.map.hasLayer(this.dnoLayerGroup)) {
+        this.dnoLayerGroup.addTo(this.map);
+      }
+      const currMin = this.dnoService.selectedLeadMinutes();
+      if (this.cachedGeoJsonMap.has(currMin)) {
+        this.renderDnoGeoJsonOnMap(this.cachedGeoJsonMap.get(currMin));
+      } else {
+        this.loadDnoGeoJson(currMin);
+      }
+    } else {
+      this.dnoLayerGroup.clearLayers();
+      if (this.dnoPilotBoundsRect) {
+        this.dnoLayerGroup.addLayer(this.dnoPilotBoundsRect);
+      }
+    }
+  }
+
+  focusDnoPilot(): void {
+    if (!this.map) return;
+    const pilotBounds: L.LatLngBoundsExpression = [
+      [12.943196, 80.170273],
+      [13.033893, 80.262192]
+    ];
+    this.map.fitBounds(pilotBounds, { padding: [30, 30], maxZoom: 14 });
   }
 }

@@ -15,6 +15,7 @@ from backend.app.db.models.user import User
 from backend.app.db.models.user_location import UserLocation
 from backend.app.db.models.citizen_preference import CitizenAlertPreferences
 from backend.app.services.flood_service import FloodService
+from backend.app.core.config import settings
 
 class AlertTargetingService:
     @staticmethod
